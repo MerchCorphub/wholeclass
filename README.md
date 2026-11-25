@@ -1,6 +1,6 @@
 # WholeClass™ — The Know Your Holes Discovery Class
 
-**Discover Your Holes. Develop Your Whole.** · https://wholeclass.app
+**Become Your Discovery.** · https://wholeclass.app
 
 A home-screen web app (PWA) for the 14-Day Discovery Class, inspired by *Know Your Holes* by C.P. Parker. Owned and operated by Merch Corporation.
 
