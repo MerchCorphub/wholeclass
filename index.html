@@ -1,0 +1,1303 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>WholeClass — The Know Your Holes Discovery Class</title>
+<meta name="description" content="Discover Your Holes. Develop Your Whole. The 14-Day Discovery Class, inspired by Know Your Holes by C.P. Parker.">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<meta name="theme-color" content="#01434B">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="WholeClass">
+<link rel="manifest" href="manifest.json">
+<link rel="icon" type="image/png" href="icons/icon-192.png">
+<link rel="apple-touch-icon" sizes="180x180" href="icons/apple-touch-icon.png">
+<script src="./cloud.js"></script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Sora:wght@400;600;700;800&family=Manrope:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+body{margin:0;-webkit-tap-highlight-color:transparent}
+button{font-family:'Manrope',sans-serif}
+textarea,input{font-family:'Manrope',sans-serif}
+textarea:focus,input:focus{outline:none;border-color:#0E7C7B !important}
+button:focus-visible,a:focus-visible{outline:3px solid #C48504;outline-offset:2px}
+@media (prefers-reduced-motion: reduce){*{transition:none!important;animation:none!important}}
+*{box-sizing:border-box}
+html,body{background:#01262B}
+.wc-stage{font-family:'Manrope',sans-serif;color:#1C2434;min-height:100dvh;display:flex;align-items:center;justify-content:center;background:#01262B radial-gradient(1200px 600px at 70% -10%, #0E5C63 0%, #01262B 55%);padding:24px 0}
+.wc-phone{width:390px;height:844px;max-height:calc(100dvh - 48px);background:#fff;border-radius:36px;overflow:hidden;position:relative;box-shadow:0 40px 90px rgba(0,0,0,.55);display:flex;flex-direction:column}
+@media (max-width:600px){.wc-stage{display:block;padding:0}.wc-phone{width:100%;height:100dvh;max-height:none;border-radius:0;box-shadow:none}}
+</style>
+</helmet>
+
+<div class="wc-stage">
+<div class="wc-phone">
+  <div style="flex:none;height:calc(10px + env(safe-area-inset-top));background:{{ barBg }}"></div>
+
+  <!-- ============ LOADING ============ -->
+  <section style="display:{{ dLoading }};flex:1;align-items:center;justify-content:center;flex-direction:column;gap:14px;background:#FEF9F2">
+    <img src="assets/wholeclass-icon.png" alt="WholeClass" style="width:72px;height:72px;border-radius:18px">
+    <p style="font-size:14px;color:#4A5468;margin:0">Opening your class…</p>
+  </section>
+
+  <!-- ============ WELCOME ============ -->
+  <section style="display:{{ dWelcome }};flex-direction:column;flex:1;overflow-y:auto;background:#FEF9F2">
+    <div style="flex:1;display:flex;flex-direction:column;justify-content:center;text-align:center;padding:0 24px 12px">
+      <sc-if value="{{ hasPendingSeat }}" hint-placeholder-val="{{ false }}"><div style="background:#FFF4DE;border:1px solid #F1D8A0;color:#5B4310;border-radius:14px;padding:10px 14px;font-size:13.5px;font-weight:700;margin:8px 0 4px">Someone gave you a seat in the 14-Day Discovery Class. Create your account to accept it.</div></sc-if>
+      <img src="assets/wholeclass-logo.png" alt="WholeClass — The Know Your Holes Discovery Class" style="width:100%;max-width:330px;height:auto;margin:0 auto;display:block">
+      <p style="font-family:'Sora',sans-serif;font-size:16px;font-weight:700;color:#01434B;margin:6px 0 0">Discover Your Holes. <span style="color:#8A5A00">Develop Your Whole.</span></p>
+      <p style="margin:14px 0 0;font-size:14.5px;line-height:1.6;color:#4A5468">A safe, trusted place to find the holes that shape how you love, argue and choose, and to do something about them.</p>
+      <div style="margin:18px auto 0;background:#fff;border:1px solid #EADFCB;border-radius:16px;padding:12px 14px;text-align:left;max-width:320px">
+        <div style="font-family:'Sora',sans-serif;font-size:11px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:#8A5A00">Start here</div>
+        <div style="font-family:'Sora',sans-serif;font-weight:800;font-size:16px;color:#01434B;margin-top:3px">The 14-Day Discovery Class</div>
+        <div style="font-size:13px;color:#4A5468;line-height:1.45;margin-top:3px">14 days · under 20 minutes a day · on your own or with a guided group</div>
+      </div>
+    </div>
+    <div style="padding:8px 22px 24px">
+      <button style="display:block;width:100%;border:none;border-radius:999px;padding:16px;font-family:'Sora',sans-serif;font-size:16px;font-weight:700;cursor:pointer;background:#01434B;color:#fff" onClick="{{ goHow }}">Take the Quick Five — free</button>
+      <button style="display:block;width:100%;border:1.5px solid #01434B;background:#fff;border-radius:999px;padding:14px;font-family:'Sora',sans-serif;font-size:15px;font-weight:700;cursor:pointer;color:#01434B;margin-top:10px" onClick="{{ goSignIn }}">I already have an account</button>
+      <div style="display:flex;justify-content:center;gap:6px;margin-top:4px">
+        <button style="border:none;background:none;font-family:'Sora',sans-serif;font-size:14px;font-weight:700;cursor:pointer;color:#0E6B6B;padding:10px" onClick="{{ openSample }}">See a sample</button>
+        <button style="border:none;background:none;font-family:'Sora',sans-serif;font-size:14px;font-weight:700;cursor:pointer;color:#0E6B6B;padding:10px" onClick="{{ openAbout }}">About WholeClass</button>
+      </div>
+      <p style="text-align:center;font-size:12px;color:#5A6478;margin:2px 0 0">Inspired by <em>Know Your Holes</em> by C.P. Parker</p>
+    </div>
+  </section>
+
+  <!-- ============ ABOUT WHOLECLASS ============ -->
+  <section style="display:{{ dAbout }};flex-direction:column;flex:1;overflow-y:auto;background:#FEF9F2">
+    <div style="padding:4px 22px 24px">
+      <button style="background:none;border:none;color:#01434B;font-weight:700;font-size:14px;cursor:pointer;padding:6px 0" onClick="{{ aboutBack }}">‹ Back</button>
+      <div style="display:flex;gap:14px;align-items:center;margin:8px 0 14px">
+        <img src="assets/wholeclass-icon.png" alt="" style="width:64px;height:64px;border-radius:16px;flex:none">
+        <div><h2 style="font-family:'Sora',sans-serif;font-size:24px;font-weight:800;color:#01434B;margin:0">WholeClass™</h2><div style="font-size:13.5px;font-weight:700;color:#8A5A00;margin-top:2px">The Know Your Holes Discovery Class</div></div>
+      </div>
+      <p style="font-size:14.5px;line-height:1.6;color:#2A3446;margin:0 0 12px"><strong>WholeClass.app</strong> is a personal development and educational platform designed to provide a safe, supportive and trusted environment where individuals can discover, understand and address their personal holes—unmet needs that create blind spots and behavioral patterns that may limit their growth.</p>
+      <p style="font-size:14.5px;line-height:1.6;color:#2A3446;margin:0 0 12px">Inspired by the book <em>Know Your Holes</em>, WholeClass guides members through structured self-discovery, personal assessments, educational exercises, reflection and accountability. Members can participate individually or through guided discovery classes.</p>
+      <p style="font-size:14.5px;line-height:1.6;color:#2A3446;margin:0 0 16px">The platform promotes personal ownership without judgment, encouraging members to recognize their strengths, understand their limitations and develop actionable strategies for meaningful improvement.</p>
+      <div style="background:#fff;border:1px solid #EADFCB;border-radius:16px;padding:14px 15px;margin-bottom:10px;border-left:5px solid #01434B">
+        <div style="font-family:'Sora',sans-serif;font-size:11px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:#0E6B6B">Our Mission</div>
+        <p style="font-size:14.5px;line-height:1.55;color:#2A3446;margin:4px 0 0">To empower individuals through self-awareness, education and intentional personal development.</p>
+      </div>
+      <div style="background:#fff;border:1px solid #EADFCB;border-radius:16px;padding:14px 15px;margin-bottom:10px;border-left:5px solid #C48504">
+        <div style="font-family:'Sora',sans-serif;font-size:11px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:#8A5A00">Our Vision</div>
+        <p style="font-size:14.5px;line-height:1.55;color:#2A3446;margin:4px 0 0">To build a trusted community where discovering your holes becomes an opportunity for growth rather than a reason for shame.</p>
+      </div>
+      <div style="background:#fff;border:1px solid #EADFCB;border-radius:16px;padding:14px 15px">
+        <div style="font-family:'Sora',sans-serif;font-size:11px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:#0E6B6B">Our Core Values</div>
+        <ul style="margin:8px 0 0;padding:0;list-style:none;display:flex;flex-direction:column;gap:8px">
+          <li style="display:flex;gap:10px;align-items:center;font-size:14.5px;color:#2A3446"><span style="width:8px;height:8px;border-radius:50%;background:#C48504;flex:none"></span>Trust and confidentiality</li>
+          <li style="display:flex;gap:10px;align-items:center;font-size:14.5px;color:#2A3446"><span style="width:8px;height:8px;border-radius:50%;background:#C48504;flex:none"></span>Self-awareness</li>
+          <li style="display:flex;gap:10px;align-items:center;font-size:14.5px;color:#2A3446"><span style="width:8px;height:8px;border-radius:50%;background:#C48504;flex:none"></span>Personal accountability</li>
+          <li style="display:flex;gap:10px;align-items:center;font-size:14.5px;color:#2A3446"><span style="width:8px;height:8px;border-radius:50%;background:#C48504;flex:none"></span>Respect and acceptance</li>
+          <li style="display:flex;gap:10px;align-items:center;font-size:14.5px;color:#2A3446"><span style="width:8px;height:8px;border-radius:50%;background:#C48504;flex:none"></span>Continuous personal growth</li>
+        </ul>
+      </div>
+      <div style="background:#01434B;border-radius:16px;padding:14px 15px;margin-top:10px;color:#fff">
+        <div style="font-family:'Sora',sans-serif;font-size:11px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:#E9B53F">Courses</div>
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-top:8px;padding-bottom:8px;border-bottom:1px solid #165F66"><span style="font-weight:700;font-size:14.5px">The 14-Day Discovery Class</span><span style="font-size:12px;font-weight:700;color:#CFE3E1">Open now</span></div>
+        <div style="display:flex;justify-content:space-between;align-items:center;padding-top:8px"><span style="font-weight:700;font-size:14.5px">The Know Your Holes Series</span><span style="font-size:12px;font-weight:700;color:#E9B53F">Coming soon</span></div>
+      </div>
+      <p style="text-align:center;font-family:'Sora',sans-serif;font-weight:800;font-size:15px;color:#01434B;margin:20px 0 4px">WholeClass™ — Discover Your Holes. <span style="color:#8A5A00">Develop Your Whole.</span></p>
+      <p style="text-align:center;margin:0"><a href="https://www.wholeclass.app" style="color:#0E6B6B;font-weight:700;font-size:14px">www.wholeclass.app</a></p>
+    </div>
+  </section>
+
+  <!-- ============ HOW IT WORKS ============ -->
+  <section style="display:{{ dHow }};flex-direction:column;flex:1;overflow-y:auto">
+    <div style="padding:10px 22px 10px;flex:1">
+      <p style="font-family:'Sora',sans-serif;font-size:11px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:#0E6B6B;margin:8px 0 0">The 14-Day Discovery Class</p>
+      <h2 style="font-family:'Sora',sans-serif;font-size:25px;font-weight:800;color:#01434B;line-height:1.2;margin:6px 0 8px">Everyone carries holes. Most of us have never named ours.</h2>
+      <p style="font-size:14.5px;color:#4A5468;line-height:1.55;margin:0 0 16px">A hole is an unmet need. Left unmet, it creates blind spots and behavioral patterns that start making decisions for you. The book names 25 of them. Over 14 days you'll look at every one, surface first and core last, and finish knowing which five matter most.</p>
+      <div style="display:flex;flex-direction:column;gap:8px">
+        <sc-for list="{{ phaseCards }}" as="p" hint-placeholder-count="5">
+          <div style="display:flex;gap:12px;align-items:flex-start;border:1px solid #E3E9F2;border-radius:14px;padding:11px 13px">
+            <div style="width:34px;height:34px;flex:none;border-radius:10px;background:{{ p.bg }};color:{{ p.ink }};display:flex;align-items:center;justify-content:center;font-family:'Sora',sans-serif;font-weight:800;font-size:14px">{{ p.n }}</div>
+            <div><div style="font-family:'Sora',sans-serif;font-weight:700;font-size:14.5px;color:#01434B">{{ p.name }} <span style="font-weight:600;color:#5A6478;font-size:12.5px">· {{ p.days }}</span></div><div style="font-size:13px;color:#4A5468;line-height:1.45;margin-top:2px">{{ p.text }}</div></div>
+          </div>
+        </sc-for>
+      </div>
+      <div style="margin-top:14px;background:#FBF7F0;border-radius:14px;padding:12px 14px;font-size:13px;color:#4A5468;line-height:1.5"><strong style="color:#01434B">Each day runs the KYH + DRG Method™:</strong> Know · Yield · Hunt · Diagnose · Respond · Grow.</div>
+      <div style="margin-top:8px;background:#FFF8E6;border-radius:14px;padding:12px 14px;font-size:13px;color:#5B4310;line-height:1.5"><strong>Two ways to take it:</strong> on your own, or with a guided group led by a church, ministry or counselor. Either way, your answers stay yours.</div>
+    </div>
+    <div style="padding:10px 22px 24px"><button style="display:block;width:100%;border:none;border-radius:999px;padding:16px;font-family:'Sora',sans-serif;font-size:16px;font-weight:700;cursor:pointer;background:#01434B;color:#fff" onClick="{{ goFaith }}">Next</button></div>
+  </section>
+
+  <!-- ============ FAITH ============ -->
+  <section style="display:{{ dFaith }};flex-direction:column;flex:1;overflow-y:auto">
+    <div style="padding:10px 22px;flex:1">
+      <p style="font-family:'Sora',sans-serif;font-size:11px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:#0E6B6B;margin:8px 0 0">Faith layer · optional</p>
+      <h2 style="font-family:'Sora',sans-serif;font-size:25px;font-weight:800;color:#01434B;line-height:1.2;margin:6px 0 8px">How much Scripture would you like along the way?</h2>
+      <p style="font-size:14.5px;color:#4A5468;line-height:1.55;margin:0 0 16px">You can change this any time in More.</p>
+      <div style="display:flex;flex-direction:column;gap:10px">
+        <sc-for list="{{ faithOpts }}" as="f" hint-placeholder-count="3">
+          <button style="{{ f.style }}" onClick="{{ f.pick }}"><div style="font-family:'Sora',sans-serif;font-weight:700;font-size:15px;color:#01434B">{{ f.label }}</div><div style="font-size:13px;color:#4A5468;margin-top:3px;line-height:1.45">{{ f.text }}</div></button>
+        </sc-for>
+      </div>
+    </div>
+    <div style="padding:10px 22px 24px"><button style="display:block;width:100%;border:none;border-radius:999px;padding:16px;font-family:'Sora',sans-serif;font-size:16px;font-weight:700;cursor:pointer;background:#01434B;color:#fff" onClick="{{ goPrivacy }}">Next</button></div>
+  </section>
+
+  <!-- ============ PRIVACY ============ -->
+  <section style="display:{{ dPrivacy }};flex-direction:column;flex:1;overflow-y:auto">
+    <div style="padding:10px 22px;flex:1">
+      <p style="font-family:'Sora',sans-serif;font-size:11px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:#0E6B6B;margin:8px 0 0">Before you start</p>
+      <h2 style="font-family:'Sora',sans-serif;font-size:25px;font-weight:800;color:#01434B;line-height:1.2;margin:6px 0 14px">Trust and confidentiality come first.</h2>
+      <div style="display:flex;flex-direction:column;gap:14px;font-size:14px;color:#4A5468;line-height:1.5">
+        <div><strong style="color:#01434B">Private by default.</strong> Your scores, Hunts and letters are never sold and never shown to anyone you haven't chosen.</div>
+        <div><strong style="color:#01434B">Groups see completion only.</strong> If you join through a guided group, your facilitator sees which days you finished. Never your answers.</div>
+        <div><strong style="color:#01434B">Export or delete any time.</strong></div>
+        <div><strong style="color:#01434B">Education, not treatment.</strong> WholeClass helps you understand your needs. It doesn't diagnose, and it doesn't replace a counselor.</div>
+      </div>
+      <div style="margin-top:20px;display:flex;gap:10px;align-items:flex-start;font-size:14px;color:#1C2434;line-height:1.45"><button style="{{ agreeBox }};cursor:pointer;padding:0" onClick="{{ toggleAgree }}" role="checkbox" aria-checked="{{ agreeAria }}" aria-label="I'm 18 or older and agree to the Terms and Privacy Policy">{{ agreeMark }}</button><span>I'm 18 or older, and I agree to the <a href="terms.html" target="_blank" rel="noopener">Terms</a> and the <a href="privacy.html" target="_blank" rel="noopener">Privacy Policy</a>.</span></div>
+    </div>
+    <div style="padding:10px 22px 24px"><button style="{{ privacyBtn }}" onClick="{{ goQuick }}">{{ privacyCta }}</button></div>
+  </section>
+
+  <!-- ============ ACCOUNT ============ -->
+  <section style="display:{{ dAccount }};flex-direction:column;flex:1;overflow-y:auto;background:#FEF9F2">
+    <div style="padding:10px 22px;flex:1">
+      <button style="background:none;border:none;color:#01434B;font-weight:700;font-size:14px;cursor:pointer;padding:6px 0" onClick="{{ accountBack }}">‹ Back</button>
+      <div style="display:flex;gap:12px;align-items:center;margin:10px 0 14px"><img src="assets/wholeclass-icon.png" alt="" style="width:48px;height:48px;border-radius:12px"><h2 style="font-family:'Sora',sans-serif;font-size:23px;font-weight:800;color:#01434B;margin:0">{{ authTitle }}</h2></div>
+      <p style="font-size:14px;color:#4A5468;line-height:1.55;margin:0 0 14px">{{ authSub }}</p>
+      <sc-if value="{{ authIsUp }}" hint-placeholder-val="{{ true }}">
+        <div style="display:grid;grid-template-columns:repeat(2, minmax(0, 1fr));gap:10px">
+          <div><label for="aFirst" style="display:block;font-weight:700;font-size:13px;color:#01434B;margin-bottom:5px">First name</label><input id="aFirst" autocomplete="given-name" style="width:100%;border:1.5px solid #D5DCE7;border-radius:10px;padding:11px 12px;font-size:15px;background:#fff" value="{{ aFirst }}" onChange="{{ setAFirst }}"></div>
+          <div><label for="aLast" style="display:block;font-weight:700;font-size:13px;color:#01434B;margin-bottom:5px">Last name</label><input id="aLast" autocomplete="family-name" style="width:100%;border:1.5px solid #D5DCE7;border-radius:10px;padding:11px 12px;font-size:15px;background:#fff" value="{{ aLast }}" onChange="{{ setALast }}"></div>
+        </div>
+      </sc-if>
+      <label for="aEmail" style="display:block;font-weight:700;font-size:13px;color:#01434B;margin:12px 0 5px">Email address</label>
+      <input id="aEmail" type="email" autocomplete="email" style="width:100%;border:1.5px solid #D5DCE7;border-radius:10px;padding:11px 12px;font-size:15px;background:#fff" value="{{ aEmail }}" onChange="{{ setAEmail }}">
+      <sc-if value="{{ authNeedsPw }}" hint-placeholder-val="{{ true }}">
+        <label for="aPw" style="display:block;font-weight:700;font-size:13px;color:#01434B;margin:12px 0 5px">Password <span style="font-weight:600;color:#5A6478">{{ pwHint }}</span></label>
+        <input id="aPw" type="password" autocomplete="{{ pwAuto }}" style="width:100%;border:1.5px solid #D5DCE7;border-radius:10px;padding:11px 12px;font-size:15px;background:#fff" value="{{ aPw }}" onChange="{{ setAPw }}" onKeyDown="{{ authKey }}">
+      </sc-if>
+      <sc-if value="{{ hasAuthErr }}" hint-placeholder-val="{{ false }}"><div role="alert" style="margin-top:12px;background:#FDECEA;color:#8A1F11;border-radius:12px;padding:10px 12px;font-size:13.5px;line-height:1.45">{{ authErr }}</div></sc-if>
+      <sc-if value="{{ hasAuthMsg }}" hint-placeholder-val="{{ false }}"><div role="status" style="margin-top:12px;background:#E3F2F1;color:#0A5656;border-radius:12px;padding:10px 12px;font-size:13.5px;line-height:1.45">{{ authMsg }}</div></sc-if>
+      <button style="{{ authBtnStyle }}" onClick="{{ authSubmit }}">{{ authCta }}</button>
+      <div style="display:flex;justify-content:space-between;margin-top:10px">
+        <button style="background:none;border:none;color:#0E6B6B;font-weight:700;font-size:13.5px;cursor:pointer;padding:6px 0" onClick="{{ authSwap }}">{{ authSwapLabel }}</button>
+        <sc-if value="{{ authIsIn }}" hint-placeholder-val="{{ false }}"><button style="background:none;border:none;color:#0E6B6B;font-weight:700;font-size:13.5px;cursor:pointer;padding:6px 0" onClick="{{ authForgot }}">Forgot password?</button></sc-if>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ NEW PASSWORD ============ -->
+  <section style="display:{{ dNewPw }};flex-direction:column;flex:1;overflow-y:auto;background:#FEF9F2">
+    <div style="padding:20px 22px;flex:1">
+      <h2 style="font-family:'Sora',sans-serif;font-size:23px;font-weight:800;color:#01434B;margin:10px 0 8px">Choose a new password</h2>
+      <label for="nPw" style="display:block;font-weight:700;font-size:13px;color:#01434B;margin:12px 0 5px">New password <span style="font-weight:600;color:#5A6478">(8 or more characters)</span></label>
+      <input id="nPw" type="password" autocomplete="new-password" style="width:100%;border:1.5px solid #D5DCE7;border-radius:10px;padding:11px 12px;font-size:15px;background:#fff" value="{{ aPw }}" onChange="{{ setAPw }}">
+      <sc-if value="{{ hasAuthErr }}" hint-placeholder-val="{{ false }}"><div role="alert" style="margin-top:12px;background:#FDECEA;color:#8A1F11;border-radius:12px;padding:10px 12px;font-size:13.5px">{{ authErr }}</div></sc-if>
+      <button style="display:block;width:100%;border:none;border-radius:999px;padding:15px;font-family:'Sora',sans-serif;font-size:15px;font-weight:700;cursor:pointer;background:#01434B;color:#fff;margin-top:16px" onClick="{{ saveNewPw }}">Save password</button>
+    </div>
+  </section>
+
+  <!-- ============ ENTER A CODE ============ -->
+  <section style="display:{{ dCode }};flex-direction:column;flex:1;overflow-y:auto">
+    <div style="padding:10px 22px;flex:1">
+      <button style="background:none;border:none;color:#01434B;font-weight:700;font-size:14px;cursor:pointer;padding:6px 0" onClick="{{ codeBack }}">‹ Back</button>
+      <h2 style="font-family:'Sora',sans-serif;font-size:23px;font-weight:800;color:#01434B;margin:10px 0 6px">{{ codeTitle }}</h2>
+      <p style="font-size:14px;color:#4A5468;line-height:1.55;margin:0 0 14px">{{ codeSub }}</p>
+      <label for="codeIn" style="display:block;font-weight:700;font-size:13px;color:#01434B;margin-bottom:5px">{{ codeLabel }}</label>
+      <input id="codeIn" autocapitalize="characters" autocomplete="off" style="width:100%;border:1.5px solid #D5DCE7;border-radius:10px;padding:12px;font-size:17px;font-weight:700;letter-spacing:.08em;text-transform:uppercase" value="{{ codeVal }}" onChange="{{ setCodeVal }}" onKeyDown="{{ codeKey }}">
+      <sc-if value="{{ hasCodeErr }}" hint-placeholder-val="{{ false }}"><div role="alert" style="margin-top:12px;background:#FDECEA;color:#8A1F11;border-radius:12px;padding:10px 12px;font-size:13.5px;line-height:1.45">{{ codeErr }}</div></sc-if>
+      <button style="display:block;width:100%;border:none;border-radius:999px;padding:15px;font-family:'Sora',sans-serif;font-size:15px;font-weight:700;cursor:pointer;background:#01434B;color:#fff;margin-top:16px" onClick="{{ codeSubmit }}">{{ codeCta }}</button>
+    </div>
+  </section>
+
+  <!-- ============ QUICK FIVE (Day 1 baseline) ============ -->
+  <section style="display:{{ dQuick }};flex-direction:column;flex:1;overflow:hidden">
+    <div style="padding:6px 22px 10px;flex:none;border-bottom:1px solid #E3E9F2">
+      <div style="display:flex;justify-content:space-between;align-items:center">
+        <p style="font-family:'Sora',sans-serif;font-size:11px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:#0E6B6B;margin:6px 0 0">Day 1 · The Quick Five · {{ quickStepLabel }}</p>
+        <span style="font-size:12px;font-weight:700;color:#5A6478">{{ quickCount }} of 25</span>
+      </div>
+      <h2 style="font-family:'Sora',sans-serif;font-size:21px;font-weight:800;color:{{ quickTier.ink }};margin:6px 0 2px">{{ quickTier.label }}</h2>
+      <p style="font-size:13px;color:#4A5468;line-height:1.45;margin:0">{{ quickTier.blurb }}</p>
+      <p style="font-size:12.5px;color:#5A6478;margin:8px 0 0"><strong style="color:#01434B">1</strong> = filled in my relationships right now · <strong style="color:#01434B">10</strong> = wide open and costing me</p>
+    </div>
+    <div style="flex:1;overflow-y:auto;padding:4px 22px 10px">
+      <sc-for list="{{ quickRows }}" as="r" hint-placeholder-count="7">
+        <div style="padding:12px 0;border-bottom:1px solid #EEF1F6">
+          <div style="display:flex;justify-content:space-between;gap:8px"><div style="font-family:'Sora',sans-serif;font-weight:700;font-size:14.5px;color:#01434B">{{ r.k }}</div><div style="font-family:'Sora',sans-serif;font-weight:800;font-size:14px;color:{{ r.ink }}">{{ r.valLabel }}</div></div>
+          <div style="font-size:12.5px;color:#5A6478;margin:2px 0 8px">{{ r.def }}</div>
+          <div style="display:grid;grid-template-columns:repeat(10, minmax(0, 1fr));gap:4px" role="group" aria-label="{{ r.k }} score">
+            <sc-for list="{{ r.opts }}" as="o" hint-placeholder-count="10"><button style="{{ o.style }}" onClick="{{ o.pick }}" aria-label="{{ o.aria }}">{{ o.n }}</button></sc-for>
+          </div>
+        </div>
+      </sc-for>
+      <sc-if value="{{ sample }}" hint-placeholder-val="{{ false }}"><button style="display:block;margin:14px auto 0;background:none;border:none;color:#0E6B6B;font-weight:700;font-size:13px;cursor:pointer;text-decoration:underline" onClick="{{ fillSampleQuick }}">Sample: fill with sample answers</button></sc-if>
+    </div>
+    <div style="padding:10px 22px 22px;flex:none;display:flex;gap:10px;border-top:1px solid #E3E9F2">
+      <button style="flex:1;border:1.5px solid #D5DCE7;background:#fff;border-radius:999px;padding:14px;font-family:'Sora',sans-serif;font-size:15px;font-weight:700;cursor:pointer;color:#01434B" onClick="{{ quickBack }}">Back</button>
+      <button style="{{ quickNextStyle }}" onClick="{{ quickNext }}">{{ quickNextLabel }}</button>
+    </div>
+  </section>
+
+  <!-- ============ QUICK FIVE RESULT ============ -->
+  <section style="display:{{ dQuickResult }};flex-direction:column;flex:1;overflow-y:auto">
+    <div style="padding:10px 22px;flex:1">
+      <p style="font-family:'Sora',sans-serif;font-size:11px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:#0E6B6B;margin:8px 0 0">Your Quick Five</p>
+      <h2 style="font-family:'Sora',sans-serif;font-size:24px;font-weight:800;color:#01434B;line-height:1.2;margin:6px 0 8px">Here's where it looks open today.</h2>
+      <p style="font-size:14px;color:#4A5468;line-height:1.55;margin:0 0 14px">This is a first guess, built from one sitting. Scores taken in one sitting tend to follow the mood you're in. The challenge tests each of these against real moments from your life before it calls anything your top five.</p>
+      <div style="display:flex;flex-direction:column;gap:8px">
+        <sc-for list="{{ provisionalTop }}" as="h" hint-placeholder-count="5">
+          <div style="display:flex;align-items:center;gap:12px;border:1px solid #E3E9F2;border-radius:14px;padding:11px 13px">
+            <div style="font-family:'Sora',sans-serif;font-weight:800;font-size:18px;color:#01434B;width:22px;text-align:center">{{ h.rank }}</div>
+            <div style="flex:1;min-width:0"><div style="font-family:'Sora',sans-serif;font-weight:700;font-size:15px;color:#01434B">{{ h.k }}</div><div style="font-size:12px;font-weight:700;color:{{ h.ink }}">{{ h.tierLabel }}</div></div>
+            <div style="font-family:'Sora',sans-serif;font-weight:800;font-size:15px;color:#01434B">{{ h.baseLabel }}</div>
+          </div>
+        </sc-for>
+      </div>
+      <div style="margin-top:14px;background:#FFF8E6;border:1px solid #F1D8A0;border-radius:14px;padding:12px 14px;font-size:13.5px;line-height:1.5;color:#5B4310"><strong>Day 1 is done.</strong> Days 2 to 14 walk you through all 25 holes with your book, one short session a day.</div>
+    </div>
+    <div style="padding:10px 22px 24px"><button style="display:block;width:100%;border:none;border-radius:999px;padding:16px;font-family:'Sora',sans-serif;font-size:16px;font-weight:700;cursor:pointer;background:#01434B;color:#fff" onClick="{{ goUnlock }}">Continue the challenge</button></div>
+  </section>
+
+  <!-- ============ UNLOCK ============ -->
+  <section style="display:{{ dUnlock }};flex-direction:column;flex:1;overflow-y:auto">
+    <div style="padding:10px 22px;flex:1">
+      <p style="font-family:'Sora',sans-serif;font-size:11px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:#0E6B6B;margin:8px 0 0">Open the full challenge</p>
+      <h2 style="font-family:'Sora',sans-serif;font-size:24px;font-weight:800;color:#01434B;line-height:1.2;margin:6px 0 8px">Your account and Quick Five are free. Days 2 to 14 are where it goes deeper.</h2>
+      <p style="font-size:14px;color:#4A5468;line-height:1.55;margin:0 0 14px">Choose how you're opening the class.</p>
+      <div style="display:flex;flex-direction:column;gap:10px">
+        <button style="text-align:left;border:2px solid #0E7C7B;background:#E3F2F1;border-radius:16px;padding:14px 16px;cursor:pointer" onClick="{{ unlockBuy }}"><div style="display:flex;justify-content:space-between"><span style="font-family:'Sora',sans-serif;font-weight:700;font-size:15px;color:#01434B">Open the full 14-Day Discovery Class</span><span style="font-family:'Sora',sans-serif;font-weight:800;font-size:15px;color:#01434B">{{ price }}</span></div><div style="font-size:13px;color:#4A5468;margin-top:3px">One payment, one year. No automatic renewal.</div></button>
+        <button style="text-align:left;border:1.5px solid #E3E9F2;background:#fff;border-radius:16px;padding:14px 16px;cursor:pointer" onClick="{{ unlockKey }}"><div style="font-family:'Sora',sans-serif;font-weight:700;font-size:15px;color:#01434B">I have the printed book</div><div style="font-size:13px;color:#4A5468;margin-top:3px">Enter the book key printed inside the back cover.</div></button>
+        <button style="text-align:left;border:1.5px solid #E3E9F2;background:#fff;border-radius:16px;padding:14px 16px;cursor:pointer" onClick="{{ unlockChurch }}"><div style="font-family:'Sora',sans-serif;font-weight:700;font-size:15px;color:#01434B">I'm in a guided group</div><div style="font-size:13px;color:#4A5468;margin-top:3px">Enter the class code from your facilitator, church or group.</div></button>
+        <button style="text-align:left;border:1.5px solid #E3E9F2;background:#fff;border-radius:16px;padding:14px 16px;cursor:pointer" onClick="{{ unlockSeat }}"><div style="font-family:'Sora',sans-serif;font-weight:700;font-size:15px;color:#01434B">Someone challenged me</div><div style="font-size:13px;color:#4A5468;margin-top:3px">Enter the invitation code they sent you. Your seat is free for 30 days.</div></button>
+      </div>
+    </div>
+    <div style="padding:10px 22px 24px"><button style="display:block;width:100%;border:none;background:none;font-family:'Sora',sans-serif;font-size:15px;font-weight:600;cursor:pointer;color:#4A5468;padding:10px" onClick="{{ unlockLater }}">{{ unlockLaterLabel }}</button></div>
+  </section>
+
+  <!-- ============ HOME / TODAY ============ -->
+  <section style="display:{{ dHome }};flex-direction:column;flex:1;overflow-y:auto;background:#FBF7F0">
+    <div style="padding:6px 20px 18px">
+      <sc-if value="{{ sample }}" hint-placeholder-val="{{ false }}"><div style="display:flex;justify-content:space-between;align-items:center;background:#FFF4DE;border:1px solid #F1D8A0;border-radius:12px;padding:8px 12px;margin-top:8px;font-size:12.5px;color:#5B4310;font-weight:700"><span>Sample account · nothing is saved</span><button style="border:none;background:none;color:#5B4310;font-weight:800;text-decoration:underline;cursor:pointer;font-size:12.5px" onClick="{{ leaveSample }}">Leave</button></div></sc-if>
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-top:6px"><p style="font-size:13px;color:#5A6478;margin:0">{{ greeting }}, {{ firstName }}</p><img src="assets/wholeclass-icon.png" alt="WholeClass" style="width:34px;height:34px;border-radius:9px"></div>
+      <h2 style="font-family:'Sora',sans-serif;font-size:23px;font-weight:800;color:#01434B;margin:2px 0 12px">Day {{ day }} of 14 · {{ phaseName }}</h2>
+
+      <div style="display:grid;grid-template-columns:repeat(14, minmax(0, 1fr));gap:3px" aria-label="Progress: day {{ day }} of 14">
+        <sc-for list="{{ dayTicks }}" as="t" hint-placeholder-count="14"><i style="{{ t.style }}"></i></sc-for>
+      </div>
+      <div style="display:flex;justify-content:space-between;font-size:11px;font-weight:700;color:#5A6478;margin:6px 0 16px"><span>Mirror</span><span>Surface</span><span>Pattern</span><span>Core</span><span>Map</span></div>
+
+      <div style="background:#01434B;border-radius:20px;padding:18px;color:#fff">
+        <div style="display:flex;justify-content:space-between;align-items:center"><span style="font-family:'Sora',sans-serif;font-size:11px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:#E9B53F">Today's session</span><span style="font-size:12.5px;color:#CFE3E1">about {{ todayMin }} min</span></div>
+        <div style="font-family:'Sora',sans-serif;font-size:20px;font-weight:800;margin:8px 0 10px;line-height:1.25">{{ todayTitle }}</div>
+        <div style="display:flex;flex-wrap:wrap;gap:6px;margin-bottom:12px">
+          <sc-for list="{{ todayHoles }}" as="h" hint-placeholder-count="2"><span style="background:#0D5961;border-radius:999px;padding:5px 11px;font-size:12.5px;font-weight:700;color:#fff">{{ h }}</span></sc-for>
+        </div>
+        <sc-if value="{{ hasTodayNote }}" hint-placeholder-val="{{ false }}"><p style="font-size:13px;color:#CFE3E1;line-height:1.5;margin:0 0 12px">{{ todayNote }}</p></sc-if>
+        <button style="display:block;width:100%;border:none;border-radius:999px;padding:14px;font-family:'Sora',sans-serif;font-size:15px;font-weight:700;cursor:pointer;background:linear-gradient(135deg,#E9B53F,#C48504);color:#2A1C00" onClick="{{ startToday }}">{{ todayCta }}</button>
+        <sc-if value="{{ canLight }}" hint-placeholder-val="{{ true }}"><button style="display:block;width:100%;border:none;background:none;color:#CFE3E1;font-size:13px;font-weight:600;cursor:pointer;margin-top:8px;padding:4px" onClick="{{ takeLight }}">Short on time? Take a Light Day ({{ lightLeft }} left)</button></sc-if>
+      </div>
+
+      <div style="background:#fff;border-radius:18px;padding:16px;margin-top:12px;border:1px solid #E3E9F2">
+        <div style="display:flex;justify-content:space-between;align-items:baseline"><span style="font-family:'Sora',sans-serif;font-weight:700;font-size:15px;color:#01434B">Your top 5 so far</span><span style="font-size:12px;font-weight:700;color:#5A6478">{{ topNote }}</span></div>
+        <div style="display:flex;flex-direction:column;gap:9px;margin-top:12px">
+          <sc-for list="{{ homeTop }}" as="h" hint-placeholder-count="5">
+            <button style="display:flex;align-items:center;gap:10px;background:none;border:none;padding:0;cursor:pointer;text-align:left" onClick="{{ h.open }}">
+              <span style="font-family:'Sora',sans-serif;font-weight:800;font-size:13px;color:#5A6478;width:14px">{{ h.rank }}</span>
+              <span style="width:112px;font-weight:700;font-size:13.5px;color:#01434B">{{ h.k }}</span>
+              <span style="flex:1;height:8px;background:#EEF1F6;border-radius:999px;overflow:hidden"><i style="{{ h.bar }}"></i></span>
+              <span style="font-size:11.5px;font-weight:700;color:{{ h.seenInk }};width:58px;text-align:right">{{ h.seenLabel }}</span>
+            </button>
+          </sc-for>
+        </div>
+      </div>
+
+      <sc-if value="{{ showVerse }}" hint-placeholder-val="{{ true }}">
+        <div style="background:#FFF8E6;border-radius:18px;padding:16px;margin-top:12px;border:1px solid #F1D8A0">
+          <div style="font-family:'Sora',sans-serif;font-size:11px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:#8A5A00">Today's verse · NIV</div>
+          <p style="font-size:15px;line-height:1.55;color:#3E2E08;margin:8px 0 4px;font-style:italic">“{{ verse.t }}”</p>
+          <div style="font-size:12.5px;font-weight:700;color:#8A5A00">{{ verse.r }}</div>
+        </div>
+      </sc-if>
+
+      <div style="background:#fff;border-radius:18px;padding:16px;margin-top:12px;border:1px solid #E3E9F2;display:flex;gap:12px;align-items:center">
+        <div style="flex:1"><div style="font-family:'Sora',sans-serif;font-weight:700;font-size:14.5px;color:#01434B">Do it with someone</div><div style="font-size:13px;color:#4A5468;line-height:1.45;margin-top:2px">Challenge your spouse, fiancé or a friend by phone. You each keep your answers private.</div></div>
+        <button style="border:none;border-radius:999px;padding:10px 14px;background:#01434B;color:#fff;font-weight:700;font-size:13px;cursor:pointer" onClick="{{ toMore }}">Challenge</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ NOTE OF CARE ============ -->
+  <section style="display:{{ dCare }};flex-direction:column;flex:1;overflow-y:auto">
+    <div style="padding:10px 22px;flex:1">
+      <p style="font-family:'Sora',sans-serif;font-size:11px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:#0E6B6B;margin:8px 0 0">Before the Core Holes</p>
+      <h2 style="font-family:'Sora',sans-serif;font-size:24px;font-weight:800;color:#01434B;line-height:1.2;margin:6px 0 12px">A note of care</h2>
+      <p style="font-size:14.5px;color:#4A5468;line-height:1.6;margin:0 0 12px">The next four days go to the oxygen holes: Trust, Emotional Safety, Respect, Communication, Security, Loyalty and Physical Intimacy. These often reach back further than any relationship you're in now.</p>
+      <p style="font-size:14.5px;color:#4A5468;line-height:1.6;margin:0 0 12px">Go slowly. Skip a question if you need to. If something surfaces that feels too heavy to carry alone, such as past abuse or trauma, stop and talk it through with a licensed counselor, your pastor, or someone you trust.</p>
+      <div style="background:#E8F0EF;border-radius:14px;padding:13px 14px;font-size:14px;color:#01434B;line-height:1.5">If you're ever thinking about harming yourself, call or text <strong>988</strong> (U.S.) any time.</div>
+    </div>
+    <div style="padding:10px 22px 24px"><button style="display:block;width:100%;border:none;border-radius:999px;padding:16px;font-family:'Sora',sans-serif;font-size:16px;font-weight:700;cursor:pointer;background:#01434B;color:#fff" onClick="{{ careContinue }}">I'm ready</button></div>
+  </section>
+
+  <!-- ============ DAILY SESSION ============ -->
+  <section style="display:{{ dSession }};flex-direction:column;flex:1;overflow:hidden">
+    <div style="padding:4px 20px 10px;flex:none;border-bottom:1px solid #E3E9F2">
+      <div style="display:flex;align-items:center;justify-content:space-between">
+        <button style="background:none;border:none;color:#01434B;font-weight:700;font-size:14px;cursor:pointer;padding:6px 0" onClick="{{ exitSession }}">‹ Today</button>
+        <span style="font-size:12.5px;font-weight:700;color:#5A6478">Day {{ sDay }} · step {{ sStepNum }} of {{ sStepCount }}</span>
+      </div>
+      <div style="display:flex;gap:4px;margin-top:4px">
+        <sc-for list="{{ sSteps }}" as="st" hint-placeholder-count="5"><div style="flex:1"><i style="{{ st.bar }}"></i><div style="font-size:10.5px;font-weight:700;color:{{ st.ink }};margin-top:4px;text-align:center">{{ st.label }}</div></div></sc-for>
+      </div>
+    </div>
+
+    <div style="flex:1;overflow-y:auto;padding:12px 20px 16px">
+      <!-- KNOW -->
+      <sc-if value="{{ stKnow }}" hint-placeholder-val="{{ true }}">
+        <p style="font-family:'Sora',sans-serif;font-size:11px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:#0E6B6B;margin:4px 0 0">K · Know</p>
+        <h2 style="font-family:'Sora',sans-serif;font-size:21px;font-weight:800;color:#01434B;margin:4px 0 12px">Read the mirror</h2>
+        <sc-for list="{{ sKnow }}" as="k" hint-placeholder-count="2">
+          <div style="border:1px solid #E3E9F2;border-radius:16px;padding:14px 15px;margin-bottom:10px">
+            <div style="display:flex;flex-wrap:wrap;gap:6px;margin-bottom:8px"><sc-for list="{{ k.chips }}" as="c" hint-placeholder-count="2"><span style="{{ c.style }}">{{ c.k }}</span></sc-for></div>
+            <p style="font-size:14.5px;line-height:1.6;color:#2A3446;margin:0">{{ k.mirror }}</p>
+            <button style="margin-top:10px;background:none;border:1.5px solid #D5DCE7;border-radius:999px;padding:8px 13px;font-size:13px;font-weight:700;color:#01434B;cursor:pointer" onClick="{{ k.read }}">Read this chapter in the book ›</button>
+          </div>
+        </sc-for>
+        <sc-if value="{{ showVerse }}" hint-placeholder-val="{{ true }}">
+          <div style="background:#FFF8E6;border-radius:16px;padding:14px;border:1px solid #F1D8A0">
+            <p style="font-size:14.5px;line-height:1.55;color:#3E2E08;margin:0 0 4px;font-style:italic">“{{ verse.t }}”</p>
+            <div style="font-size:12.5px;font-weight:700;color:#8A5A00">{{ verse.r }} · NIV</div>
+          </div>
+        </sc-if>
+      </sc-if>
+
+      <!-- YIELD -->
+      <sc-if value="{{ stYield }}" hint-placeholder-val="{{ false }}">
+        <p style="font-family:'Sora',sans-serif;font-size:11px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:#0E6B6B;margin:4px 0 0">Y · Yield</p>
+        <h2 style="font-family:'Sora',sans-serif;font-size:21px;font-weight:800;color:#01434B;margin:4px 0 4px">The IWK questions</h2>
+        <p style="font-size:13.5px;color:#4A5468;line-height:1.5;margin:0 0 12px">Answer the way it is, not the way you'd like it to be. Nobody sees this but you.</p>
+        <sc-for list="{{ sQuestions }}" as="q" hint-placeholder-count="3">
+          <div style="padding:12px 0;border-bottom:1px solid #EEF1F6">
+            <p style="font-size:14.5px;line-height:1.5;color:#1C2434;margin:0 0 9px;font-weight:600">{{ q.t }}</p>
+            <div style="display:flex;gap:6px" role="group" aria-label="Answer">
+              <sc-for list="{{ q.opts }}" as="o" hint-placeholder-count="3"><button style="{{ o.style }}" onClick="{{ o.pick }}">{{ o.label }}</button></sc-for>
+            </div>
+          </div>
+        </sc-for>
+      </sc-if>
+
+      <!-- HUNT -->
+      <sc-if value="{{ stHunt }}" hint-placeholder-val="{{ false }}">
+        <p style="font-family:'Sora',sans-serif;font-size:11px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:#0E6B6B;margin:4px 0 0">H · Hunt</p>
+        <h2 style="font-family:'Sora',sans-serif;font-size:21px;font-weight:800;color:#01434B;margin:4px 0 8px">Follow one real moment</h2>
+        <sc-for list="{{ sHunts }}" as="h" hint-placeholder-count="1"><div style="background:#FBF7F0;border-radius:14px;padding:12px 14px;font-size:14px;line-height:1.5;color:#2A3446;margin-bottom:8px">{{ h }}</div></sc-for>
+        <label for="huntMoment" style="display:block;font-weight:700;font-size:13.5px;color:#01434B;margin:12px 0 6px">What happened?</label>
+        <textarea id="huntMoment" rows="3" style="width:100%;box-sizing:border-box;border:1.5px solid #D5DCE7;border-radius:12px;padding:10px 12px;font-size:14px;resize:none" placeholder="Where were you, who was there, what was said…" value="{{ huntMoment }}" onChange="{{ setHuntMoment }}"></textarea>
+        <div style="font-weight:700;font-size:13.5px;color:#01434B;margin:12px 0 6px">Ask why five times</div>
+        <sc-for list="{{ whyRows }}" as="w" hint-placeholder-count="5">
+          <div style="display:flex;gap:8px;align-items:center;margin-bottom:6px"><label for="{{ w.id }}" style="font-size:12.5px;font-weight:800;color:#5A6478;width:44px">Why {{ w.n }}</label><input id="{{ w.id }}" style="flex:1;border:1.5px solid #D5DCE7;border-radius:10px;padding:9px 11px;font-size:14px" value="{{ w.v }}" onChange="{{ w.set }}"></div>
+        </sc-for>
+        <div style="font-weight:700;font-size:13.5px;color:#01434B;margin:14px 0 6px">Which hole does this moment point to?</div>
+        <div style="display:flex;flex-wrap:wrap;gap:6px">
+          <sc-for list="{{ huntPoint }}" as="c" hint-placeholder-count="3"><button style="{{ c.style }}" onClick="{{ c.pick }}">{{ c.label }}</button></sc-for>
+        </div>
+      </sc-if>
+
+      <!-- DIAGNOSE -->
+      <sc-if value="{{ stDiag }}" hint-placeholder-val="{{ false }}">
+        <p style="font-family:'Sora',sans-serif;font-size:11px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:#0E6B6B;margin:4px 0 0">D · Diagnose</p>
+        <h2 style="font-family:'Sora',sans-serif;font-size:21px;font-weight:800;color:#01434B;margin:4px 0 4px">Daily Diagnosis Box™</h2>
+        <p style="font-size:13.5px;color:#4A5468;line-height:1.5;margin:0 0 10px">How open is each hole right now? 1 is filled, 10 is wide open.</p>
+        <sc-for list="{{ sevRows }}" as="r" hint-placeholder-count="2">
+          <div style="padding:10px 0">
+            <div style="display:flex;justify-content:space-between"><span style="font-family:'Sora',sans-serif;font-weight:700;font-size:14.5px;color:#01434B">{{ r.k }}</span><span style="font-family:'Sora',sans-serif;font-weight:800;font-size:14px;color:#01434B">{{ r.valLabel }}</span></div>
+            <div style="display:grid;grid-template-columns:repeat(10, minmax(0, 1fr));gap:4px;margin-top:8px" role="group" aria-label="{{ r.k }} severity"><sc-for list="{{ r.opts }}" as="o" hint-placeholder-count="10"><button style="{{ o.style }}" onClick="{{ o.pick }}" aria-label="{{ o.aria }}">{{ o.n }}</button></sc-for></div>
+          </div>
+        </sc-for>
+        <sc-for list="{{ diagFields }}" as="f" hint-placeholder-count="3">
+          <label for="{{ f.id }}" style="display:block;font-weight:700;font-size:13.5px;color:#01434B;margin:12px 0 6px">{{ f.label }}</label>
+          <input id="{{ f.id }}" style="width:100%;box-sizing:border-box;border:1.5px solid #D5DCE7;border-radius:10px;padding:10px 12px;font-size:14px" placeholder="{{ f.ph }}" value="{{ f.v }}" onChange="{{ f.set }}">
+        </sc-for>
+      </sc-if>
+
+      <!-- CHECKPOINT (Day 7) -->
+      <sc-if value="{{ stCheck }}" hint-placeholder-val="{{ false }}">
+        <p style="font-family:'Sora',sans-serif;font-size:11px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:#0E6B6B;margin:4px 0 0">Checkpoint · halfway</p>
+        <h2 style="font-family:'Sora',sans-serif;font-size:21px;font-weight:800;color:#01434B;margin:4px 0 4px">Re-score all 25</h2>
+        <p style="font-size:13.5px;color:#4A5468;line-height:1.5;margin:0 0 6px">Your Day 1 answers are filled in. Change only what has moved since then.</p>
+        <sc-for list="{{ checkRows }}" as="r" hint-placeholder-count="6">
+          <div style="padding:10px 0;border-bottom:1px solid #EEF1F6">
+            <div style="display:flex;justify-content:space-between"><span style="font-family:'Sora',sans-serif;font-weight:700;font-size:14px;color:#01434B">{{ r.k }}</span><span style="font-size:12px;font-weight:700;color:{{ r.moveInk }}">{{ r.move }}</span></div>
+            <div style="display:grid;grid-template-columns:repeat(10, minmax(0, 1fr));gap:4px;margin-top:7px" role="group" aria-label="{{ r.k }} score"><sc-for list="{{ r.opts }}" as="o" hint-placeholder-count="10"><button style="{{ o.style }}" onClick="{{ o.pick }}" aria-label="{{ o.aria }}">{{ o.n }}</button></sc-for></div>
+          </div>
+        </sc-for>
+      </sc-if>
+
+      <!-- RESPOND + GROW -->
+      <sc-if value="{{ stRespond }}" hint-placeholder-val="{{ false }}">
+        <p style="font-family:'Sora',sans-serif;font-size:11px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:#0E6B6B;margin:4px 0 0">R · Respond &amp; G · Grow</p>
+        <h2 style="font-family:'Sora',sans-serif;font-size:21px;font-weight:800;color:#01434B;margin:4px 0 4px">One action. One line.</h2>
+        <label for="respondAction" style="display:block;font-weight:700;font-size:13.5px;color:#01434B;margin:12px 0 6px">What will you do in the next 24 hours?</label>
+        <textarea id="respondAction" rows="3" style="width:100%;box-sizing:border-box;border:1.5px solid #D5DCE7;border-radius:12px;padding:10px 12px;font-size:14px;resize:none" placeholder="Small and specific. A conversation, a habit, a repair." value="{{ respondAction }}" onChange="{{ setRespond }}"></textarea>
+        <label for="growLine" style="display:block;font-weight:700;font-size:13.5px;color:#01434B;margin:12px 0 6px">Your one-line takeaway</label>
+        <input id="growLine" style="width:100%;box-sizing:border-box;border:1.5px solid #D5DCE7;border-radius:10px;padding:10px 12px;font-size:14px" placeholder="Today I noticed…" value="{{ growLine }}" onChange="{{ setGrow }}">
+      </sc-if>
+    </div>
+
+    <div style="padding:10px 20px 20px;flex:none;display:flex;gap:10px;border-top:1px solid #E3E9F2">
+      <button style="flex:1;border:1.5px solid #D5DCE7;background:#fff;border-radius:999px;padding:14px;font-family:'Sora',sans-serif;font-size:15px;font-weight:700;cursor:pointer;color:#01434B" onClick="{{ sBack }}">Back</button>
+      <button style="flex:2;border:none;border-radius:999px;padding:14px;font-family:'Sora',sans-serif;font-size:15px;font-weight:700;cursor:pointer;background:#01434B;color:#fff" onClick="{{ sNext }}">{{ sNextLabel }}</button>
+    </div>
+  </section>
+
+  <!-- ============ FINAL DIAGNOSIS (Day 13) ============ -->
+  <section style="display:{{ dFinal }};flex-direction:column;flex:1;overflow:hidden">
+    <div style="padding:4px 20px 10px;flex:none;border-bottom:1px solid #E3E9F2">
+      <button style="background:none;border:none;color:#01434B;font-weight:700;font-size:14px;cursor:pointer;padding:6px 0" onClick="{{ exitSession }}">‹ Today</button>
+      <p style="font-family:'Sora',sans-serif;font-size:11px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:#0E6B6B;margin:2px 0 0">Day 13 · Final Diagnosis · {{ finalStepLabel }}</p>
+      <h2 style="font-family:'Sora',sans-serif;font-size:21px;font-weight:800;color:#01434B;margin:4px 0 2px">{{ finalTitle }}</h2>
+      <p style="font-size:13px;color:#4A5468;line-height:1.45;margin:0">{{ finalSub }}</p>
+    </div>
+    <div style="flex:1;overflow-y:auto;padding:6px 20px 14px">
+      <sc-if value="{{ finalA }}" hint-placeholder-val="{{ true }}">
+        <sc-for list="{{ finalRows }}" as="r" hint-placeholder-count="10">
+          <div style="padding:10px 0;border-bottom:1px solid #EEF1F6">
+            <div style="display:flex;justify-content:space-between"><span style="font-family:'Sora',sans-serif;font-weight:700;font-size:14px;color:#01434B">{{ r.k }}</span><span style="font-size:12px;font-weight:700;color:{{ r.moveInk }}">{{ r.move }}</span></div>
+            <div style="display:grid;grid-template-columns:repeat(10, minmax(0, 1fr));gap:4px;margin-top:7px" role="group" aria-label="{{ r.k }} score"><sc-for list="{{ r.opts }}" as="o" hint-placeholder-count="10"><button style="{{ o.style }}" onClick="{{ o.pick }}" aria-label="{{ o.aria }}">{{ o.n }}</button></sc-for></div>
+          </div>
+        </sc-for>
+      </sc-if>
+      <sc-if value="{{ finalB }}" hint-placeholder-val="{{ false }}">
+        <sc-for list="{{ finalTopRows }}" as="h" hint-placeholder-count="5">
+          <div style="display:flex;align-items:center;gap:10px;border:1px solid #E3E9F2;border-radius:14px;padding:10px 12px;margin-top:8px">
+            <div style="font-family:'Sora',sans-serif;font-weight:800;font-size:18px;color:#01434B;width:20px;text-align:center">{{ h.rank }}</div>
+            <div style="flex:1;min-width:0"><div style="font-family:'Sora',sans-serif;font-weight:700;font-size:14.5px;color:#01434B">{{ h.k }}</div><div style="font-size:12px;font-weight:700;color:{{ h.ink }}">{{ h.tierLabel }} · {{ h.seenLabel }}</div></div>
+            <div style="display:flex;flex-direction:column;gap:3px">
+              <button style="border:1.5px solid #D5DCE7;background:#fff;border-radius:8px;width:34px;height:26px;cursor:pointer;color:#01434B;font-size:12px" onClick="{{ h.up }}" aria-label="Move {{ h.k }} up">▲</button>
+              <button style="border:1.5px solid #D5DCE7;background:#fff;border-radius:8px;width:34px;height:26px;cursor:pointer;color:#01434B;font-size:12px" onClick="{{ h.down }}" aria-label="Move {{ h.k }} down">▼</button>
+            </div>
+          </div>
+        </sc-for>
+        <div style="font-family:'Sora',sans-serif;font-weight:700;font-size:13.5px;color:#01434B;margin:18px 0 4px">Close behind</div>
+        <p style="font-size:12.5px;color:#5A6478;margin:0 0 6px">If one of these belongs in your five, swap it in for #5.</p>
+        <sc-for list="{{ finalBench }}" as="h" hint-placeholder-count="5">
+          <div style="display:flex;align-items:center;gap:10px;padding:9px 0;border-bottom:1px solid #EEF1F6">
+            <div style="flex:1"><span style="font-weight:700;font-size:14px;color:#01434B">{{ h.k }}</span> <span style="font-size:12px;font-weight:700;color:{{ h.ink }}">· {{ h.seenLabel }}</span></div>
+            <button style="border:1.5px solid #D5DCE7;background:#fff;border-radius:999px;padding:6px 12px;font-size:12.5px;font-weight:700;color:#01434B;cursor:pointer" onClick="{{ h.swap }}">Swap in</button>
+          </div>
+        </sc-for>
+      </sc-if>
+    </div>
+    <div style="padding:10px 20px 20px;flex:none;display:flex;gap:10px;border-top:1px solid #E3E9F2">
+      <button style="flex:1;border:1.5px solid #D5DCE7;background:#fff;border-radius:999px;padding:14px;font-family:'Sora',sans-serif;font-size:15px;font-weight:700;cursor:pointer;color:#01434B" onClick="{{ finalBack }}">Back</button>
+      <button style="flex:2;border:none;border-radius:999px;padding:14px;font-family:'Sora',sans-serif;font-size:15px;font-weight:700;cursor:pointer;background:#01434B;color:#fff" onClick="{{ finalNext }}">{{ finalNextLabel }}</button>
+    </div>
+  </section>
+
+  <!-- ============ HOLE MAP (Day 14) ============ -->
+  <section style="display:{{ dMap }};flex-direction:column;flex:1;overflow-y:auto;background:#FBF7F0">
+    <div style="padding:4px 20px 20px">
+      <button style="background:none;border:none;color:#01434B;font-weight:700;font-size:14px;cursor:pointer;padding:6px 0" onClick="{{ exitSession }}">‹ Today</button>
+      <p style="font-family:'Sora',sans-serif;font-size:11px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:#0E6B6B;margin:2px 0 0">Day 14 · Your Hole Map™</p>
+      <h2 style="font-family:'Sora',sans-serif;font-size:23px;font-weight:800;color:#01434B;margin:4px 0 4px">These are your five.</h2>
+      <p style="font-size:13.5px;color:#4A5468;line-height:1.5;margin:0 0 12px">For each one, mark where it came from and the shape that fills it. Then pick your keystone, the hole that, once filled, eases the others.</p>
+      <sc-for list="{{ mapCards }}" as="m" hint-placeholder-count="5">
+        <div style="background:#fff;border:1px solid #E3E9F2;border-radius:18px;padding:14px 15px;margin-bottom:10px;border-left:5px solid {{ m.color }}">
+          <div style="display:flex;justify-content:space-between;align-items:flex-start;gap:8px">
+            <div><div style="font-family:'Sora',sans-serif;font-weight:800;font-size:16px;color:#01434B">{{ m.rank }}. {{ m.k }}</div><div style="font-size:12px;font-weight:700;color:{{ m.ink }}">{{ m.tierLabel }} · {{ m.seenLabel }}</div></div>
+            <button style="{{ m.keyStyle }}" onClick="{{ m.pickKey }}">{{ m.keyLabel }}</button>
+          </div>
+          <div style="font-size:13px;color:#4A5468;margin:6px 0 10px">{{ m.def }}</div>
+          <div style="font-size:12px;font-weight:800;color:#5A6478;margin-bottom:5px">Origin</div>
+          <div style="display:flex;gap:6px;margin-bottom:10px"><sc-for list="{{ m.origins }}" as="o" hint-placeholder-count="3"><button style="{{ o.style }}" onClick="{{ o.pick }}">{{ o.label }}</button></sc-for></div>
+          <div style="font-size:12px;font-weight:800;color:#5A6478;margin-bottom:5px">Shape that fills it</div>
+          <div style="display:flex;flex-wrap:wrap;gap:6px"><sc-for list="{{ m.shapes }}" as="o" hint-placeholder-count="5"><button style="{{ o.style }}" onClick="{{ o.pick }}">{{ o.label }}</button></sc-for></div>
+        </div>
+      </sc-for>
+      <div style="background:#01434B;border-radius:18px;padding:16px;color:#fff;margin-top:4px">
+        <div style="font-family:'Sora',sans-serif;font-weight:800;font-size:16px">Last step: your IWK Letter</div>
+        <p style="font-size:13.5px;color:#CFE3E1;line-height:1.5;margin:6px 0 12px">Write to yourself about your keystone hole, using the five-part letter from the book.</p>
+        <button style="display:block;width:100%;border:none;border-radius:999px;padding:13px;font-family:'Sora',sans-serif;font-size:15px;font-weight:700;cursor:pointer;background:linear-gradient(135deg,#E9B53F,#C48504);color:#2A1C00" onClick="{{ toLetter }}">Write my IWK Letter</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ IWK LETTER ============ -->
+  <section style="display:{{ dLetter }};flex-direction:column;flex:1;overflow-y:auto">
+    <div style="padding:4px 20px 20px">
+      <button style="background:none;border:none;color:#01434B;font-weight:700;font-size:14px;cursor:pointer;padding:6px 0" onClick="{{ toMapBack }}">‹ Hole Map</button>
+      <p style="font-family:'Sora',sans-serif;font-size:11px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:#0E6B6B;margin:2px 0 0">IWK Letter · to myself</p>
+      <h2 style="font-family:'Sora',sans-serif;font-size:22px;font-weight:800;color:#01434B;margin:4px 0 4px">About my {{ keystoneName }} hole</h2>
+      <sc-for list="{{ letterParts }}" as="p" hint-placeholder-count="5">
+        <label for="{{ p.id }}" style="display:block;margin:14px 0 6px"><span style="font-family:'Sora',sans-serif;font-weight:700;font-size:14px;color:#01434B">{{ p.n }}. {{ p.label }}</span><span style="display:block;font-size:12.5px;color:#5A6478;margin-top:2px">{{ p.hint }}</span></label>
+        <textarea id="{{ p.id }}" rows="3" style="width:100%;box-sizing:border-box;border:1.5px solid #D5DCE7;border-radius:12px;padding:10px 12px;font-size:14px;resize:none" value="{{ p.v }}" onChange="{{ p.set }}"></textarea>
+      </sc-for>
+      <button style="display:block;width:100%;border:none;border-radius:999px;padding:15px;font-family:'Sora',sans-serif;font-size:15px;font-weight:700;cursor:pointer;background:#01434B;color:#fff;margin-top:18px" onClick="{{ finishChallenge }}">Save and finish the challenge</button>
+    </div>
+  </section>
+
+  <!-- ============ DONE ============ -->
+  <section style="display:{{ dDone }};flex-direction:column;flex:1;overflow-y:auto;background:linear-gradient(165deg,#01434B 0%,#012F35 70%);color:#fff">
+    <div style="padding:20px 24px;flex:1">
+      <img src="assets/wholeclass-icon.png" alt="" style="width:56px;height:56px;border-radius:14px;margin-top:14px;display:block">
+      <p style="font-family:'Sora',sans-serif;font-size:11px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:#E9B53F;margin:14px 0 0">14-Day Discovery Class complete</p>
+      <h2 style="font-family:'Sora',sans-serif;font-size:27px;font-weight:800;line-height:1.2;margin:8px 0 4px">You know your five.</h2><p style="font-size:14px;color:#CFE3E1;margin:0 0 10px">Discover your holes. Now develop your whole.</p>
+      <sc-for list="{{ doneTop }}" as="h" hint-placeholder-count="5"><div style="display:flex;gap:12px;align-items:center;padding:9px 0;border-bottom:1px solid #165F66"><span style="font-family:'Sora',sans-serif;font-weight:800;color:#E9B53F;width:16px">{{ h.rank }}</span><span style="font-weight:700;flex:1">{{ h.k }}</span><span style="font-size:12px;color:#CFE3E1">{{ h.tag }}</span></div></sc-for>
+      <div style="margin-top:18px;font-family:'Sora',sans-serif;font-weight:700;font-size:15px">Now open</div>
+      <div style="display:flex;flex-direction:column;gap:8px;margin-top:8px">
+        <div style="background:#0A525A;border-radius:14px;padding:12px 14px"><strong>My People</strong><div style="font-size:13px;color:#CFE3E1;margin-top:2px">Map the holes of the people you love, as your best guesses until they join.</div></div>
+        <div style="background:#0A525A;border-radius:14px;padding:12px 14px"><strong>Before I Talk™</strong><div style="font-size:13px;color:#CFE3E1;margin-top:2px">Prepare a hard conversation around their hole and yours.</div></div>
+        <div style="background:#0A525A;border-radius:14px;padding:12px 14px"><strong>Share your Hole Map</strong><div style="font-size:13px;color:#CFE3E1;margin-top:2px">Only with someone you choose, and only if they share theirs.</div></div>
+      </div>
+    </div>
+    <div style="padding:10px 22px 24px"><button style="display:block;width:100%;border:none;border-radius:999px;padding:15px;font-family:'Sora',sans-serif;font-size:15px;font-weight:700;cursor:pointer;background:linear-gradient(135deg,#E9B53F,#C48504);color:#2A1C00" onClick="{{ toHolesNav }}">See all 25 holes</button></div>
+  </section>
+
+  <!-- ============ JOURNEY ============ -->
+  <section style="display:{{ dJourney }};flex-direction:column;flex:1;overflow-y:auto;background:#FBF7F0">
+    <div style="padding:6px 20px 18px">
+      <h2 style="font-family:'Sora',sans-serif;font-size:23px;font-weight:800;color:#01434B;margin:6px 0 12px">Your 14 days</h2>
+      <sc-for list="{{ journeyRows }}" as="j" hint-placeholder-count="14">
+        <sc-if value="{{ j.hasHeader }}" hint-placeholder-val="{{ false }}"><div style="font-family:'Sora',sans-serif;font-size:11px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:{{ j.headInk }};margin:14px 0 6px">{{ j.header }}</div></sc-if>
+        <div style="display:flex;align-items:center;gap:12px;background:#fff;border:1px solid {{ j.border }};border-radius:14px;padding:11px 13px;margin-bottom:6px">
+          <div style="{{ j.badge }}">{{ j.mark }}</div>
+          <div style="flex:1;min-width:0"><div style="font-weight:700;font-size:14px;color:#01434B">Day {{ j.d }} · {{ j.title }}</div><div style="font-size:12.5px;color:#5A6478;margin-top:1px">{{ j.sub }}</div></div>
+        </div>
+      </sc-for>
+      <p style="font-size:12.5px;color:#5A6478;line-height:1.5;margin:12px 0 0">Re-scores happen on Day 1, Day 7 and Day 13, so you can watch your scores move.</p>
+    </div>
+  </section>
+
+  <!-- ============ MY HOLES ============ -->
+  <section style="display:{{ dHoles }};flex-direction:column;flex:1;overflow-y:auto;background:#FBF7F0">
+    <div style="padding:6px 20px 18px">
+      <h2 style="font-family:'Sora',sans-serif;font-size:23px;font-weight:800;color:#01434B;margin:6px 0 4px">All 25 holes</h2>
+      <p style="font-size:13px;color:#4A5468;line-height:1.5;margin:0 0 10px">Ranked by your scores, your Diagnosis Boxes and how often each hole turned up in a Hunt. A hole counts as <strong>confirmed</strong> once it has shown up three times.</p>
+      <div style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:10px"><sc-for list="{{ tierFilters }}" as="f" hint-placeholder-count="4"><button style="{{ f.style }}" onClick="{{ f.pick }}">{{ f.label }}</button></sc-for></div>
+      <sc-for list="{{ holeList }}" as="h" hint-placeholder-count="10">
+        <button style="display:flex;width:100%;align-items:center;gap:10px;background:#fff;border:1px solid #E3E9F2;border-radius:14px;padding:10px 12px;margin-bottom:6px;cursor:pointer;text-align:left" onClick="{{ h.open }}">
+          <span style="font-family:'Sora',sans-serif;font-weight:800;font-size:13px;color:#5A6478;width:20px">{{ h.rank }}</span>
+          <span style="flex:1;min-width:0"><span style="display:block;font-weight:700;font-size:14px;color:#01434B">{{ h.k }}</span><span style="display:block;font-size:11.5px;font-weight:700;color:{{ h.ink }}">{{ h.tierLabel }}</span></span>
+          <span style="width:70px;height:7px;background:#EEF1F6;border-radius:999px;overflow:hidden"><i style="{{ h.bar }}"></i></span>
+          <span style="font-size:11.5px;font-weight:700;color:{{ h.seenInk }};width:60px;text-align:right">{{ h.seenLabel }}</span>
+        </button>
+      </sc-for>
+    </div>
+  </section>
+
+  <!-- ============ HOLE DETAIL ============ -->
+  <section style="display:{{ dHole }};flex-direction:column;flex:1;overflow-y:auto">
+    <div style="padding:4px 20px 20px">
+      <button style="background:none;border:none;color:#01434B;font-weight:700;font-size:14px;cursor:pointer;padding:6px 0" onClick="{{ toHolesNav }}">‹ All holes</button>
+      <div style="font-size:12px;font-weight:800;color:{{ selHole.ink }};margin-top:6px">{{ selHole.tierLabel }} · Day {{ selHole.day }}</div>
+      <h2 style="font-family:'Sora',sans-serif;font-size:25px;font-weight:800;color:#01434B;margin:2px 0 4px">The {{ selHole.k }} Hole</h2>
+      <p style="font-size:14.5px;color:#4A5468;line-height:1.5;margin:0 0 14px">{{ selHole.def }}</p>
+      <div style="display:grid;grid-template-columns:repeat(4, minmax(0, 1fr));gap:8px">
+        <sc-for list="{{ selHole.readings }}" as="r" hint-placeholder-count="4"><div style="background:#FBF7F0;border-radius:12px;padding:10px 6px;text-align:center"><div style="font-family:'Sora',sans-serif;font-weight:800;font-size:19px;color:#01434B">{{ r.v }}</div><div style="font-size:11px;font-weight:700;color:#5A6478;margin-top:2px">{{ r.k }}</div></div></sc-for>
+      </div>
+      <div style="margin-top:12px;border:1px solid #E3E9F2;border-radius:14px;padding:12px 14px;display:flex;justify-content:space-between;align-items:center"><span style="font-size:13.5px;color:#4A5468">Turned up in your Hunts</span><span style="font-family:'Sora',sans-serif;font-weight:800;color:#01434B">{{ selHole.sightLabel }}</span></div>
+      <div style="margin-top:8px;border:1px solid #E3E9F2;border-radius:14px;padding:12px 14px;display:flex;justify-content:space-between;align-items:center"><span style="font-size:13.5px;color:#4A5468">Status</span><span style="font-family:'Sora',sans-serif;font-weight:800;color:{{ selHole.seenInk }}">{{ selHole.status }}</span></div>
+      <button style="margin-top:14px;display:block;width:100%;border:1.5px solid #D5DCE7;background:#fff;border-radius:999px;padding:13px;font-family:'Sora',sans-serif;font-size:14.5px;font-weight:700;cursor:pointer;color:#01434B" onClick="{{ readSel }}">Read this chapter in the book</button>
+    </div>
+  </section>
+
+  <!-- ============ BOOK ============ -->
+  <section style="display:{{ dBook }};flex-direction:column;flex:1;overflow-y:auto;background:#FBF7F0">
+    <div style="padding:6px 20px 18px">
+      <div style="display:flex;gap:14px;align-items:center;margin:6px 0 14px">
+        <div style="width:64px;height:92px;border-radius:6px;background:linear-gradient(160deg,#01434B,#01262B);display:flex;align-items:flex-end;padding:7px;box-sizing:border-box;box-shadow:0 6px 14px rgba(1,38,43,.25)"><span style="font-family:'Sora',sans-serif;font-weight:800;font-size:10px;color:#C48504;line-height:1.1">Know Your Holes</span></div>
+        <div><h2 style="font-family:'Sora',sans-serif;font-size:20px;font-weight:800;color:#01434B;margin:0">Know Your Holes</h2><div style="font-size:13px;color:#4A5468;margin-top:2px">C.P. Parker · Merch Corporation</div><div style="font-size:12.5px;font-weight:700;color:{{ bookStatusInk }};margin-top:6px">{{ bookStatus }}</div></div>
+      </div>
+      <sc-for list="{{ bookTiers }}" as="t" hint-placeholder-count="3">
+        <div style="font-family:'Sora',sans-serif;font-size:11px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:{{ t.ink }};margin:14px 0 6px">{{ t.label }}</div>
+        <sc-for list="{{ t.items }}" as="c" hint-placeholder-count="7">
+          <button style="display:flex;width:100%;justify-content:space-between;align-items:center;background:#fff;border:1px solid #E3E9F2;border-radius:12px;padding:10px 12px;margin-bottom:5px;cursor:pointer;text-align:left" onClick="{{ c.read }}"><span style="font-weight:700;font-size:14px;color:#01434B">The {{ c.k }} Hole</span><span style="font-size:12px;font-weight:700;color:#5A6478">{{ c.tag }}</span></button>
+        </sc-for>
+      </sc-for>
+    </div>
+  </section>
+
+  <!-- ============ MORE ============ -->
+  <section style="display:{{ dMore }};flex-direction:column;flex:1;overflow-y:auto;background:#FBF7F0">
+    <div style="padding:6px 20px 18px">
+      <h2 style="font-family:'Sora',sans-serif;font-size:23px;font-weight:800;color:#01434B;margin:6px 0 12px">More</h2>
+
+      <div style="background:#fff;border:1px solid #E3E9F2;border-radius:16px;padding:14px 15px">
+        <div style="font-family:'Sora',sans-serif;font-weight:700;font-size:15px;color:#01434B">Challenge someone</div>
+        <p style="font-size:13px;color:#4A5468;line-height:1.45;margin:4px 0 10px">Give a seat to your spouse, fiancé or a friend. They take the 14 days free for 30 days. Neither of you sees the other's answers.</p>
+        <sc-if value="{{ canGive }}" hint-placeholder-val="{{ true }}">
+          <label for="chTo" style="display:block;font-size:12.5px;font-weight:700;color:#01434B;margin-bottom:5px">Who is it for? <span style="font-weight:600;color:#5A6478">(optional, for your records)</span></label>
+          <div style="display:flex;gap:8px"><input id="chTo" style="flex:1;min-width:0;border:1.5px solid #D5DCE7;border-radius:10px;padding:10px 12px;font-size:14px" placeholder="First name" value="{{ chPhone }}" onChange="{{ setChPhone }}"><button style="border:none;border-radius:10px;padding:0 14px;background:#01434B;color:#fff;font-weight:700;cursor:pointer;white-space:nowrap" onClick="{{ sendChallenge }}">Make link</button></div>
+          <div style="font-size:12px;color:#5A6478;margin-top:8px">Seats left this year: {{ seatsLeft }}</div>
+        </sc-if>
+        <sc-if value="{{ cantGive }}" hint-placeholder-val="{{ false }}"><div style="font-size:12.5px;color:#5A6478">Seats to give come with your own purchase or book key.</div></sc-if>
+        <sc-if value="{{ hasGift }}" hint-placeholder-val="{{ false }}">
+          <div style="margin-top:12px;background:#E3F2F1;border-radius:12px;padding:12px">
+            <div style="font-size:12.5px;font-weight:700;color:#0A5656">Send this link. Their code is <strong>{{ giftCode }}</strong>.</div>
+            <div style="font-size:13px;color:#01434B;word-break:break-all;margin:6px 0 10px">{{ giftLink }}</div>
+            <div style="display:flex;gap:8px"><button style="flex:1;border:none;border-radius:999px;padding:10px;background:#01434B;color:#fff;font-weight:700;cursor:pointer" onClick="{{ shareGift }}">Share</button><button style="flex:1;border:1.5px solid #01434B;border-radius:999px;padding:10px;background:#fff;color:#01434B;font-weight:700;cursor:pointer" onClick="{{ copyGift }}">Copy</button></div>
+          </div>
+        </sc-if>
+      </div>
+
+      <div style="background:#fff;border:1px solid #E3E9F2;border-radius:16px;margin-top:10px">
+        <button style="display:flex;width:100%;justify-content:space-between;align-items:center;background:none;border:none;border-bottom:1px solid #EEF1F6;padding:14px 15px;cursor:pointer;text-align:left" onClick="{{ cycleFaith }}"><span><span style="display:block;font-weight:700;font-size:14px;color:#01434B">Faith layer</span><span style="display:block;font-size:12.5px;color:#5A6478">{{ faithLabel }}</span></span><span style="font-size:13px;font-weight:700;color:#0E6B6B">Change</span></button>
+        <button style="display:flex;width:100%;justify-content:space-between;align-items:center;background:none;border:none;border-bottom:1px solid #EEF1F6;padding:14px 15px;cursor:pointer;text-align:left" onClick="{{ joinGroup }}"><span><span style="display:block;font-weight:700;font-size:14px;color:#01434B">Guided group code</span><span style="display:block;font-size:12.5px;color:#5A6478">Your facilitator sees completion only</span></span><span style="font-size:13px;font-weight:700;color:#0E6B6B">Enter</span></button>
+        <button style="display:flex;width:100%;justify-content:space-between;align-items:center;background:none;border:none;border-bottom:1px solid #EEF1F6;padding:14px 15px;cursor:pointer;text-align:left" onClick="{{ toUnlockMore }}"><span><span style="display:block;font-weight:700;font-size:14px;color:#01434B">Class access</span><span style="display:block;font-size:12.5px;color:#5A6478">{{ accessLabel }}</span></span><span style="font-size:13px;font-weight:700;color:#0E6B6B">Manage</span></button>
+        <button style="display:flex;width:100%;justify-content:space-between;align-items:center;background:none;border:none;border-bottom:1px solid #EEF1F6;padding:14px 15px;cursor:pointer;text-align:left" onClick="{{ exportData }}"><span><span style="display:block;font-weight:700;font-size:14px;color:#01434B">My data</span><span style="display:block;font-size:12.5px;color:#5A6478">Export or delete everything</span></span><span style="font-size:13px;font-weight:700;color:#0E6B6B">Export</span></button>
+        <button style="display:flex;width:100%;justify-content:space-between;align-items:center;background:none;border:none;border-bottom:1px solid #EEF1F6;padding:14px 15px;cursor:pointer;text-align:left" onClick="{{ eraseTap }}"><span><span style="display:block;font-weight:700;font-size:14px;color:#8A1F11">{{ eraseLabel }}</span><span style="display:block;font-size:12.5px;color:#5A6478">{{ eraseSub }}</span></span><span style="font-size:13px;font-weight:700;color:#8A1F11">{{ eraseCta }}</span></button>
+        <button style="display:flex;width:100%;justify-content:space-between;align-items:center;background:none;border:none;border-bottom:1px solid #EEF1F6;padding:14px 15px;cursor:pointer;text-align:left" onClick="{{ openAbout }}"><span><span style="display:block;font-weight:700;font-size:14px;color:#01434B">About WholeClass</span><span style="display:block;font-size:12.5px;color:#5A6478">Mission, vision and core values</span></span><span style="font-size:13px;font-weight:700;color:#0E6B6B">Read</span></button>
+        <a href="terms.html" style="display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid #EEF1F6;padding:14px 15px;text-decoration:none"><span style="font-weight:700;font-size:14px;color:#01434B">Terms of Use</span><span style="font-size:13px;font-weight:700;color:#0E6B6B">Read</span></a>
+        <a href="privacy.html" style="display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid #EEF1F6;padding:14px 15px;text-decoration:none"><span style="font-weight:700;font-size:14px;color:#01434B">Privacy Policy</span><span style="font-size:13px;font-weight:700;color:#0E6B6B">Read</span></a>
+        <button style="display:flex;width:100%;justify-content:space-between;align-items:center;background:none;border:none;padding:14px 15px;cursor:pointer;text-align:left" onClick="{{ signOutTap }}"><span><span style="display:block;font-weight:700;font-size:14px;color:#01434B">{{ signOutLabel }}</span><span style="display:block;font-size:12.5px;color:#5A6478">{{ accountEmail }}</span></span><span style="font-size:13px;font-weight:700;color:#0E6B6B">›</span></button>
+      </div>
+
+      <div style="background:#fff;border:1px solid #E3E9F2;border-radius:16px;padding:14px 15px;margin-top:10px">
+        <div style="font-family:'Sora',sans-serif;font-weight:700;font-size:15px;color:#01434B">More courses</div>
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-top:8px"><span style="font-size:14px;color:#2A3446">The Know Your Holes Series</span><span style="background:#FFF4DE;color:#8A5A00;border-radius:999px;padding:4px 10px;font-size:12px;font-weight:800">Coming soon</span></div>
+        <button style="margin-top:10px;border:1.5px solid #D5DCE7;background:#fff;border-radius:999px;padding:8px 13px;font-size:13px;font-weight:700;color:#01434B;cursor:pointer" onClick="{{ notifySeries }}">Tell me when it opens</button>
+      </div>
+<sc-if value="{{ sample }}" hint-placeholder-val="{{ false }}">
+      <div style="background:#FFF8E6;border:1px dashed #E0B85C;border-radius:16px;padding:14px 15px;margin-top:10px">
+        <div style="font-family:'Sora',sans-serif;font-weight:700;font-size:14px;color:#5B4310">Prototype controls</div>
+        <p style="font-size:12.5px;color:#5B4310;margin:4px 0 10px">Jump the sample account to any day to see how the app changes.</p>
+        <div style="display:flex;align-items:center;gap:10px">
+          <button style="width:40px;height:40px;border-radius:10px;border:1.5px solid #E0B85C;background:#fff;font-size:18px;font-weight:800;color:#5B4310;cursor:pointer" onClick="{{ dayMinus }}" aria-label="Previous day">−</button>
+          <div style="flex:1;text-align:center;font-family:'Sora',sans-serif;font-weight:800;color:#5B4310">Day {{ day }}</div>
+          <button style="width:40px;height:40px;border-radius:10px;border:1.5px solid #E0B85C;background:#fff;font-size:18px;font-weight:800;color:#5B4310;cursor:pointer" onClick="{{ dayPlus }}" aria-label="Next day">+</button>
+        </div>
+        <button style="display:block;width:100%;margin-top:10px;border:none;background:none;color:#5B4310;font-weight:700;font-size:13px;text-decoration:underline;cursor:pointer" onClick="{{ restart }}">Restart from the welcome screen</button>
+      </div>
+      </sc-if>
+
+      <p style="font-size:12px;color:#5A6478;line-height:1.5;margin:14px 2px 0">WholeClass™ is educational and supportive, not diagnostic. Inspired by <em>Know Your Holes</em> by C.P. Parker · Merch Corporation · wholeclass.app</p>
+    </div>
+  </section>
+
+  <!-- ============ BOTTOM NAV ============ -->
+  <nav style="display:{{ dNav }};flex:none;border-top:1px solid #E3E9F2;background:#fff;padding:8px 6px calc(10px + env(safe-area-inset-bottom))" aria-label="Main">
+    <sc-for list="{{ navItems }}" as="n" hint-placeholder-count="5">
+      <button style="flex:1;background:none;border:none;cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:3px;padding:4px 0;color:{{ n.color }}" onClick="{{ n.go }}" aria-current="{{ n.current }}">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="{{ n.icon }}"></path></svg>
+        <span style="font-size:11px;font-weight:700">{{ n.label }}</span>
+      </button>
+    </sc-for>
+  </nav>
+
+  <div style="position:absolute;left:50%;bottom:96px;transform:translateX(-50%) translateY({{ toastY }});opacity:{{ toastOpacity }};transition:all .25s;background:#01434B;color:#fff;padding:11px 18px;border-radius:999px;font-size:13.5px;font-weight:600;white-space:nowrap;pointer-events:none;max-width:340px;overflow:hidden;text-overflow:ellipsis" role="status">{{ toastText }}</div>
+
+</div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script>
+class Component extends DCLogic {
+  SESSIONS = {"5":{"holes":["Fun & Play","TLC"],"mirror":"Think about the last time you laughed until it hurt — and the last time someone took care of you when you were worn down. If you have to reach back months to find either memory, that is not a coincidence. Fun & Play and TLC are the first holes to go quiet when life gets heavy, and their absence rarely announces itself. It just shows up as a life that feels gray.","questions":["In the last two weeks, have I done anything purely for joy — with no productive purpose?","When I am run down, do I let anyone care for me, or do I push through alone?","Do the people close to me know how to comfort me — have I ever told them how?"],"hunt":"Recall a recent week that felt heavy or flat. Ask: why was there no lightness in it?"},"6":{"holes":["Gift & Gesture","Aesthetic Attraction"],"mirror":"A small gift says: I thought about you when you were not in the room. Attention to how you show up — for yourself and for others — says: you are worth the effort. Neither is shallow. When these holes are open, people often say things like “it's not about the gift” while quietly keeping score of every occasion that passed unmarked.","questions":["When was the last time I gave — or received — a small, unrequested token of thoughtfulness?","Do I still make an effort in how I present myself, or have I stopped seeing myself as worth the effort?","Have I dismissed something as “materialistic” that was really a request to feel remembered?"],"hunt":"Recall a moment you felt forgotten or overlooked on a day that mattered. Why did it sting?"},"8":{"holes":["Social Connection","Status & Pride"],"mirror":"Are you included in the lives of the people you love — their friends, their world, their wins? And do you feel proud of each other in public, or do you shrink? A Social Connection hole feels like standing outside a window. A Status & Pride hole feels like being someone's secret. Both are surface holes with deep roots.","questions":["Am I genuinely included in the social world of the people closest to me?","Do I speak proudly of the people in my life — and do they speak proudly of me?","Is there any relationship where I feel hidden, minimized, or left off the guest list?"],"hunt":"Recall a gathering, event, or introduction that left you feeling like an outsider. Why?"},"9":{"holes":["Shared Goals","Intellectual Connection"],"mirror":"You can share a home, a bed, and a bank account and still be building two different futures. And you can talk every day without ever having a conversation that stretches you. Shared Goals asks: are we going the same direction? Intellectual Connection asks: do our minds still meet? When either is missing, the relationship runs on logistics.","questions":["Can I clearly state the shared goals of my most important relationship — and would the other person state the same ones?","When was my last conversation that taught me something or challenged how I think?","Have I stopped bringing my ideas, dreams, and questions to the people closest to me? Why?"],"hunt":"Recall a conversation that stayed on the surface when you wanted it to go deeper. Why did it stay shallow?"},"10":{"holes":["Conflict Resolution"],"mirror":"Every relationship has conflict. Not every relationship has resolution. Some fight to win. Some go silent for days. Some apologize just to end the discomfort, and the same fight returns wearing new clothes. A Conflict Resolution hole is not about how often you disagree — it is about whether disagreements ever actually close.","questions":["When I argue, am I trying to be understood — or trying to win?","Do my conflicts actually get resolved, or do they just get paused until next time?","Is there a disagreement in my life right now that has been recycling for months or years?"],"hunt":"Pick one recurring argument in your life. Trace it: why does it keep coming back?"},"11":{"holes":["Freedom"],"mirror":"Freedom is personal independence inside connection — room to have your own friends, your own interests, your own quiet. A Freedom hole can come from the outside (someone holding you too tightly) or from the inside (you abandoning yourself to keep someone else comfortable). Either way, the symptom is the same: you feel smaller than you used to be.","questions":["Do I have parts of my life — interests, friendships, time — that are genuinely mine?","Have I given up things I loved to keep a relationship calm?","Do I extend to others the same independence I want for myself?"],"hunt":"Name one thing you stopped doing that used to make you feel like yourself. Why did you stop?"},"13":{"holes":["Affection"],"mirror":"Affection is the warm, frequent, low-stakes expression of love — the hand on the shoulder, the unprompted “I love you,” the good-morning text. It is the first thing to fade in a busy life and the last thing people admit to missing, because asking for it feels needy. It is not needy. It is fuel.","questions":["When did I last receive affection I did not have to ask for?","Do I express warmth freely, or do I wait for the other person to go first?","Have I ever labeled my own need for affection as weakness?"],"hunt":"Recall a stretch of time when you felt starved for warmth. What pattern was running?"},"15":{"holes":["Quality Time"],"mirror":"Being in the same room is not the same as being together. Quality Time is intentional, uninterrupted attention — no phones, no multitasking, no half-listening. When this hole is open, people describe feeling lonely in company: surrounded, scheduled, and still unseen.","questions":["In the last week, did I give anyone thirty minutes of full, undivided attention?","Do the people I love get my presence — or just my proximity?","When someone gives me their full attention, how does it change how I feel about them?"],"hunt":"Recall a recent evening “together” that left you feeling alone. Why?"},"16":{"holes":["Appreciation","Being Needed"],"mirror":"Appreciation says: I see what you do, and I see who you are. Being Needed says: your presence matters — this would not work without you. When these holes are open, people over-perform, hoping effort will finally earn recognition, or they quietly withdraw, convinced no one would notice their absence.","questions":["Do I feel recognized for what I contribute — at home, at work, in my relationships?","Do I know, concretely, that I matter to the people in my life?","Do I express appreciation to others as often as I wish they expressed it to me?"],"hunt":"Recall a moment your effort went unacknowledged. Trace what you did next — and why."},"17":{"holes":["Support"],"mirror":"Support has shapes. Some people need emotional presence — someone to listen and hold space. Others need practical action — someone who shows up with a truck, a proofread, a solution. A Support hole often hides inside a shape mismatch: both people are giving support, but neither is giving it in the shape the other one receives it.","questions":["When I need help, do I ask — clearly, out loud?","What shape of support fills me: presence, or action? Do the people around me know that?","Is there someone in my life who supports me constantly — in a shape I keep failing to recognize?"],"hunt":"Recall a time you felt unsupported. Was support absent — or delivered in the wrong shape?"},"18":{"holes":["Validation"],"mirror":"Validation is acknowledgment that your feelings and experiences are real — before anyone tries to fix them, debate them, or explain them away. A Validation hole makes you second-guess your own perceptions. Its most common disguise is the phrase “you're too sensitive.”","questions":["When I share a feeling, do people acknowledge it — or immediately argue with it?","Do I validate other people's feelings, or do I rush to fix and explain?","Have I started keeping feelings to myself because sharing them never goes well?"],"hunt":"Recall a time you were told your reaction was wrong or too much. What did you do with that feeling?"},"19":{"holes":["Romance","Adventure"],"mirror":"Romance is intentionality — evidence that someone still chooses you on purpose, not by default. Adventure is novelty — proof that the story is still being written. These holes open slowly, disguised as maturity: “we're past that stage.” No one is past being chosen. No one is past being surprised.","questions":["When did I last plan something intentional for someone I love — or have it planned for me?","Have I accepted “we're comfortable” as a reason to stop trying?","When did I last do something for the first time?"],"hunt":"Recall when the effort stopped — in any relationship, including with yourself. What happened right before?"},"22":{"holes":["Trust","Emotional Safety"],"mirror":"Trust is confidence that people are honest, dependable, and safe. Emotional Safety is the freedom to be fully yourself without bracing for judgment. These are oxygen holes — when they are open, everything else in the relationship is negotiated from behind a shield. Today, go slowly. Core holes usually have first memories much older than the current relationship.","questions":["Is there anyone with whom I can be completely myself — unedited?","When someone makes a promise, do I believe it — or do I quietly prepare a backup plan?","Do I test people instead of trusting them?"],"hunt":"Recall your earliest memory of learning that people could not be fully trusted or that being yourself was not safe. Follow the whys from there."},"23":{"holes":["Respect","Communication"],"mirror":"Respect is having your feelings, needs, and boundaries treated as valid. Communication is the honest, clear exchange of what is actually happening inside you. When these core holes are open, you either fight to be heard or stop speaking altogether — and silence is often the louder symptom.","questions":["Are my boundaries respected — and do I state them clearly enough to be respected?","Do I say what I actually mean, or a softer version I think people can handle?","Is there something important I have needed to say to someone for a long time and have not said?"],"hunt":"Recall a moment you were dismissed, corrected publicly, or talked over. Why did it land so hard? Keep asking why."},"24":{"holes":["Security","Loyalty"],"mirror":"Security is stability you can build a life on — emotional, physical, financial. Loyalty is being chosen first and protected, especially when it costs something. A Loyalty hole is not only about fidelity; it is about who hears the real story first, and who defends you when you are not in the room.","questions":["Do I feel stable — or am I always braced for the ground to move?","Am I chosen first by the people who claim me? Do I choose them first?","Has private information about me ever traveled further than I gave it permission to?"],"hunt":"Recall a time the ground moved — a betrayal, a loss, an instability. Trace how it still shapes your decisions today."},"25":{"holes":["Physical Intimacy"],"mirror":"Physical Intimacy is closeness of the body — and it is a core need, not a luxury. This hole hides under the most excuses: exhaustion, stress, kids, age, routine. When it is open, partners drift into being co-managers of a household instead of lovers. This page is private. Be honest on it.","questions":["Is physical closeness present in my life at the level I actually need?","Have I communicated what I need — or have I only hinted, sighed, and hoped?","Is something else — resentment, exhaustion, insecurity — blocking this hole from being filled?"],"hunt":"If this hole is open, trace when the distance started. What happened around that time? Keep asking why."}};
+
+  TIERS = {
+    desires:{label:'Personal Desires', color:'#C48504', ink:'#8A5A00', tint:'#FFF4DE', rank:1, blurb:'The seasoning. The relationship still works without them. They make it yours.'},
+    wants:{label:'Strong Wants', color:'#2A9D97', ink:'#0E6B6B', tint:'#E3F2F1', rank:2, blurb:'The water. You can go without for a while, but closeness wears thin.'},
+    core:{label:'Core Needs', color:'#01434B', ink:'#01434B', tint:'#E8F0EF', rank:3, blurb:'The oxygen. When these are open, the foundation cracks.'}
+  };
+  TIER_ORDER = ['desires','wants','core'];
+
+  HOLE_DEFS = [
+    ['Trust','core','Confidence that they are honest, dependable, safe.'],
+    ['Emotional Safety','core','Freedom to be yourself without fear of judgment.'],
+    ['Respect','core','Valuing your feelings, needs, and boundaries.'],
+    ['Communication','core','Honest, clear exchange of thoughts and feelings.'],
+    ['Security','core','A sense of stability and protection.'],
+    ['Loyalty','core','Steadfast commitment through challenges.'],
+    ['Physical Intimacy','core','Sexual and physical closeness.'],
+    ['Affection','wants','Warm physical or verbal expressions of love.'],
+    ['Quality Time','wants','Intentional, uninterrupted time together.'],
+    ['Appreciation','wants','Recognition for who you are and what you do.'],
+    ['Being Needed','wants',"Feeling important to your partner's life."],
+    ['Support','wants','Knowing your partner has your back.'],
+    ['Validation','wants','Acknowledgment of your feelings and experiences.'],
+    ['Romance','wants','Acts that keep love exciting and intentional.'],
+    ['Adventure','wants','Novelty and shared exploration.'],
+    ['TLC','desires','Care, comfort, and nurturing.'],
+    ['Fun & Play','desires','Lightheartedness and joy.'],
+    ['Intellectual Connection','desires','Stimulating conversation and learning.'],
+    ['Status & Pride','desires','Feeling admired and proud of each other.'],
+    ['Shared Goals','desires','Alignment on future plans.'],
+    ['Social Connection','desires',"Inclusion in each other's social lives."],
+    ['Gift & Gesture','desires','Tangible tokens of thoughtfulness.'],
+    ['Aesthetic Attraction','desires','Physical and stylistic appeal.'],
+    ['Conflict Resolution','desires','Fair and respectful handling of disagreements.'],
+    ['Freedom','desires','Personal independence within the relationship.']
+  ];
+
+  PHASES = [
+    {name:'The Mirror', days:'Day 1', text:'Score all 25 holes in about ten minutes. That is your Quick Five and your baseline.'},
+    {name:'Surface Holes', days:'Days 2–4', text:'The ten Personal Desires. Visible habits and everyday friction.'},
+    {name:'Pattern Holes', days:'Days 5–8', text:'The eight Strong Wants, with a halfway re-score on Day 7.'},
+    {name:'Core Holes', days:'Days 9–12', text:'The seven Core Needs. The roots, taken slowly.'},
+    {name:'Your Hole Map', days:'Days 13–14', text:'Confirm your top five, map them, and write your IWK Letter.'}
+  ];
+
+  PLAN = [
+    {d:1, ph:0, kind:'baseline', title:'Your baseline', min:10},
+    {d:2, ph:1, s:[5,6], min:18},
+    {d:3, ph:1, s:[8,9], min:18},
+    {d:4, ph:1, s:[10,11], min:15},
+    {d:5, ph:2, s:[13,15], min:18},
+    {d:6, ph:2, s:[16,17], min:18},
+    {d:7, ph:2, s:[18], check:true, min:20},
+    {d:8, ph:2, s:[19], min:15},
+    {d:9, ph:3, s:[22], care:true, min:18},
+    {d:10, ph:3, s:[23], min:18},
+    {d:11, ph:3, s:[24], min:18},
+    {d:12, ph:3, s:[25], min:15},
+    {d:13, ph:4, kind:'final', title:'Final Diagnosis', min:20},
+    {d:14, ph:4, kind:'map', title:'Hole Map & IWK Letter', min:20}
+  ];
+
+  VERSES = {
+    1:{t:'Search me, God, and know my heart; test me and know my anxious thoughts.', r:'Psalm 139:23'},
+    2:{t:'A cheerful heart is good medicine, but a crushed spirit dries up the bones.', r:'Proverbs 17:22'},
+    3:{t:'As iron sharpens iron, so one person sharpens another.', r:'Proverbs 27:17'},
+    4:{t:'If it is possible, as far as it depends on you, live at peace with everyone.', r:'Romans 12:18'},
+    5:{t:'We love because he first loved us.', r:'1 John 4:19'},
+    6:{t:'Carry each other’s burdens, and in this way you will fulfill the law of Christ.', r:'Galatians 6:2'},
+    7:{t:'Rejoice with those who rejoice; mourn with those who mourn.', r:'Romans 12:15'},
+    8:{t:'May your fountain be blessed, and may you rejoice in the wife of your youth.', r:'Proverbs 5:18'},
+    9:{t:'Trust in the LORD with all your heart and lean not on your own understanding.', r:'Proverbs 3:5'},
+    10:{t:'Everyone should be quick to listen, slow to speak and slow to become angry.', r:'James 1:19'},
+    11:{t:'It always protects, always trusts, always hopes, always perseveres.', r:'1 Corinthians 13:7'},
+    12:{t:'That is why a man leaves his father and mother and is united to his wife, and they become one flesh.', r:'Genesis 2:24'},
+    13:{t:'Let us examine our ways and test them, and let us return to the LORD.', r:'Lamentations 3:40'},
+    14:{t:'Be kind and compassionate to one another, forgiving each other, just as in Christ God forgave you.', r:'Ephesians 4:32'}
+  };
+
+  SAMPLE_BASE = {'Trust':4,'Emotional Safety':7,'Respect':5,'Communication':8,'Security':4,'Loyalty':3,'Physical Intimacy':5,'Affection':6,'Quality Time':8,'Appreciation':9,'Being Needed':6,'Support':5,'Validation':7,'Romance':5,'Adventure':4,'TLC':5,'Fun & Play':6,'Intellectual Connection':3,'Status & Pride':4,'Shared Goals':5,'Social Connection':3,'Gift & Gesture':2,'Aesthetic Attraction':2,'Conflict Resolution':7,'Freedom':8};
+  SAMPLE_MID = {'Emotional Safety':8,'Quality Time':7,'Freedom':7,'Validation':6,'Conflict Resolution':6,'Fun & Play':5,'Affection':5};
+  SAMPLE_SEV = {'Fun & Play':5,'TLC':4,'Gift & Gesture':2,'Aesthetic Attraction':2,'Social Connection':3,'Status & Pride':4,'Shared Goals':5,'Intellectual Connection':3,'Conflict Resolution':7,'Freedom':8,'Affection':6,'Quality Time':8,'Appreciation':9,'Being Needed':7,'Support':5,'Validation':7,'Romance':4,'Adventure':3,'Trust':4,'Emotional Safety':8,'Respect':5,'Communication':9,'Security':4,'Loyalty':3,'Physical Intimacy':5};
+  SAMPLE_SIGHT = {'Appreciation':3,'Communication':2,'Freedom':2,'Quality Time':2,'Emotional Safety':2,'Conflict Resolution':1,'Validation':1,'Being Needed':1};
+  SAMPLE_FINAL = {'Appreciation':9,'Communication':8,'Emotional Safety':8,'Quality Time':7,'Freedom':7,'Validation':6,'Conflict Resolution':6,'Being Needed':6,'Affection':5,'Fun & Play':5};
+
+  SHAPES = ['Words','Time','Touch','Gifts','Acts'];
+  ORIGINS = ['Nature','Nurture','Not sure'];
+  LETTER = [
+    {key:'q', label:'The Question', hint:'What do you wanna know about this hole?'},
+    {key:'s', label:'The Situation', hint:'One real moment where it showed up.'},
+    {key:'p', label:'The Pattern', hint:'Where you have seen it before, and how often.'},
+    {key:'f', label:'The Feeling / Core Need', hint:'What you felt, and what you needed underneath it.'},
+    {key:'c', label:'The Confusion', hint:'What you still do not understand about yourself here.'}
+  ];
+
+  constructor(props){
+    super(props);
+    this.HOLES = this.HOLE_DEFS.map(([k,t,def])=>({k,t,def, tierLabel:this.TIERS[t].label, color:this.TIERS[t].color, ink:this.TIERS[t].ink, tint:this.TIERS[t].tint, tierRank:this.TIERS[t].rank}));
+    this.HOLE_DAY = {};
+    this.PLAN.forEach(p=>(p.s||[]).forEach(id=>this.SESSIONS[id].holes.forEach(h=>{this.HOLE_DAY[h]=p.d;})));
+    this.HOLES.forEach(h=>{h.day=this.HOLE_DAY[h.k];});
+    this.state = {
+      screen:'loading', faith:'biblical', agree:false,
+      real:false, member:null, access:null, price:20, lastDone:null,
+      authMode:'up', aFirst:'', aLast:'', aEmail:'', aPw:'', authErr:'', authMsg:'', busy:false,
+      codeMode:'key', codeVal:'', codeErr:'', codeFrom:'unlock', gift:null, eraseArm:false, pendingSeat:null, completedAt:null,
+      quickStep:0, base:{}, mid:{}, fin:{}, sev:{}, sight:{},
+      day:1, unlocked:false, sample:false, lightUsed:0, done:{},
+      sess:null, finalStep:0, finalTop:null,
+      origin:{}, shape:{}, keystone:null, letter:{},
+      tierFilter:'all', selHole:'Appreciation', chPhone:'', seats:4,
+      toastText:'', toastShow:false, aboutFrom:'welcome'
+    };
+    this._t = null;
+  }
+
+  toast(m){ this.setState({toastText:m, toastShow:true}); clearTimeout(this._t); this._t=setTimeout(()=>this.setState({toastShow:false}),2000); }
+  go(screen){ this.setState({screen}); }
+
+  sampleState(day){
+    const pick=(src, lim)=>{ const o={}; Object.keys(src).forEach(k=>{ if(this.HOLE_DAY[k]!=null && this.HOLE_DAY[k]<lim) o[k]=src[k]; }); return o; };
+    const done={}; for(let i=1;i<day;i++) done[i]=true;
+    return {
+      sample:true, unlocked:true, agree:true, day,
+      base:{...this.SAMPLE_BASE},
+      mid: day>7 ? {...this.SAMPLE_BASE, ...this.SAMPLE_MID} : {},
+      fin: day>13 ? {...this.SAMPLE_FINAL} : {},
+      sev: pick(this.SAMPLE_SEV, day),
+      sight: pick(this.SAMPLE_SIGHT, day),
+      done, sess:null, finalStep:0,
+      finalTop: day>13 ? this.rankWith({...this.SAMPLE_BASE},{...this.SAMPLE_BASE,...this.SAMPLE_MID},{...this.SAMPLE_FINAL},{...this.SAMPLE_SEV},{...this.SAMPLE_SIGHT}).slice(0,5).map(h=>h.k) : null
+    };
+  }
+
+  rankWith(base, mid, fin, sev, sight){
+    return this.HOLES.map(h=>{
+      const b=base[h.k], m=mid[h.k], f=fin[h.k], v=sev[h.k], n=sight[h.k]||0;
+      const latest = f ?? m ?? b;
+      if(latest==null) return {...h, score:null, seen:0, confirmed:false, sightings:n};
+      const bb = b ?? latest, sn = Math.min(n,3)/3*10;
+      const val = v!=null ? .35*latest + .15*bb + .35*v + .15*sn : .6*latest + .25*bb + .15*sn;
+      const reads=[b,m,f,v].filter(x=>x!=null);
+      const seen = reads.filter(x=>x>=7).length + Math.min(n,2);
+      return {...h, score:Math.round(val*10), seen, confirmed: seen>=3, sightings:n};
+    }).sort((a,b)=> ((b.score??-1)-(a.score??-1)) || (b.tierRank-a.tierRank));
+  }
+  rank(){ const s=this.state; return this.rankWith(s.base,s.mid,s.fin,s.sev,s.sight); }
+
+  segStyle(sel, n){
+    const hot = n>=7;
+    return `border:1.5px solid ${sel?(hot?'#01434B':'#0E7C7B'):'#E3E9F2'};background:${sel?(hot?'#01434B':'#E3F2F1'):'#fff'};color:${sel?(hot?'#fff':'#0A5656'):'#4A5468'};border-radius:8px;height:32px;padding:0;font-size:12.5px;font-weight:800;cursor:pointer;font-family:'Sora',sans-serif`;
+  }
+  segRow(k, cur, setter){
+    return [1,2,3,4,5,6,7,8,9,10].map(n=>({n, aria:`${k}: ${n} of 10`, style:this.segStyle(cur===n,n), pick:()=>setter(n)}));
+  }
+  pillStyle(sel){
+    return `border:1.5px solid ${sel?'#0E7C7B':'#D5DCE7'};background:${sel?'#E3F2F1':'#fff'};color:${sel?'#0A5656':'#2A3446'};border-radius:999px;padding:8px 13px;font-size:13px;font-weight:700;cursor:pointer`;
+  }
+  chipStyle(h){ return `background:${h.tint};color:${h.ink};border-radius:999px;padding:4px 10px;font-size:12px;font-weight:800`; }
+  holeBy(k){ return this.HOLES.find(h=>h.k===k); }
+
+  // ================= live account =================
+  today(){ const d=new Date(); return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`; }
+  err(e){ return (e && (e.message || e.error_description)) || 'Something went wrong. Please try again.'; }
+  async componentDidMount(){
+    try{ if('serviceWorker' in navigator && location.protocol==='https:') navigator.serviceWorker.register('sw.js').catch(()=>{}); }catch(e){}
+    const q=new URLSearchParams(location.search);
+    const seat=q.get('seat'); if(seat){ try{ localStorage.setItem('wc-seat', seat.toUpperCase()); }catch(e){} }
+    let pending=null; try{ pending=localStorage.getItem('wc-seat'); }catch(e){}
+    this.setState({pendingSeat:pending});
+    const paid=q.get('paid'), canceled=q.get('canceled'), reset=q.get('reset');
+    if(seat||paid||canceled) history.replaceState(null,'',location.pathname);
+    if(!window.WC){ this.setState({screen:'welcome'}); return; }
+    try{
+      WC.onAuth((ev)=>{ if(ev==='PASSWORD_RECOVERY') this.setState({screen:'newpw', authErr:'', aPw:''}); });
+      WC.price().then(v=>this.setState({price:v})).catch(()=>{});
+      const ses=await WC.session();
+      if(reset && ses){ this.setState({screen:'newpw'}); return; }
+      if(ses){ await this.loadAccount(); }
+      else this.setState({screen:'welcome'});
+      if(ses && paid){ this.toast('Confirming your payment…'); try{ const r=await WC.confirmPayment(paid); if(r.status==='paid'){ await this.refreshAccess(); this.setState({screen:'home'}); this.toast('Payment received. Your class is open.'); } else this.toast('That payment did not go through.'); }catch(e){ this.toast(this.err(e)); } }
+      if(ses && canceled) this.toast('Payment canceled. Nothing was charged.');
+    }catch(e){ this.setState({screen:'welcome'}); }
+  }
+  async loadAccount(meta){
+    const member=await WC.ensureMember(meta);
+    const pr=await WC.loadProgress()||{};
+    const access=await WC.access();
+    const st={real:true, sample:false, member, access, unlocked:!!(access&&access.unlocked), faith:member.faith||'biblical', agree:true,
+      day:pr.day||1, done:pr.done||{}, base:pr.base||{}, mid:pr.mid||{}, fin:pr.fin||{}, sev:pr.sev||{}, sight:pr.sight||{},
+      finalTop:pr.final_top||null, origin:pr.origin||{}, shape:pr.shape||{}, keystone:pr.keystone||null, letter:pr.letter||{},
+      lightUsed:pr.light_used||0, lastDone:pr.last_completed_on||null, completedAt:pr.completed_at||null, sess:null};
+    st.screen = Object.keys(st.base).length<25 ? 'quick' : 'home';
+    if(st.screen==='quick') st.quickStep=0;
+    this._saved=JSON.stringify(this.progressOf(st));
+    this.setState(st);
+    let pend=null; try{ pend=localStorage.getItem('wc-seat'); }catch(e){}
+    if(pend){
+      try{ const a=await WC.acceptSeat(pend); this.setState({access:a, unlocked:!!a.unlocked}); this.toast('Seat accepted. Your class is open for 30 days.'); }
+      catch(e){ this.toast(this.err(e)); }
+      try{ localStorage.removeItem('wc-seat'); }catch(e){}
+      this.setState({pendingSeat:null});
+    }
+  }
+  async refreshAccess(){ const a=await WC.access(); this.setState({access:a, unlocked:!!(a&&a.unlocked)}); return a; }
+  progressOf(s){
+    return {day:s.day, done:s.done, base:s.base, mid:s.mid, fin:s.fin, sev:s.sev, sight:s.sight, final_top:s.finalTop, origin:s.origin, shape:s.shape,
+      keystone:s.keystone, letter:s.letter, light_used:s.lightUsed, last_completed_on:s.lastDone, completed_at:s.completedAt};
+  }
+  componentDidUpdate(){
+    const s=this.state; if(!s.real || s.sample) return;
+    const j=JSON.stringify(this.progressOf(s));
+    if(j===this._saved) return;
+    clearTimeout(this._saveT);
+    this._saveT=setTimeout(async()=>{
+      const now=JSON.stringify(this.progressOf(this.state));
+      try{ await WC.saveProgress(JSON.parse(now)); this._saved=now; }
+      catch(e){ this.toast('Could not save. Check your connection.'); }
+    }, 700);
+  }
+  async authSubmit(){
+    const s=this.state; if(s.busy) return;
+    const email=s.aEmail.trim(), pw=s.aPw;
+    this.setState({authErr:'', authMsg:''});
+    if(!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email)){ this.setState({authErr:'Enter a valid email address.'}); return; }
+    if(s.authMode==='forgot'){
+      this.setState({busy:true});
+      try{ await WC.resetPassword(email); this.setState({authMsg:'Check your email for a link to choose a new password.'}); }
+      catch(e){ this.setState({authErr:this.err(e)}); }
+      this.setState({busy:false}); return;
+    }
+    if(pw.length<8){ this.setState({authErr:'Your password needs at least 8 characters.'}); return; }
+    this.setState({busy:true});
+    try{
+      if(s.authMode==='up'){
+        if(!s.aFirst.trim()){ this.setState({authErr:'Please add your first name.', busy:false}); return; }
+        const meta={first:s.aFirst.trim(), last:s.aLast.trim(), faith:s.faith, adult:true, agreed:true};
+        const r=await WC.signUp(email, pw, meta);
+        if(!r.session){ this.setState({busy:false, authMsg:'Almost there. Check your email and tap the link to confirm your account, then come back and sign in.', authMode:'in', aPw:''}); return; }
+        await this.loadAccount(meta);
+      } else {
+        await WC.signIn(email, pw);
+        await this.loadAccount();
+      }
+      this.setState({busy:false, aPw:''});
+    }catch(e){
+      const m=this.err(e);
+      this.setState({busy:false, authErr: /invalid login/i.test(m)?'That email and password do not match.':(/already registered/i.test(m)?'You already have an account. Sign in instead.':m)});
+    }
+  }
+  async codeSubmit(){
+    const s=this.state; if(s.busy) return;
+    const c=s.codeVal.trim(); if(!c){ this.setState({codeErr:'Enter the code first.'}); return; }
+    this.setState({busy:true, codeErr:''});
+    try{
+      const fn={key:WC.redeemKey, group:WC.joinGroup, seat:WC.acceptSeat}[s.codeMode];
+      const a=await fn(c);
+      const msgs={key:'Book key accepted. Your class is open for one year.', group:`Welcome to ${a.group?a.group.name:'your group'}. Your class is open.`, seat:'Seat accepted. Your class is open for 30 days.'};
+      this.setState({access:a, unlocked:!!a.unlocked, busy:false, codeVal:'', screen:'home'});
+      this.toast(msgs[s.codeMode]);
+    }catch(e){ this.setState({busy:false, codeErr:this.err(e)}); }
+  }
+  openCode(mode, from){
+    if(this.state.sample){ this.setState({unlocked:true, screen:'home'}); this.toast('Sample: class opened'); return; }
+    this.setState({screen:'code', codeMode:mode, codeVal:'', codeErr:'', codeFrom:from||'unlock'});
+  }
+  async buy(){
+    if(this.state.sample){ this.setState({unlocked:true, screen:'home'}); this.toast('Sample: class opened'); return; }
+    if(this.state.busy) return; this.setState({busy:true});
+    try{ await WC.checkout(); }catch(e){ this.setState({busy:false}); this.toast(this.err(e)); }
+  }
+  async giveSeat(){
+    const s=this.state;
+    if(s.sample){ this.setState({gift:{code:'SAMPLE12', link:location.origin+location.pathname+'?seat=SAMPLE12'}}); return; }
+    if(s.busy) return; this.setState({busy:true});
+    try{
+      const r=await WC.giveSeat(s.chPhone);
+      const link=location.origin+location.pathname.replace(/[^/]*$/,'')+'?seat='+r.code;
+      this.setState({busy:false, chPhone:'', gift:{code:r.code, link}});
+      this.refreshAccess();
+    }catch(e){ this.setState({busy:false}); this.toast(this.err(e)); }
+  }
+  async shareGift(){
+    const g=this.state.gift; if(!g) return;
+    const text=`I'm taking the 14-Day Discovery Class on WholeClass and I'd like you to take it with me. Your seat is free: ${g.link}`;
+    try{ if(navigator.share){ await navigator.share({title:'WholeClass', text, url:g.link}); return; } }catch(e){ return; }
+    this.copyGift();
+  }
+  async copyGift(){ const g=this.state.gift; if(!g) return; try{ await navigator.clipboard.writeText(g.link); this.toast('Link copied'); }catch(e){ this.toast('Copy the link above'); } }
+  async exportData(){
+    if(this.state.sample){ this.toast('Sample accounts have nothing saved'); return; }
+    try{ const d=await WC.exportData(); const b=new Blob([JSON.stringify(d,null,2)],{type:'application/json'}); const a=document.createElement('a'); a.href=URL.createObjectURL(b); a.download='wholeclass-my-data.json'; document.body.appendChild(a); a.click(); a.remove(); this.toast('Your data was downloaded'); }
+    catch(e){ this.toast(this.err(e)); }
+  }
+  async eraseTap(){
+    const s=this.state;
+    if(!s.eraseArm){ this.setState({eraseArm:true}); clearTimeout(this._eraseT); this._eraseT=setTimeout(()=>this.setState({eraseArm:false}),5000); return; }
+    this.setState({eraseArm:false});
+    if(s.sample){ this.leaveSample(); return; }
+    try{ await WC.eraseAnswers(); await this.loadAccount(); this.toast('Your answers were erased'); }catch(e){ this.toast(this.err(e)); }
+  }
+  async signOut(){
+    if(this.state.sample){ this.leaveSample(); return; }
+    await WC.signOut(); this._saved=null;
+    this.setState({real:false, member:null, access:null, unlocked:false, screen:'welcome', base:{}, mid:{}, fin:{}, sev:{}, sight:{}, done:{}, day:1, finalTop:null, origin:{}, shape:{}, keystone:null, letter:{}, lightUsed:0, lastDone:null, completedAt:null, sess:null, gift:null, aEmail:'', aPw:''});
+  }
+  leaveSample(){ this.setState({screen:'welcome', base:{}, mid:{}, fin:{}, sev:{}, sight:{}, day:1, unlocked:false, sample:false, done:{}, sess:null, finalTop:null, agree:false, lightUsed:0, origin:{}, shape:{}, keystone:null, letter:{}, lastDone:null, gift:null}); }
+  lockedToday(){ const s=this.state; return s.real && !s.sample && s.lastDone===this.today() && !s.done[s.day] && s.day>1; }
+  async saveNewPw(){
+    const pw=this.state.aPw; if(pw.length<8){ this.setState({authErr:'Your password needs at least 8 characters.'}); return; }
+    try{ await WC.setPassword(pw); this.setState({aPw:'', authErr:''}); await this.loadAccount(); this.toast('Password saved'); history.replaceState(null,'',location.pathname); }
+    catch(e){ this.setState({authErr:this.err(e)}); }
+  }
+
+  // ---- onboarding ----
+  quickNext(){
+    const s=this.state; const tierKey=this.TIER_ORDER[s.quickStep];
+    const missing=this.HOLES.filter(h=>h.t===tierKey && s.base[h.k]==null).length;
+    if(missing){ this.toast(`Score the ${missing} left on this page`); return; }
+    if(s.quickStep<2) this.setState({quickStep:s.quickStep+1});
+    else this.setState({screen:'quickResult', done:{...s.done, 1:true}, day:Math.max(2,s.day), lastDone: s.done[1] ? s.lastDone : this.today()});
+  }
+  quickBack(){ const s=this.state; if(s.quickStep>0) this.setState({quickStep:s.quickStep-1}); else this.go(s.real?'home':'privacy'); }
+  fillSampleQuick(){ this.setState({base:{...this.SAMPLE_BASE}}); this.toast('Sample answers filled in'); }
+  unlock(msg){ this.setState({unlocked:true, screen:'home', day:Math.max(2,this.state.day)}); this.toast(msg); }
+
+  // ---- session ----
+  startToday(){
+    const s=this.state, p=this.PLAN[s.day-1];
+    if(p.kind==='baseline'){ this.setState({screen:'quick', quickStep:0}); return; }
+    if(!s.unlocked){ this.go('unlock'); return; }
+    if(this.lockedToday()){ this.toast(`Day ${s.day} opens tomorrow. Let today's work settle.`); return; }
+    if(p.kind==='final'){ this.setState({screen:'final', finalStep:0, fin: Object.keys(s.fin).length? s.fin : this.seedFinal()}); return; }
+    if(p.kind==='map'){ if(!s.finalTop) this.setState({finalTop:this.rank().slice(0,5).map(h=>h.k)}); this.go('map'); return; }
+    const sess = {day:s.day, step:0, ans:{}, moment:'', whys:['','','','',''], point:null, sev:{}, trig:'', who:'', strength:'', action:'', grow:'', light:false, check:{}};
+    const holes=[].concat(...p.s.map(id=>this.SESSIONS[id].holes));
+    holes.forEach(h=>{ if(s.sev[h]!=null) sess.sev[h]=s.sev[h]; });
+    if(p.check) sess.check={...s.base, ...s.mid};
+    this.setState({sess, screen: p.care ? 'care' : 'session'});
+  }
+  seedFinal(){ const s=this.state, o={}; this.rank().slice(0,10).forEach(h=>{ o[h.k]= s.mid[h.k] ?? s.base[h.k] ?? 5; }); return o; }
+  takeLight(){
+    const s=this.state; if(s.lightUsed>=2) return;
+    this.startToday(); this.setState(st=>({sess: st.sess? {...st.sess, light:true}:st.sess}));
+    this.toast('Light Day: Know and Hunt only');
+  }
+  stepsFor(){
+    const s=this.state, p=this.PLAN[s.sess.day-1];
+    if(s.sess.light) return ['know','hunt','respond'];
+    const a=['know','yield','hunt','diag'];
+    if(p.check) a.push('check');
+    a.push('respond'); return a;
+  }
+  updSess(patch){ this.setState(st=>({sess:{...st.sess, ...patch}})); }
+  sNext(){
+    const s=this.state, steps=this.stepsFor();
+    if(s.sess.step < steps.length-1){ this.updSess({step:s.sess.step+1}); return; }
+    // finish day
+    const ss=s.sess, sev={...s.sev, ...ss.sev}, sight={...s.sight};
+    if(ss.point) sight[ss.point]=(sight[ss.point]||0)+1;
+    const patch={sev, sight, done:{...s.done, [ss.day]:true}, day:Math.min(14, ss.day+1), sess:null, screen:'home'};
+    if(this.PLAN[ss.day-1].check) patch.mid={...ss.check};
+    if(ss.light) patch.lightUsed=s.lightUsed+1;
+    patch.lastDone=this.today();
+    this.setState(patch);
+    if(s.real && !s.sample){
+      WC.saveDay({day:ss.day, light:!!ss.light, answers:ss.ans, moment:ss.moment||null, whys:ss.whys, points_to:ss.point, trigger:ss.trig||null,
+        who_affected:ss.who||null, hidden_strength:ss.strength||null, action:ss.action||null, grow:ss.grow||null}).catch(()=>this.toast('Your answers could not be saved. Check your connection.'));
+    }
+    this.toast(`Day ${ss.day} done. See you tomorrow.`);
+  }
+  sBack(){ const s=this.state; if(s.sess.step>0) this.updSess({step:s.sess.step-1}); else this.setState({screen:'home', sess:null}); }
+
+  // ---- final ----
+  finalNext(){
+    const s=this.state;
+    if(s.finalStep===0){
+      const r=this.rankWith(s.base,s.mid,s.fin,s.sev,s.sight);
+      this.setState({finalStep:1, finalTop:r.slice(0,5).map(h=>h.k)}); return;
+    }
+    if(s.real && !s.sample){ this.setState({done:{...s.done, 13:true}, day:14, lastDone:this.today(), screen:'home'}); this.toast('Top five confirmed. Day 14 opens tomorrow.'); return; }
+    this.setState({done:{...s.done, 13:true}, day:14, screen:'map'}); this.toast('Top five confirmed');
+  }
+  finalBack(){ const s=this.state; if(s.finalStep>0) this.setState({finalStep:0}); else this.go('home'); }
+  moveTop(i,dir){ const a=[...this.state.finalTop], j=i+dir; if(j<0||j>4) return; [a[i],a[j]]=[a[j],a[i]]; this.setState({finalTop:a}); }
+  swapIn(k){ const a=[...this.state.finalTop]; a[4]=k; this.setState({finalTop:a}); this.toast(`${k} moved into your five`); }
+
+  readChapter(k){ this.toast(`“The ${k} Hole” — reading inside the app is coming soon`); }
+
+  renderVals(){
+    const s=this.state, price='$'+(Number(s.price)%1?Number(s.price).toFixed(2):Number(s.price));
+    const scr=s.screen, d=id=>scr===id?'flex':'none';
+    const ranked=this.rank();
+    const plan=this.PLAN[s.day-1];
+    const titles={loading:'', account:'Account', code:'Code', newpw:'Password', about:'About', how:'How it works', faith:'Faith layer', privacy:'Privacy', quick:'Quick Five', quickResult:'Quick Five', unlock:'Open the class', home:'Today', care:'Day 9', session:'Session', final:'Day 13', map:'Day 14', letter:'IWK Letter', journey:'Journey', holes:'My Holes', hole:'Hole', book:'The Book', more:'More', done:'Complete'};
+    const darkBar = scr==='done';
+    const seenLabel=h=> h.score==null ? '—' : (h.confirmed ? 'Confirmed' : `Seen ${h.seen}×`);
+    const seenInk=h=> h.confirmed ? '#0E6B6B' : '#5A6478';
+    const bar=(h,c)=>`display:block;height:100%;width:${h.score??0}%;background:${c||h.color};border-radius:999px`;
+
+    // quick five
+    const qTierKey=this.TIER_ORDER[s.quickStep], qTier=this.TIERS[qTierKey];
+    const quickRows=this.HOLES.filter(h=>h.t===qTierKey).map(h=>({k:h.k, def:h.def, ink:h.ink, valLabel: s.base[h.k]!=null? `${s.base[h.k]}/10`:'', opts:this.segRow(h.k, s.base[h.k], n=>this.setState(st=>({base:{...st.base,[h.k]:n}})))}));
+    const qMissing=this.HOLES.filter(h=>h.t===qTierKey && s.base[h.k]==null).length;
+    const provisionalTop=this.rankWith(s.base,{},{},{},{}).filter(h=>h.score!=null).slice(0,5).map((h,i)=>({...h, rank:i+1, baseLabel:`${s.base[h.k]}/10`}));
+
+    // home
+    const todayHoles = plan.s ? [].concat(...plan.s.map(id=>this.SESSIONS[id].holes)) : (plan.kind==='baseline'?['All 25']:(plan.kind==='final'?['Re-score top 10','Confirm your five']:['Hole Map','IWK Letter']));
+    const todayTitle = plan.title || `${this.PHASES[plan.ph].name}: ${todayHoles.join(' · ')}`;
+    let todayNote='';
+    if(plan.check) todayNote='Halfway checkpoint today. You will re-score all 25 at the end.';
+    if(plan.care) todayNote='The Core Holes start today. Take them slowly.';
+    if(!s.unlocked && plan.kind!=='baseline') todayNote=`Days 2 to 14 open with ${price} for one year, a book key, or a guided group seat.`;
+    const finished = s.done[14];
+    const dayTicks=this.PLAN.map(p=>({style:`display:block;height:8px;border-radius:999px;background:${s.done[p.d]?'#0E7C7B':(p.d===s.day?'#01434B':'#DCE3ED')}`}));
+    const confirmedCount=ranked.slice(0,5).filter(h=>h.confirmed).length;
+    const homeTop=(s.finalTop? s.finalTop.map(k=>ranked.find(h=>h.k===k)) : ranked.slice(0,5)).filter(h=>h&&h.score!=null).map((h,i)=>({...h, rank:i+1, bar:bar(h), seenLabel:seenLabel(h), seenInk:seenInk(h), open:()=>this.setState({selHole:h.k, screen:'hole'})}));
+
+    // session
+    let sv={sDay:'',sStepNum:'',sStepCount:'',sSteps:[],stKnow:false,stYield:false,stHunt:false,stDiag:false,stCheck:false,stRespond:false,sKnow:[],sQuestions:[],sHunts:[],huntMoment:'',setHuntMoment:()=>{},whyRows:[],huntPoint:[],sevRows:[],diagFields:[],checkRows:[],respondAction:'',setRespond:()=>{},growLine:'',setGrow:()=>{},sNextLabel:''};
+    if(s.sess){
+      const sp=this.PLAN[s.sess.day-1], steps=this.stepsFor(), cur=steps[s.sess.step];
+      const labels={know:'Know',yield:'Yield',hunt:'Hunt',diag:'Diagnose',check:'Re-score',respond:'Respond'};
+      const sessions=sp.s.map(id=>this.SESSIONS[id]);
+      const holes=[].concat(...sessions.map(x=>x.holes));
+      const ss=s.sess;
+      sv={
+        sDay:ss.day, sStepNum:ss.step+1, sStepCount:steps.length,
+        sSteps:steps.map((k,i)=>({label:labels[k], ink: i<=ss.step?'#01434B':'#8A94A6', bar:`display:block;height:5px;border-radius:999px;background:${i<ss.step?'#0E7C7B':(i===ss.step?'#01434B':'#E3E9F2')}`})),
+        stKnow:cur==='know', stYield:cur==='yield', stHunt:cur==='hunt', stDiag:cur==='diag', stCheck:cur==='check', stRespond:cur==='respond',
+        sKnow:sessions.map(x=>({mirror:x.mirror, chips:x.holes.map(k=>({k, style:this.chipStyle(this.holeBy(k))})), read:()=>this.readChapter(x.holes[0])})),
+        sQuestions:[].concat(...sp.s.map(id=>this.SESSIONS[id].questions.map((t,i)=>{const key=`${id}-${i}`; return {t, opts:['Yes','Sometimes','No'].map(label=>({label, style:this.pillStyle(ss.ans[key]===label)+';flex:1', pick:()=>this.updSess({ans:{...ss.ans,[key]:label}})}))};}))),
+        sHunts:sessions.map(x=>x.hunt),
+        huntMoment:ss.moment, setHuntMoment:e=>this.updSess({moment:e.target.value}),
+        whyRows:ss.whys.map((v,i)=>({n:i+1, id:`why${i}`, v, set:e=>{const w=[...this.state.sess.whys]; w[i]=e.target.value; this.updSess({whys:w});}})),
+        huntPoint:[...holes, 'Another hole'].map(label=>({label, style:this.pillStyle(ss.point===label), pick:()=>this.updSess({point:label})})),
+        sevRows:holes.map(k=>({k, valLabel: ss.sev[k]!=null?`${ss.sev[k]}/10`:'', opts:this.segRow(k, ss.sev[k], n=>this.updSess({sev:{...this.state.sess.sev,[k]:n}}))})),
+        diagFields:[
+          {id:'dTrig', label:'Trigger', ph:'What set it off?', v:ss.trig, set:e=>this.updSess({trig:e.target.value})},
+          {id:'dWho', label:"Who's affected", ph:'You, your spouse, your kids…', v:ss.who, set:e=>this.updSess({who:e.target.value})},
+          {id:'dStr', label:'Hidden strength beneath it', ph:'What this hole says you value', v:ss.strength, set:e=>this.updSess({strength:e.target.value})}
+        ],
+        checkRows:this.HOLES.map(h=>{const v=ss.check[h.k], b=s.base[h.k]; const diff=(v!=null&&b!=null)?v-b:0; return {k:h.k, move: diff===0?'Same as Day 1':(diff>0?`Up ${diff}`:`Down ${-diff}`), moveInk: diff>0?'#B0331F':(diff<0?'#0E6B6B':'#5A6478'), opts:this.segRow(h.k, v, n=>this.updSess({check:{...this.state.sess.check,[h.k]:n}}))};}),
+        respondAction:ss.action, setRespond:e=>this.updSess({action:e.target.value}),
+        growLine:ss.grow, setGrow:e=>this.updSess({grow:e.target.value}),
+        sNextLabel: ss.step===steps.length-1 ? `Finish Day ${ss.day}` : 'Next'
+      };
+    }
+
+    // final
+    const finalTopRows=(s.finalTop||[]).map((k,i)=>{const h=ranked.find(x=>x.k===k); return {...h, rank:i+1, seenLabel:seenLabel(h), up:()=>this.moveTop(i,-1), down:()=>this.moveTop(i,1)};});
+    const finalBench=ranked.filter(h=>!(s.finalTop||[]).includes(h.k)).slice(0,5).map(h=>({...h, seenLabel:seenLabel(h), swap:()=>this.swapIn(h.k)}));
+    const finalRows=Object.keys(s.fin).map(k=>{const v=s.fin[k], prev=s.mid[k]??s.base[k]; const diff=(v!=null&&prev!=null)?v-prev:0; return {k, move: diff===0?'No change':(diff>0?`Up ${diff}`:`Down ${-diff}`), moveInk: diff>0?'#B0331F':(diff<0?'#0E6B6B':'#5A6478'), opts:this.segRow(k, v, n=>this.setState(st=>({fin:{...st.fin,[k]:n}})))};});
+
+    // map
+    const top5=(s.finalTop||ranked.slice(0,5).map(h=>h.k));
+    const keystone = s.keystone || top5[0];
+    const mapCards=top5.map((k,i)=>{const h=ranked.find(x=>x.k===k); const isKey=keystone===k; return {...h, rank:i+1, seenLabel:seenLabel(h),
+      keyLabel:isKey?'★ Keystone':'Make keystone', keyStyle:`border:1.5px solid ${isKey?'#C48504':'#D5DCE7'};background:${isKey?'#FFF4DE':'#fff'};color:${isKey?'#8A5A00':'#4A5468'};border-radius:999px;padding:6px 10px;font-size:12px;font-weight:800;cursor:pointer;white-space:nowrap`,
+      pickKey:()=>this.setState({keystone:k}),
+      origins:this.ORIGINS.map(label=>({label, style:this.pillStyle(s.origin[k]===label), pick:()=>this.setState(st=>({origin:{...st.origin,[k]:label}}))})),
+      shapes:this.SHAPES.map(label=>({label, style:this.pillStyle(s.shape[k]===label), pick:()=>this.setState(st=>({shape:{...st.shape,[k]:label}}))}))
+    };});
+
+    // journey
+    let lastPh=-1;
+    const journeyRows=this.PLAN.map(p=>{
+      const header = p.ph!==lastPh ? `${this.PHASES[p.ph].name} · ${this.PHASES[p.ph].days}` : ''; lastPh=p.ph;
+      const holes = p.s ? [].concat(...p.s.map(id=>this.SESSIONS[id].holes)).join(' · ') : (p.kind==='baseline'?'All 25 holes, quick-scored':(p.kind==='final'?'Re-score, then confirm your top five':'Map your five, write your IWK Letter'));
+      const isDone=!!s.done[p.d], isToday=p.d===s.day && !finished;
+      const extra = p.check?' · re-score':(p.care?' · note of care':'');
+      return {d:p.d, header, hasHeader:!!header, headInk:'#0E6B6B', title: p.title || (p.s.length>1?`${p.s.length} sessions`:'1 session'), sub:`${holes}${extra} · ${p.min} min`,
+        border: isToday?'#01434B':'#E3E9F2', mark: isDone?'✓':String(p.d),
+        badge:`width:30px;height:30px;flex:none;border-radius:50%;display:flex;align-items:center;justify-content:center;font-family:'Sora',sans-serif;font-weight:800;font-size:13px;background:${isDone?'#0E7C7B':(isToday?'#01434B':'#EEF1F6')};color:${isDone||isToday?'#fff':'#5A6478'}`};
+    });
+
+    // holes list
+    const filters=[['all','All'],['core','Core Needs'],['wants','Strong Wants'],['desires','Personal Desires']];
+    const holeList=ranked.map((h,i)=>({...h, rank:h.score==null?'–':i+1})).filter(h=>s.tierFilter==='all'||h.t===s.tierFilter).map(h=>({...h, bar:bar(h), seenLabel:seenLabel(h), seenInk:seenInk(h), open:()=>this.setState({selHole:h.k, screen:'hole'})}));
+    const sh=ranked.find(h=>h.k===s.selHole)||ranked[0];
+    const fmt=v=> v==null?'—':v;
+    const selHole={...sh, seenInk:seenInk(sh), status: sh.score==null?'Not scored yet':(sh.confirmed?'Confirmed':`Watching · seen ${sh.seen}×`), sightLabel: `${sh.sightings}×`,
+      readings:[{k:'Day 1',v:fmt(s.base[sh.k])},{k:'Day 7',v:fmt(s.mid[sh.k])},{k:'Day 13',v:fmt(s.fin[sh.k])},{k:'Diagnosis',v:fmt(s.sev[sh.k])}]};
+
+    // book
+    const bookTiers=['core','wants','desires'].map(t=>({label:this.TIERS[t].label, ink:this.TIERS[t].ink, items:this.HOLES.filter(h=>h.t===t).map(h=>({k:h.k, tag:`Day ${h.day}`, read:()=>this.readChapter(h.k)}))}));
+
+    // nav
+    const NAV=[['home','Today','M3 11l9-8 9 8M5 10v10h14V10'],['journey','Journey','M4 19h16M4 5h16M4 12h10'],['holes','My Holes','M12 3a9 9 0 1 0 0 18a9 9 0 1 0 0-18zM12 8a4 4 0 1 0 0 8a4 4 0 1 0 0-8z'],['book','Book','M4 5a2 2 0 0 1 2-2h13v16H6a2 2 0 0 0-2 2zM4 21V5'],['more','More','M5 12h.01M12 12h.01M19 12h.01']];
+    const navScreens={home:['home'],journey:['journey'],holes:['holes','hole'],book:['book'],more:['more']};
+    const navOn=['home','journey','holes','hole','book','more'].includes(scr);
+
+    const verse=this.VERSES[s.sess? s.sess.day : s.day];
+
+    return {
+      title: titles[scr]||'', barBg: darkBar?'#01434B':(['welcome','about','account','newpw','loading'].includes(scr)?'#FEF9F2':(['home','journey','holes','book','more','map'].includes(scr)?'#FBF7F0':'#fff')), barInk: darkBar?'#fff':'#01434B',
+      dLoading:d('loading'), dAccount:d('account'), dCode:d('code'), dNewPw:d('newpw'), dWelcome:d('welcome'), dAbout:d('about'), dHow:d('how'), dFaith:d('faith'), dPrivacy:d('privacy'), dQuick:d('quick'), dQuickResult:d('quickResult'), dUnlock:d('unlock'),
+      dHome:d('home'), dCare:d('care'), dSession:d('session'), dFinal:d('final'), dMap:d('map'), dLetter:d('letter'), dDone:d('done'),
+      dJourney:d('journey'), dHoles:d('holes'), dHole:d('hole'), dBook:d('book'), dMore:d('more'), dNav: navOn?'flex':'none',
+      price,
+
+      goHow:()=>this.go('how'), openAbout:()=>this.setState({aboutFrom:scr, screen:'about'}), aboutBack:()=>this.go(s.aboutFrom||'welcome'), goFaith:()=>this.go('faith'), goPrivacy:()=>this.go('privacy'),
+      openSample:()=>{ this.setState({...this.sampleState(5), screen:'home'}); this.toast('Sample account · Day 5'); },
+      phaseCards:this.PHASES.map((p,i)=>({...p, n:i+1, bg:['#E8F0EF','#FFF4DE','#E3F2F1','#E8F0EF','#01434B'][i], ink:['#01434B','#8A5A00','#0E6B6B','#01434B','#fff'][i]})),
+      faithOpts:[['biblical','Biblical (NIV)','A verse for each day and Scripture woven into the questions.'],['informed','Faith-informed','An occasional verse, light spiritual framing.'],['secular','Practical only','No Scripture. The same 14 days.']].map(([v,label,text])=>({label,text, style:`text-align:left;border:${s.faith===v?'2px solid #0E7C7B':'1.5px solid #E3E9F2'};background:${s.faith===v?'#E3F2F1':'#fff'};border-radius:16px;padding:14px 16px;cursor:pointer`, pick:()=>this.setState({faith:v})})),
+      toggleAgree:()=>this.setState({agree:!s.agree}),
+      agreeBox:`width:22px;height:22px;flex:none;border-radius:6px;border:2px solid ${s.agree?'#0E7C7B':'#B8C2D3'};background:${s.agree?'#0E7C7B':'#fff'};color:#fff;display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:800`,
+      agreeMark: s.agree?'✓':'', agreeAria: s.agree?'true':'false',
+      privacyBtn:`display:block;width:100%;border:none;border-radius:999px;padding:16px;font-family:'Sora',sans-serif;font-size:16px;font-weight:700;cursor:pointer;background:${s.agree?'#01434B':'#B8C2D3'};color:#fff`,
+      goQuick:()=>{ if(!s.agree){ this.toast('Please confirm you are 18+ and agree'); return; } if(s.real||s.sample) this.setState({screen:'quick', quickStep:0}); else this.setState({screen:'account', authMode:'up', authErr:'', authMsg:''}); },
+      privacyCta: (s.real||s.sample)?'Start the Quick Five':'Create my free account',
+      goSignIn:()=>this.setState({screen:'account', authMode:'in', authErr:'', authMsg:''}),
+      hasPendingSeat: !!s.pendingSeat,
+      authIsUp: s.authMode==='up', authIsIn: s.authMode==='in', authNeedsPw: s.authMode!=='forgot',
+      authTitle: {up:'Create your free account', in:'Welcome back', forgot:'Reset your password'}[s.authMode],
+      authSub: {up:'Your answers save to your account so you can pick up on any device. Only you can see them.', in:'Sign in to pick up where you left off.', forgot:'Enter your email and we will send you a link to choose a new password.'}[s.authMode],
+      authCta: s.busy ? 'One moment…' : {up:'Create account', in:'Sign in', forgot:'Send reset link'}[s.authMode],
+      authBtnStyle:`display:block;width:100%;border:none;border-radius:999px;padding:15px;font-family:'Sora',sans-serif;font-size:15px;font-weight:700;cursor:pointer;background:${s.busy?'#7A8598':'#01434B'};color:#fff;margin-top:16px`,
+      authSwapLabel: s.authMode==='up' ? 'I already have an account' : 'Create a new account',
+      authSwap:()=>this.setState({authMode: s.authMode==='up'?'in':'up', authErr:'', authMsg:''}),
+      authForgot:()=>this.setState({authMode:'forgot', authErr:'', authMsg:''}),
+      accountBack:()=>this.go(s.authMode==='up'?'privacy':'welcome'),
+      pwHint: s.authMode==='up'?'(8 or more characters)':'', pwAuto: s.authMode==='up'?'new-password':'current-password',
+      aFirst:s.aFirst, aLast:s.aLast, aEmail:s.aEmail, aPw:s.aPw,
+      setAFirst:e=>this.setState({aFirst:e.target.value}), setALast:e=>this.setState({aLast:e.target.value}), setAEmail:e=>this.setState({aEmail:e.target.value}), setAPw:e=>this.setState({aPw:e.target.value}),
+      authKey:e=>{ if(e.key==='Enter') this.authSubmit(); },
+      authSubmit:()=>this.authSubmit(), authErr:s.authErr, hasAuthErr:!!s.authErr, authMsg:s.authMsg, hasAuthMsg:!!s.authMsg,
+      saveNewPw:()=>this.saveNewPw(),
+      codeTitle:{key:'Enter your book key', group:'Join your guided group', seat:'Accept your seat'}[s.codeMode],
+      codeSub:{key:'Your book key is printed inside the back cover of Know Your Holes. It opens the class for one year.', group:'Your facilitator, church or ministry gives you this code. They will see which days you finish, never your answers.', seat:'Enter the code from the invitation you received. The class is yours free for 30 days.'}[s.codeMode],
+      codeLabel:{key:'Book key', group:'Group code', seat:'Invitation code'}[s.codeMode],
+      codeCta: s.busy?'One moment…':'Open my class',
+      codeVal:s.codeVal, setCodeVal:e=>this.setState({codeVal:e.target.value}), codeKey:e=>{ if(e.key==='Enter') this.codeSubmit(); },
+      codeErr:s.codeErr, hasCodeErr:!!s.codeErr, codeSubmit:()=>this.codeSubmit(), codeBack:()=>this.go(s.codeFrom||'unlock'),
+
+      quickStepLabel:`${s.quickStep+1} of 3`, quickTier:qTier, quickRows,
+      quickCount:Object.keys(s.base).length,
+      quickNextLabel: s.quickStep<2 ? 'Next tier' : 'See my Quick Five',
+      quickNextStyle:`flex:2;border:none;border-radius:999px;padding:14px;font-family:'Sora',sans-serif;font-size:15px;font-weight:700;cursor:pointer;background:${qMissing?'#B8C2D3':'#01434B'};color:#fff`,
+      quickNext:()=>this.quickNext(), quickBack:()=>this.quickBack(), fillSampleQuick:()=>this.fillSampleQuick(),
+      provisionalTop, goUnlock:()=>this.go('unlock'),
+      unlockBuy:()=>this.buy(),
+      unlockKey:()=>this.openCode('key'),
+      unlockChurch:()=>this.openCode('group'),
+      unlockSeat:()=>this.openCode('seat'),
+      unlockLater:()=>{ this.setState({screen:'home', day:Math.max(2,s.day)}); if(!s.unlocked) this.toast('Your Quick Five is saved'); },
+      unlockLaterLabel: s.unlocked ? 'Back to today' : 'Not now — keep my free Quick Five',
+
+      firstName: s.sample?'Cary':((s.member&&s.member.first_name)||'friend'),
+      greeting: (()=>{ const h=new Date().getHours(); return h<12?'Good morning':(h<17?'Good afternoon':'Good evening'); })(),
+      leaveSample:()=>this.leaveSample(), sample:!!s.sample, day:s.day, phaseName: finished?'Complete':this.PHASES[plan.ph].name,
+      dayTicks, todayMin:plan.min, todayTitle, todayHoles, todayNote, hasTodayNote:!!todayNote,
+      todayCta: finished ? 'View my Hole Map' : (!s.unlocked && plan.kind!=='baseline' ? 'Open the full class' : this.lockedToday() ? `Day ${s.day} opens tomorrow` : (plan.kind==='map'?'Open my Hole Map':(plan.kind==='final'?'Start the Final Diagnosis':`Start Day ${s.day}`))),
+      startToday:()=> finished ? this.go('map') : this.startToday(),
+      canLight: !!plan.s && s.unlocked && s.lightUsed<2 && !finished && !this.lockedToday(), lightLeft:2-s.lightUsed, takeLight:()=>this.takeLight(),
+      homeTop, topNote: s.finalTop ? 'Confirmed Day 13' : (confirmedCount?`${confirmedCount} of 5 confirmed`:'Provisional until Day 13'),
+      showVerse: s.faith!=='secular' && !!verse, verse: verse||{t:'',r:''},
+      toMore:()=>this.go('more'),
+
+      careContinue:()=>this.go('session'),
+      exitSession:()=>this.setState({screen:'home', sess:null}),
+      ...sv,
+      sNext:()=>this.sNext(), sBack:()=>this.sBack(),
+
+      finalA:s.finalStep===0, finalB:s.finalStep===1, finalStepLabel:`step ${s.finalStep+1} of 2`,
+      finalTitle: s.finalStep===0?'Re-score your top ten':'Confirm your five',
+      finalSub: s.finalStep===0?'Prefilled from Day 7. Change what has moved.':'Ranked from everything you scored and hunted. Reorder if it reads wrong. You know your life better than the math does.',
+      finalRows, finalTopRows, finalBench,
+      finalNextLabel: s.finalStep===0?'Rank my holes':'Confirm my top five',
+      finalNext:()=>this.finalNext(), finalBack:()=>this.finalBack(),
+
+      mapCards, toLetter:()=>this.go('letter'), toMapBack:()=>this.go('map'),
+      keystoneName:keystone,
+      letterParts:this.LETTER.map((p,i)=>({...p, n:i+1, id:`ltr${p.key}`, v:s.letter[p.key]||'', set:e=>this.setState(st=>({letter:{...st.letter,[p.key]:e.target.value}}))})),
+      finishChallenge:()=>{ this.setState({done:{...s.done,14:true}, completedAt:s.completedAt||new Date().toISOString(), lastDone:this.today(), screen:'done'}); },
+      doneTop:top5.map((k,i)=>({k, rank:i+1, tag: k===keystone?'Keystone':this.holeBy(k).tierLabel})),
+
+      journeyRows,
+      tierFilters:filters.map(([v,label])=>({label, style:this.pillStyle(s.tierFilter===v), pick:()=>this.setState({tierFilter:v})})),
+      holeList, selHole, readSel:()=>this.readChapter(sh.k),
+      toHolesNav:()=>this.go('holes'),
+
+      bookTiers, bookStatus: s.unlocked?'Reading in the app is coming soon':'Class locked · Quick Five only', bookStatusInk: s.unlocked?'#0E6B6B':'#8A5A00',
+
+      chPhone:s.chPhone, setChPhone:e=>this.setState({chPhone:e.target.value}),
+      sendChallenge:()=>this.giveSeat(),
+      seatsLeft: s.sample?4:((s.access&&s.access.seats_left)||0),
+      canGive: s.sample || !!(s.access&&s.access.seats_left>0), cantGive: !(s.sample || !!(s.access&&s.access.seats_left>0)),
+      hasGift:!!s.gift, giftCode:s.gift?s.gift.code:'', giftLink:s.gift?s.gift.link:'', shareGift:()=>this.shareGift(), copyGift:()=>this.copyGift(),
+      faithLabel: s.faith==='biblical'?'Biblical (NIV)':(s.faith==='informed'?'Faith-informed':'Practical only'),
+      cycleFaith:()=>{ const o=['biblical','informed','secular'], f=o[(o.indexOf(s.faith)+1)%3]; this.setState({faith:f}); if(s.real&&!s.sample) WC.updateMember({faith:f}).catch(()=>{}); },
+      notifySeries:()=>{ if(s.real&&!s.sample) WC.interest('kyh_series').catch(()=>{}); this.toast('We will let you know when it opens'); },
+      joinGroup:()=>this.openCode('group','more'),
+      accessLabel: s.unlocked ? (s.access&&s.access.expires_at ? `Open until ${new Date(s.access.expires_at).toLocaleDateString('en-US',{month:'long',day:'numeric',year:'numeric'})}` : 'Open') : 'Not opened yet',
+      toUnlockMore:()=>this.go('unlock'),
+      exportData:()=>this.exportData(),
+      eraseTap:()=>this.eraseTap(), eraseLabel: s.eraseArm?'Tap again to erase':'Erase my answers', eraseSub: s.eraseArm?'This cannot be undone':'Start the 14 days over from Day 1', eraseCta: s.eraseArm?'Erase':'›',
+      signOutTap:()=>this.signOut(), signOutLabel: s.sample?'Leave the sample':'Sign out', accountEmail: s.sample?'Nothing in the sample is saved':((s.member&&s.member.email)||''),
+      dayMinus:()=>{ const n=Math.max(1,s.day-1); this.setState({...this.sampleState(n), screen:'home', letter:{}, keystone:null}); },
+      dayPlus:()=>{ const n=Math.min(14,s.day+1); this.setState({...this.sampleState(n), screen:'home', letter:{}, keystone:null}); },
+      restart:()=>this.leaveSample(),
+
+      navItems:NAV.map(([k,label,icon])=>{const on=navScreens[k].includes(scr); return {label, icon, color:on?'#01434B':'#7A8598', current:on?'page':'false', go:()=>this.go(k)};}),
+      toastText:s.toastText, toastOpacity:s.toastShow?1:0, toastY:s.toastShow?'0px':'12px'
+    };
+  }
+}
+</script>
+</body>
+</html>
