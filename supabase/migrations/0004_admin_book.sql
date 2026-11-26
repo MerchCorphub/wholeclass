@@ -2,17 +2,17 @@
 -- (Same statements as applied to the wholeclass project as migration "admin_save_book".)
 create or replace function public.admin_save_book(p_chapters json)
 returns json language plpgsql security definer set search_path = public, private as $$
-declare c json; n int := 0;
+declare c json; saved int := 0;
 begin
   perform private.require_admin();
   if json_typeof(p_chapters) <> 'array' or json_array_length(p_chapters) < 1 or json_array_length(p_chapters) > 60 then raise exception 'The book needs between 1 and 60 chapters.'; end if;
-  delete from book_chapters;
+  delete from public.book_chapters bc where bc.n >= 0;  -- Supabase requires a WHERE on deletes
   for c in select * from json_array_elements(p_chapters) loop
     if length(c->>'html') > 400000 then raise exception 'A chapter is too long.'; end if;
     insert into book_chapters (n, title, html, free) values ((c->>'n')::int, left(c->>'title', 200), c->>'html', coalesce((c->>'free')::boolean, false));
-    n := n + 1;
+    saved := saved + 1;
   end loop;
-  return json_build_object('saved', n);
+  return json_build_object('saved', saved);
 end $$;
 create or replace function public.admin_book()
 returns json language plpgsql stable security definer set search_path = public, private as $$
