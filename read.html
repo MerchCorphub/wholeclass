@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Know Your Holes · WholeClass</title>
+<meta name="theme-color" content="#01434B">
+<meta name="robots" content="noindex">
+<link rel="icon" type="image/png" href="icons/icon-192.png">
+<link rel="manifest" href="manifest.json">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Sora:wght@600;700;800&family=Manrope:wght@400;500;600;700&family=Source+Serif+4:ital,wght@0,400;0,600;0,700;1,400&display=swap" rel="stylesheet">
+<script src="./cloud.js"></script>
+<style>
+*{box-sizing:border-box}
+body{margin:0;background:#FEF9F2;color:#2A3446;font-family:'Manrope',system-ui,sans-serif;-webkit-text-size-adjust:100%}
+header{position:sticky;top:0;z-index:5;background:#01434B;color:#fff;padding:calc(10px + env(safe-area-inset-top)) 16px 10px;display:flex;align-items:center;gap:10px}
+header a,header button{color:#fff;text-decoration:none;font-weight:700;font-size:14px;background:none;border:none;cursor:pointer;padding:6px 4px;font-family:inherit}
+header .t{flex:1;min-width:0;font-family:'Sora',sans-serif;font-size:14px;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;text-align:center}
+main{max-width:720px;margin:0 auto;padding:22px 20px 80px}
+.kicker{font-family:'Sora',sans-serif;font-size:11px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:#8A5A00;margin:8px 0 0}
+h1{font-family:'Sora',sans-serif;color:#01434B;font-size:28px;line-height:1.2;margin:6px 0 18px}
+.book{font-family:'Source Serif 4',Georgia,serif;font-size:18px;line-height:1.7}
+.book h2{font-family:'Sora',sans-serif;color:#01434B;font-size:20px;margin:28px 0 8px}
+.book p{margin:0 0 14px}
+.book li{margin:6px 0}
+.book li p{margin:0}
+.book hr{border:none;border-top:1px solid #EADFCB;margin:26px 0}
+.tw{overflow-x:auto;-webkit-overflow-scrolling:touch;margin:14px -4px 20px;border:1px solid #EADFCB;border-radius:12px;background:#fff}
+.book table{border-collapse:collapse;font-family:'Manrope',sans-serif;font-size:14px;line-height:1.45;min-width:620px;width:100%}
+.book th,.book td{border-bottom:1px solid #F0E8DA;padding:9px 10px;text-align:left;vertical-align:top}
+.book th{background:#E8F0EF;color:#01434B;font-size:13px}
+.book tr.hit{background:#FFF4DE;outline:2px solid #C48504;outline-offset:-2px}
+.book table p{margin:0}
+.toc a{display:flex;justify-content:space-between;gap:10px;align-items:center;background:#fff;border:1px solid #EADFCB;border-radius:14px;padding:13px 14px;margin-bottom:8px;text-decoration:none;color:#01434B;font-weight:700}
+.toc small{font-weight:700;color:#5A6478;white-space:nowrap}
+.toc .lock{color:#8A5A00}
+.cover{display:flex;gap:16px;align-items:center;margin:6px 0 18px}
+.cover img{width:86px;border-radius:6px;box-shadow:0 8px 18px rgba(1,38,43,.25)}
+.nav{display:flex;gap:10px;margin-top:34px}
+.nav a{flex:1;text-align:center;border-radius:999px;padding:13px;font-weight:700;text-decoration:none;font-family:'Sora',sans-serif;font-size:14px}
+.btn{background:#01434B;color:#fff}
+.btn2{border:1.5px solid #01434B;color:#01434B;background:#fff}
+.note{background:#fff;border:1px solid #EADFCB;border-radius:16px;padding:18px;margin-top:10px;line-height:1.55}
+.note a{display:inline-block;margin-top:12px;background:#01434B;color:#fff;border-radius:999px;padding:11px 18px;font-weight:700;text-decoration:none}
+.size{display:flex;gap:2px}
+.copy{font-size:12px;color:#5A6478;margin-top:40px;text-align:center}
+</style>
+</head>
+<body>
+<header>
+  <a href="./" aria-label="Back to WholeClass">‹ Class</a>
+  <div class="t" id="hdr">Know Your Holes</div>
+  <div class="size"><button id="smaller" aria-label="Smaller text">A−</button><button id="bigger" aria-label="Larger text">A+</button></div>
+</header>
+<main id="main"><p>Opening the book…</p></main>
+<script>
+(function(){
+  const main = document.getElementById('main'), hdr = document.getElementById('hdr');
+  const esc = s => String(s).replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+  let size = 18; try { size = +localStorage.getItem('wc-read-size') || 18; } catch (e) {}
+  const applySize = () => { document.querySelectorAll('.book').forEach(b => b.style.fontSize = size + 'px'); try { localStorage.setItem('wc-read-size', size); } catch (e) {} };
+  document.getElementById('smaller').onclick = () => { size = Math.max(14, size - 1); applySize(); };
+  document.getElementById('bigger').onclick = () => { size = Math.min(26, size + 1); applySize(); };
+  const dayFor = n => (n >= 1 && n <= 14) ? 'Day ' + n : 'Start here';
+
+  async function run(){
+    const s = await WC.session();
+    if (!s) { main.innerHTML = '<p class="kicker">Know Your Holes</p><h1>Sign in to read</h1><div class="note">The book opens inside your WholeClass account. Your note from the author and Chapter 1 are free.<br><a href="./">Sign in or create a free account</a></div>'; return; }
+    const list = await WC.bookContents();
+    const ch = new URLSearchParams(location.search).get('ch');
+    if (ch === null || ch === '') return toc(list);
+    const n = +ch, meta = list.find(c => c.n === n);
+    if (!meta) { main.innerHTML = '<h1>Chapter not found</h1><p><a href="read.html">See all chapters</a></p>'; return; }
+    const row = await WC.chapter(n);
+    hdr.textContent = n === 0 ? 'A Note for My Reader' : 'Chapter ' + n;
+    document.title = (n === 0 ? meta.title : 'Chapter ' + n + ': ' + meta.title) + ' · Know Your Holes';
+    const i = list.findIndex(c => c.n === n), prev = list[i - 1], next = list[i + 1];
+    const navHtml = '<div class="nav">' + (prev ? '<a class="btn2" href="read.html?ch=' + prev.n + '">‹ ' + (prev.n === 0 ? 'Note' : 'Chapter ' + prev.n) + '</a>' : '<a class="btn2" href="read.html">Contents</a>') +
+      (next ? '<a class="btn" href="read.html?ch=' + next.n + '">' + 'Chapter ' + next.n + ' ›</a>' : '<a class="btn" href="./">Back to my class</a>') + '</div>';
+    const head = '<p class="kicker">' + (n === 0 ? 'Know Your Holes · C.P. Parker' : 'Chapter ' + n + ' · ' + dayFor(n)) + '</p><h1>' + esc(meta.title) + '</h1>';
+    if (!row) {
+      main.innerHTML = head + '<div class="note">This chapter opens with the full 14-Day Discovery Class. Your note from the author and Chapter 1 are free.<br><a href="./">Open the full class</a></div>' + navHtml;
+      return;
+    }
+    main.innerHTML = head + '<div class="book">' + row.html + '</div>' + navHtml + '<p class="copy">© Merch Corporation. All rights reserved. For your personal reading in WholeClass.</p>';
+    main.querySelectorAll('.book table').forEach(t => { const w = document.createElement('div'); w.className = 'tw'; t.parentNode.insertBefore(w, t); w.appendChild(t); });
+    applySize();
+    if (location.hash) { const el = document.getElementById(decodeURIComponent(location.hash.slice(1))); if (el) { el.classList.add('hit'); setTimeout(() => el.scrollIntoView({ block: 'center' }), 50); } }
+    else window.scrollTo(0, 0);
+  }
+  function toc(list){
+    hdr.textContent = 'Know Your Holes';
+    main.innerHTML = '<div class="cover"><img src="assets/kyh-cover.jpg" alt="Know Your Holes book cover"><div><p class="kicker">The book</p><h1 style="margin:4px 0 2px">Know Your Holes</h1><div style="color:#5A6478;font-weight:600">C.P. Parker · Merch Corporation</div></div></div>' +
+      '<p style="line-height:1.55">Each day of the 14-Day Discovery Class has a chapter to go with it. Day 1 reads Chapter 1, Day 2 reads Chapter 2, and so on.</p>' +
+      '<div class="toc">' + list.map(c => '<a href="read.html?ch=' + c.n + '"><span>' + (c.n === 0 ? '' : c.n + '. ') + esc(c.title) + '</span><small' + (c.free ? '' : ' class="lock"') + '>' + (c.free ? (c.n === 0 ? 'Free' : 'Free · Day 1') : dayFor(c.n)) + '</small></a>').join('') + '</div>' +
+      (list.length ? '' : '<div class="note">The book has not been loaded yet. Check back soon.</div>');
+  }
+  run().catch(e => { main.innerHTML = '<h1>Could not open the book</h1><p>' + esc(e.message || e) + '</p><p><a href="read.html">Try again</a></p>'; });
+})();
+</script>
+</body>
+</html>

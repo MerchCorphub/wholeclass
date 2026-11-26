@@ -11,7 +11,9 @@ A home-screen web app (PWA) for the 14-Day Discovery Class, inspired by *Know Yo
 | App pages | `index.html` (the whole app), `terms.html`, `privacy.html` — served by GitHub Pages at wholeclass.app |
 | Database & sign-in | Supabase project **wholeclass** (`uiwbwiznuradpmfdeeuy`), schema in `supabase/migrations/` |
 | Payments | Stripe Checkout through the `stripe-pay` server function (`supabase/functions/stripe-pay/`) |
-| Price | `public.prices` table — $20, one year, no automatic renewal |
+| Price | `public.prices` table — $20, one year, no automatic renewal (change it in the console) |
+| Admin console | `admin.html` — members, guided groups, book keys, payments, the book, price and admins. Group facilitators see only their groups' completion. |
+| The book | `read.html` — chapters live in the database (`book_chapters`) and open only with class access; the note and Chapter 1 are free. Load or replace it from the console with the Word file. |
 
 ## Ways to open Days 2–14
 

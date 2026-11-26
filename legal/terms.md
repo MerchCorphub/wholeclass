@@ -19,7 +19,7 @@ You must be **18 or older** to create an account. If you register or lead a guid
 
 ## 3. Your account
 
-Give us true, current information. Keep your password private; you are responsible for everything done through your account. One person per account. Do not share, sell or transfer your account or your access. Tell us right away at support@wholeclass.app if you think someone else has used your account.
+Give us true, current information. Keep your password private; you are responsible for everything done through your account. One person per account. Do not share, sell or transfer your account or your access. Tell us right away at askpaul.pp@gmail.com if you think someone else has used your account.
 
 ## 4. Access, prices and payment
 
@@ -56,7 +56,7 @@ We may add, change or stop parts of the Service, including courses and prices. W
 
 ## 11. Suspension and termination
 
-You may stop using the Service at any time and may ask us to delete your account at support@wholeclass.app. Closing your account ends any access on it without refund. We may suspend or close accounts, codes or groups that break these Terms or create risk for others.
+You may stop using the Service at any time and may ask us to delete your account at askpaul.pp@gmail.com. Closing your account ends any access on it without refund. We may suspend or close accounts, codes or groups that break these Terms or create risk for others.
 
 ## 12. Disclaimers
 
@@ -72,13 +72,13 @@ You will defend, indemnify and hold harmless Merch Corporation and its owners, o
 
 ## 15. Dispute resolution and arbitration
 
-**Talk to us first.** Before starting a claim, email support@wholeclass.app with a description of the problem and the relief you want. We will try in good faith to resolve it within 60 days.
+**Talk to us first.** Before starting a claim, email askpaul.pp@gmail.com with a description of the problem and the relief you want. We will try in good faith to resolve it within 60 days.
 
 **Binding individual arbitration.** If we cannot resolve it, you and Merch Corporation agree that any dispute arising out of or relating to the Service or these Terms will be settled by **binding individual arbitration** administered by the American Arbitration Association under its Consumer Arbitration Rules, before a single arbitrator, in the **State of Georgia** (in or near Atlanta) unless we agree otherwise. The Federal Arbitration Act governs this section. Either party may bring an individual claim in small claims court if it qualifies.
 
 **Class action and jury trial waiver.** YOU AND WE EACH AGREE TO BRING CLAIMS ONLY IN AN INDIVIDUAL CAPACITY, NOT AS A PLAINTIFF OR CLASS MEMBER IN ANY CLASS, COLLECTIVE OR REPRESENTATIVE PROCEEDING, AND EACH WAIVES THE RIGHT TO A JURY TRIAL.
 
-**30-day opt-out.** You may opt out of arbitration by emailing support@wholeclass.app within 30 days after you first accept these Terms, with your name, account email and a clear statement that you opt out.
+**30-day opt-out.** You may opt out of arbitration by emailing askpaul.pp@gmail.com within 30 days after you first accept these Terms, with your name, account email and a clear statement that you opt out.
 
 ## 16. Governing law
 
@@ -90,4 +90,4 @@ We may update these Terms by posting a new version with a new effective date and
 
 ## 18. Contact us
 
-Merch Corporation · WholeClass · support@wholeclass.app
+Merch Corporation · WholeClass · askpaul.pp@gmail.com

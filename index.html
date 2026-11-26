@@ -360,7 +360,7 @@ html,body{background:#01262B}
           <div style="border:1px solid #E3E9F2;border-radius:16px;padding:14px 15px;margin-bottom:10px">
             <div style="display:flex;flex-wrap:wrap;gap:6px;margin-bottom:8px"><sc-for list="{{ k.chips }}" as="c" hint-placeholder-count="2"><span style="{{ c.style }}">{{ c.k }}</span></sc-for></div>
             <p style="font-size:14.5px;line-height:1.6;color:#2A3446;margin:0">{{ k.mirror }}</p>
-            <button style="margin-top:10px;background:none;border:1.5px solid #D5DCE7;border-radius:999px;padding:8px 13px;font-size:13px;font-weight:700;color:#01434B;cursor:pointer" onClick="{{ k.read }}">Read this chapter in the book ›</button>
+            <button style="margin-top:10px;background:none;border:1.5px solid #D5DCE7;border-radius:999px;padding:8px 13px;font-size:13px;font-weight:700;color:#01434B;cursor:pointer" onClick="{{ k.read }}">{{ k.readLabel }}</button>
           </div>
         </sc-for>
         <sc-if value="{{ showVerse }}" hint-placeholder-val="{{ true }}">
@@ -597,22 +597,20 @@ html,body{background:#01262B}
       </div>
       <div style="margin-top:12px;border:1px solid #E3E9F2;border-radius:14px;padding:12px 14px;display:flex;justify-content:space-between;align-items:center"><span style="font-size:13.5px;color:#4A5468">Turned up in your Hunts</span><span style="font-family:'Sora',sans-serif;font-weight:800;color:#01434B">{{ selHole.sightLabel }}</span></div>
       <div style="margin-top:8px;border:1px solid #E3E9F2;border-radius:14px;padding:12px 14px;display:flex;justify-content:space-between;align-items:center"><span style="font-size:13.5px;color:#4A5468">Status</span><span style="font-family:'Sora',sans-serif;font-weight:800;color:{{ selHole.seenInk }}">{{ selHole.status }}</span></div>
-      <button style="margin-top:14px;display:block;width:100%;border:1.5px solid #D5DCE7;background:#fff;border-radius:999px;padding:13px;font-family:'Sora',sans-serif;font-size:14.5px;font-weight:700;cursor:pointer;color:#01434B" onClick="{{ readSel }}">Read this chapter in the book</button>
+      <button style="margin-top:14px;display:block;width:100%;border:1.5px solid #D5DCE7;background:#fff;border-radius:999px;padding:13px;font-family:'Sora',sans-serif;font-size:14.5px;font-weight:700;cursor:pointer;color:#01434B" onClick="{{ readSel }}">Read about this hole in the book</button>
     </div>
   </section>
 
   <!-- ============ BOOK ============ -->
   <section style="display:{{ dBook }};flex-direction:column;flex:1;overflow-y:auto;background:#FBF7F0">
     <div style="padding:6px 20px 18px">
-      <div style="display:flex;gap:14px;align-items:center;margin:6px 0 14px">
-        <div style="width:64px;height:92px;border-radius:6px;background:linear-gradient(160deg,#01434B,#01262B);display:flex;align-items:flex-end;padding:7px;box-sizing:border-box;box-shadow:0 6px 14px rgba(1,38,43,.25)"><span style="font-family:'Sora',sans-serif;font-weight:800;font-size:10px;color:#C48504;line-height:1.1">Know Your Holes</span></div>
+      <div style="display:flex;gap:14px;align-items:center;margin:8px 0 14px">
+        <img src="assets/kyh-cover.jpg" alt="Know Your Holes book cover" style="width:72px;border-radius:6px;box-shadow:0 6px 14px rgba(1,38,43,.25)">
         <div><h2 style="font-family:'Sora',sans-serif;font-size:20px;font-weight:800;color:#01434B;margin:0">Know Your Holes</h2><div style="font-size:13px;color:#4A5468;margin-top:2px">C.P. Parker · Merch Corporation</div><div style="font-size:12.5px;font-weight:700;color:{{ bookStatusInk }};margin-top:6px">{{ bookStatus }}</div></div>
       </div>
-      <sc-for list="{{ bookTiers }}" as="t" hint-placeholder-count="3">
-        <div style="font-family:'Sora',sans-serif;font-size:11px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:{{ t.ink }};margin:14px 0 6px">{{ t.label }}</div>
-        <sc-for list="{{ t.items }}" as="c" hint-placeholder-count="7">
-          <button style="display:flex;width:100%;justify-content:space-between;align-items:center;background:#fff;border:1px solid #E3E9F2;border-radius:12px;padding:10px 12px;margin-bottom:5px;cursor:pointer;text-align:left" onClick="{{ c.read }}"><span style="font-weight:700;font-size:14px;color:#01434B">The {{ c.k }} Hole</span><span style="font-size:12px;font-weight:700;color:#5A6478">{{ c.tag }}</span></button>
-        </sc-for>
+      <p style="font-size:13.5px;color:#4A5468;line-height:1.5;margin:0 0 12px">Each day of the class has a chapter. Day 1 reads Chapter 1, Day 2 reads Chapter 2, and so on.</p>
+      <sc-for list="{{ bookChapters }}" as="c" hint-placeholder-count="15">
+        <button style="display:flex;width:100%;justify-content:space-between;align-items:center;gap:10px;background:#fff;border:1px solid {{ c.border }};border-radius:12px;padding:11px 12px;margin-bottom:6px;cursor:pointer;text-align:left" onClick="{{ c.read }}"><span style="font-weight:700;font-size:14px;color:#01434B">{{ c.label }}</span><span style="font-size:12px;font-weight:700;color:{{ c.tagInk }};white-space:nowrap">{{ c.tag }}</span></button>
       </sc-for>
     </div>
   </section>
@@ -649,6 +647,7 @@ html,body{background:#01262B}
         <button style="display:flex;width:100%;justify-content:space-between;align-items:center;background:none;border:none;border-bottom:1px solid #EEF1F6;padding:14px 15px;cursor:pointer;text-align:left" onClick="{{ openAbout }}"><span><span style="display:block;font-weight:700;font-size:14px;color:#01434B">About WholeClass</span><span style="display:block;font-size:12.5px;color:#5A6478">Mission, vision and core values</span></span><span style="font-size:13px;font-weight:700;color:#0E6B6B">Read</span></button>
         <a href="terms.html" style="display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid #EEF1F6;padding:14px 15px;text-decoration:none"><span style="font-weight:700;font-size:14px;color:#01434B">Terms of Use</span><span style="font-size:13px;font-weight:700;color:#0E6B6B">Read</span></a>
         <a href="privacy.html" style="display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid #EEF1F6;padding:14px 15px;text-decoration:none"><span style="font-weight:700;font-size:14px;color:#01434B">Privacy Policy</span><span style="font-size:13px;font-weight:700;color:#0E6B6B">Read</span></a>
+        <sc-if value="{{ hasConsole }}" hint-placeholder-val="{{ false }}"><a href="admin.html" style="display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid #EEF1F6;padding:14px 15px;text-decoration:none"><span><span style="display:block;font-weight:700;font-size:14px;color:#01434B">{{ consoleLabel }}</span><span style="display:block;font-size:12.5px;color:#5A6478">{{ consoleSub }}</span></span><span style="font-size:13px;font-weight:700;color:#0E6B6B">Open</span></a></sc-if>
         <button style="display:flex;width:100%;justify-content:space-between;align-items:center;background:none;border:none;padding:14px 15px;cursor:pointer;text-align:left" onClick="{{ signOutTap }}"><span><span style="display:block;font-weight:700;font-size:14px;color:#01434B">{{ signOutLabel }}</span><span style="display:block;font-size:12.5px;color:#5A6478">{{ accountEmail }}</span></span><span style="font-size:13px;font-weight:700;color:#0E6B6B">›</span></button>
       </div>
 
@@ -776,6 +775,7 @@ class Component extends DCLogic {
   SAMPLE_SIGHT = {'Appreciation':3,'Communication':2,'Freedom':2,'Quality Time':2,'Emotional Safety':2,'Conflict Resolution':1,'Validation':1,'Being Needed':1};
   SAMPLE_FINAL = {'Appreciation':9,'Communication':8,'Emotional Safety':8,'Quality Time':7,'Freedom':7,'Validation':6,'Conflict Resolution':6,'Being Needed':6,'Affection':5,'Fun & Play':5};
 
+  CHAPTERS = [[0, "A Note for My Reader"], [1, "What is a Hole?"], [2, "Why Categorize Holes?"], [3, "Needs vs. Wants vs. Desires"], [4, "Your Network of Fillers"], [5, "Hole Shapes & Love Languages"], [6, "Nature & Nurture Holes"], [7, "The Before Map"], [8, "Understanding Change"], [9, "Speaking Your Holes"], [10, "Filling Theirs: Understanding Your Partner’s Holes"], [11, "The Relationship Hole Alignment Check"], [12, "The After Map"], [13, "Awareness + Action = Alignment"], [14, "Appendix"]];
   SHAPES = ['Words','Time','Touch','Gifts','Acts'];
   ORIGINS = ['Nature','Nurture','Not sure'];
   LETTER = [
@@ -879,7 +879,8 @@ class Component extends DCLogic {
     const member=await WC.ensureMember(meta);
     const pr=await WC.loadProgress()||{};
     const access=await WC.access();
-    const st={real:true, sample:false, member, access, unlocked:!!(access&&access.unlocked), faith:member.faith||'biblical', agree:true,
+    let role=null; try{ role=await WC.rpc('console_me'); }catch(e){}
+    const st={consoleRole:role, real:true, sample:false, member, access, unlocked:!!(access&&access.unlocked), faith:member.faith||'biblical', agree:true,
       day:pr.day||1, done:pr.done||{}, base:pr.base||{}, mid:pr.mid||{}, fin:pr.fin||{}, sev:pr.sev||{}, sight:pr.sight||{},
       finalTop:pr.final_top||null, origin:pr.origin||{}, shape:pr.shape||{}, keystone:pr.keystone||null, letter:pr.letter||{},
       lightUsed:pr.light_used||0, lastDone:pr.last_completed_on||null, completedAt:pr.completed_at||null, sess:null};
@@ -1078,7 +1079,11 @@ class Component extends DCLogic {
   moveTop(i,dir){ const a=[...this.state.finalTop], j=i+dir; if(j<0||j>4) return; [a[i],a[j]]=[a[j],a[i]]; this.setState({finalTop:a}); }
   swapIn(k){ const a=[...this.state.finalTop]; a[4]=k; this.setState({finalTop:a}); this.toast(`${k} moved into your five`); }
 
-  readChapter(k){ this.toast(`“The ${k} Hole” — reading inside the app is coming soon`); }
+  openBook(n, hash){
+    if(!this.state.real || this.state.sample){ this.toast('Create a free account to read the book'); return; }
+    location.href = 'read.html' + (n==null ? '' : '?ch=' + n) + (hash ? '#' + hash : '');
+  }
+  readChapter(k){ this.openBook(2, 'hole-' + k.toLowerCase().replace(/[^a-z]+/g,'-').replace(/^-|-$/g,'')); }
 
   renderVals(){
     const s=this.state, price='$'+(Number(s.price)%1?Number(s.price).toFixed(2):Number(s.price));
@@ -1121,7 +1126,7 @@ class Component extends DCLogic {
         sDay:ss.day, sStepNum:ss.step+1, sStepCount:steps.length,
         sSteps:steps.map((k,i)=>({label:labels[k], ink: i<=ss.step?'#01434B':'#8A94A6', bar:`display:block;height:5px;border-radius:999px;background:${i<ss.step?'#0E7C7B':(i===ss.step?'#01434B':'#E3E9F2')}`})),
         stKnow:cur==='know', stYield:cur==='yield', stHunt:cur==='hunt', stDiag:cur==='diag', stCheck:cur==='check', stRespond:cur==='respond',
-        sKnow:sessions.map(x=>({mirror:x.mirror, chips:x.holes.map(k=>({k, style:this.chipStyle(this.holeBy(k))})), read:()=>this.readChapter(x.holes[0])})),
+        sKnow:sessions.map(x=>({mirror:x.mirror, chips:x.holes.map(k=>({k, style:this.chipStyle(this.holeBy(k))})), read:()=>this.openBook(ss.day), readLabel:`Read Chapter ${ss.day} in the book ›`})),
         sQuestions:[].concat(...sp.s.map(id=>this.SESSIONS[id].questions.map((t,i)=>{const key=`${id}-${i}`; return {t, opts:['Yes','Sometimes','No'].map(label=>({label, style:this.pillStyle(ss.ans[key]===label)+';flex:1', pick:()=>this.updSess({ans:{...ss.ans,[key]:label}})}))};}))),
         sHunts:sessions.map(x=>x.hunt),
         huntMoment:ss.moment, setHuntMoment:e=>this.updSess({moment:e.target.value}),
@@ -1176,7 +1181,8 @@ class Component extends DCLogic {
       readings:[{k:'Day 1',v:fmt(s.base[sh.k])},{k:'Day 7',v:fmt(s.mid[sh.k])},{k:'Day 13',v:fmt(s.fin[sh.k])},{k:'Diagnosis',v:fmt(s.sev[sh.k])}]};
 
     // book
-    const bookTiers=['core','wants','desires'].map(t=>({label:this.TIERS[t].label, ink:this.TIERS[t].ink, items:this.HOLES.filter(h=>h.t===t).map(h=>({k:h.k, tag:`Day ${h.day}`, read:()=>this.readChapter(h.k)}))}));
+    const bookChapters=this.CHAPTERS.map(([n,t])=>{ const free=n<=1, open=free||s.unlocked, today=n===s.day&&!finished;
+      return {label: n===0?t:`${n}. ${t}`, tag: n===0?'Free':(n===1?'Free · Day 1':(open?`Day ${n}`:`Day ${n} · locked`)), tagInk: open?'#0E6B6B':'#8A5A00', border: today?'#01434B':'#E3E9F2', read:()=>this.openBook(n)}; });
 
     // nav
     const NAV=[['home','Today','M3 11l9-8 9 8M5 10v10h14V10'],['journey','Journey','M4 19h16M4 5h16M4 12h10'],['holes','My Holes','M12 3a9 9 0 1 0 0 18a9 9 0 1 0 0-18zM12 8a4 4 0 1 0 0 8a4 4 0 1 0 0-8z'],['book','Book','M4 5a2 2 0 0 1 2-2h13v16H6a2 2 0 0 0-2 2zM4 21V5'],['more','More','M5 12h.01M12 12h.01M19 12h.01']];
@@ -1241,7 +1247,10 @@ class Component extends DCLogic {
 
       firstName: s.sample?'Cary':((s.member&&s.member.first_name)||'friend'),
       greeting: (()=>{ const h=new Date().getHours(); return h<12?'Good morning':(h<17?'Good afternoon':'Good evening'); })(),
-      leaveSample:()=>this.leaveSample(), sample:!!s.sample, day:s.day, phaseName: finished?'Complete':this.PHASES[plan.ph].name,
+      leaveSample:()=>this.leaveSample(), sample:!!s.sample,
+      hasConsole: !!(s.real && !s.sample && s.consoleRole && (s.consoleRole.admin || s.consoleRole.facilitator)),
+      consoleLabel: s.consoleRole&&s.consoleRole.admin ? 'Admin console' : 'My groups',
+      consoleSub: s.consoleRole&&s.consoleRole.admin ? 'Members, groups, book keys, payments, the book' : 'See who in your group has finished each day', day:s.day, phaseName: finished?'Complete':this.PHASES[plan.ph].name,
       dayTicks, todayMin:plan.min, todayTitle, todayHoles, todayNote, hasTodayNote:!!todayNote,
       todayCta: finished ? 'View my Hole Map' : (!s.unlocked && plan.kind!=='baseline' ? 'Open the full class' : this.lockedToday() ? `Day ${s.day} opens tomorrow` : (plan.kind==='map'?'Open my Hole Map':(plan.kind==='final'?'Start the Final Diagnosis':`Start Day ${s.day}`))),
       startToday:()=> finished ? this.go('map') : this.startToday(),
@@ -1273,7 +1282,7 @@ class Component extends DCLogic {
       holeList, selHole, readSel:()=>this.readChapter(sh.k),
       toHolesNav:()=>this.go('holes'),
 
-      bookTiers, bookStatus: s.unlocked?'Reading in the app is coming soon':'Class locked · Quick Five only', bookStatusInk: s.unlocked?'#0E6B6B':'#8A5A00',
+      bookChapters, bookStatus: s.unlocked?'All 14 chapters are open':'Note and Chapter 1 are free', bookStatusInk: s.unlocked?'#0E6B6B':'#8A5A00',
 
       chPhone:s.chPhone, setChPhone:e=>this.setState({chPhone:e.target.value}),
       sendChallenge:()=>this.giveSeat(),

@@ -44,7 +44,7 @@ We keep your account and class work while your account is open. If you erase you
 - **Export** everything you have saved from More › My data.
 - **Erase your answers** and start over from More.
 - **Change your faith setting** at any time.
-- **Delete your account** by emailing support@wholeclass.app from your account email.
+- **Delete your account** by emailing askpaul.pp@gmail.com from your account email.
 - Depending on where you live, you may have other rights to access, correct or delete your information. Contact us and we will respond as the law requires.
 
 ## 9. Adults only
@@ -61,4 +61,4 @@ We may update this policy by posting a new version with a new effective date and
 
 ## 12. Contact us
 
-Merch Corporation · WholeClass · support@wholeclass.app
+Merch Corporation · WholeClass · askpaul.pp@gmail.com

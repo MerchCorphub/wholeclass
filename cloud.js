@@ -74,5 +74,8 @@
     giveSeat: to => rpc('give_seat', { p_to: to || '' }),
     acceptSeat: code => rpc('accept_seat', { p_code: code }),
     exportData: () => rpc('export_my_data'),
+    bookContents: () => rpc('book_contents'),
+    chapter: async n => { const c = await sb(); return ok(await c.from('book_chapters').select('n,title,html').eq('n', n).maybeSingle()); },
+    rpc,
     eraseAnswers: () => rpc('erase_my_answers') };
 })();

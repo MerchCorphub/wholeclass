@@ -1,0 +1,281 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Admin console · WholeClass</title>
+<meta name="robots" content="noindex">
+<meta name="theme-color" content="#01434B">
+<link rel="icon" type="image/png" href="icons/icon-192.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Sora:wght@600;700;800&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<script src="./cloud.js"></script>
+<style>
+*{box-sizing:border-box}
+body{margin:0;background:#FBF7F0;color:#1C2434;font:15px/1.5 'Manrope',system-ui,sans-serif}
+header{background:#01434B;color:#fff;padding:calc(12px + env(safe-area-inset-top)) 20px 0}
+.hrow{display:flex;align-items:center;gap:12px;max-width:1180px;margin:0 auto}
+.hrow img{width:34px;height:34px;border-radius:9px}
+.hrow h1{font-family:'Sora',sans-serif;font-size:18px;margin:0;flex:1}
+.hrow a,.hrow button{color:#CFE3E1;font-weight:700;text-decoration:none;background:none;border:none;cursor:pointer;font:inherit;font-weight:700}
+nav{display:flex;gap:4px;max-width:1180px;margin:12px auto 0;overflow-x:auto}
+nav button{background:none;border:none;color:#CFE3E1;font:700 14px 'Manrope',sans-serif;padding:10px 14px;border-radius:10px 10px 0 0;cursor:pointer;white-space:nowrap}
+nav button[aria-selected="true"]{background:#FBF7F0;color:#01434B}
+main{max-width:1180px;margin:0 auto;padding:22px 20px 60px}
+h2{font-family:'Sora',sans-serif;color:#01434B;font-size:22px;margin:0 0 4px}
+h3{font-family:'Sora',sans-serif;color:#01434B;font-size:16px;margin:22px 0 8px}
+.sub{color:#4A5468;margin:0 0 16px}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(170px,1fr));gap:10px}
+.stat{background:#fff;border:1px solid #E7E0D2;border-radius:14px;padding:14px}
+.stat b{display:block;font-family:'Sora',sans-serif;font-size:26px;color:#01434B;line-height:1.1}
+.stat span{font-size:12.5px;font-weight:700;color:#5A6478}
+.card{background:#fff;border:1px solid #E7E0D2;border-radius:16px;padding:16px;margin-top:12px}
+.tw{overflow-x:auto;background:#fff;border:1px solid #E7E0D2;border-radius:14px;margin-top:10px}
+table{border-collapse:collapse;width:100%;min-width:640px}
+th,td{text-align:left;padding:9px 12px;border-bottom:1px solid #F0EBE1;vertical-align:top;font-size:14px}
+th{font-size:12px;text-transform:uppercase;letter-spacing:.06em;color:#5A6478;background:#FAF7F1}
+tr.click{cursor:pointer} tr.click:hover{background:#F4FAF9}
+.pill{display:inline-block;border-radius:999px;padding:2px 9px;font-size:12px;font-weight:800;background:#E8F0EF;color:#0E6B6B}
+.pill.gold{background:#FFF4DE;color:#8A5A00}.pill.grey{background:#EEF1F6;color:#5A6478}.pill.red{background:#FDECEA;color:#8A1F11}
+label{display:block;font-size:13px;font-weight:700;color:#01434B;margin:10px 0 4px}
+input,select{font:inherit;border:1.5px solid #D5DCE7;border-radius:10px;padding:9px 11px;background:#fff;width:100%}
+.row{display:flex;gap:10px;flex-wrap:wrap;align-items:flex-end}.row>*{flex:1 1 160px}
+button.b{border:none;border-radius:999px;padding:10px 16px;font:700 14px 'Manrope',sans-serif;cursor:pointer;background:#01434B;color:#fff}
+button.b2{border:1.5px solid #01434B;border-radius:999px;padding:8px 14px;font:700 13.5px 'Manrope',sans-serif;cursor:pointer;background:#fff;color:#01434B}
+button.danger{border-color:#8A1F11;color:#8A1F11}
+button:disabled{opacity:.55;cursor:default}
+.msg{margin-top:10px;border-radius:12px;padding:10px 12px;font-size:14px}
+.msg.ok{background:#E3F2F1;color:#0A5656}.msg.err{background:#FDECEA;color:#8A1F11}
+.bars{display:grid;grid-template-columns:repeat(14,minmax(0,1fr));gap:6px;align-items:end;height:120px;margin-top:10px}
+.bars div{background:#0E7C7B;border-radius:6px 6px 0 0;min-height:2px;position:relative}
+.bars small{position:absolute;bottom:-20px;left:0;right:0;text-align:center;font-size:11px;color:#5A6478;font-weight:700}
+.codes{font-family:ui-monospace,Menlo,monospace;background:#FAF7F1;border-radius:10px;padding:10px;max-height:240px;overflow:auto;white-space:pre-wrap;font-size:13px}
+.gate{max-width:440px;margin:60px auto;text-align:center}
+.gate a{display:inline-block;margin-top:12px;background:#01434B;color:#fff;border-radius:999px;padding:11px 18px;font-weight:700;text-decoration:none}
+.muted{color:#5A6478;font-size:13px}
+</style>
+</head>
+<body>
+<header>
+  <div class="hrow"><img src="assets/wholeclass-icon.png" alt=""><h1 id="ttl">WholeClass console</h1><a href="./">‹ Back to the app</a></div>
+  <nav id="tabs" role="tablist"></nav>
+</header>
+<main id="main"><p>Loading…</p></main>
+<script src="admin/book-split.js"></script>
+<script>
+(function(){
+const main = document.getElementById('main'), tabs = document.getElementById('tabs');
+const esc = s => s == null ? '' : String(s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const d = x => x ? new Date(x).toLocaleDateString('en-US', {month:'short', day:'numeric', year:'numeric'}) : '—';
+const money = n => '$' + Number(n || 0).toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2});
+const rpc = (name, args) => WC.rpc(name, args || {});
+const errMsg = e => (e && (e.message || e.details)) || 'Something went wrong.';
+const KIND = {paid:'Paid', book_key:'Book key', group:'Group', seat:'Gifted seat', admin:'Granted'};
+let me = null, current = null;
+
+function msg(el, text, ok){ el.innerHTML = '<div class="msg ' + (ok ? 'ok' : 'err') + '">' + esc(text) + '</div>'; }
+function download(name, text, type){ const a = document.createElement('a'); a.href = URL.createObjectURL(new Blob([text], {type: type || 'text/csv'})); a.download = name; document.body.appendChild(a); a.click(); a.remove(); }
+function csv(rows){ return rows.map(r => r.map(v => '"' + String(v == null ? '' : v).replace(/"/g, '""') + '"').join(',')).join('\n'); }
+function armed(btn, label, fn){ // two-tap confirmation, no browser dialogs
+  btn.addEventListener('click', async () => {
+    if (btn.dataset.armed !== '1') { btn.dataset.armed = '1'; const old = btn.textContent; btn.textContent = label; setTimeout(() => { btn.dataset.armed = ''; btn.textContent = old; }, 4000); return; }
+    btn.dataset.armed = ''; btn.disabled = true; try { await fn(); } finally { btn.disabled = false; }
+  });
+}
+
+const PAGES = {
+  // ---------------- overview ----------------
+  async overview(){
+    const o = await rpc('admin_overview');
+    const k = o.by_kind || {};
+    const max = Math.max(1, ...(o.by_day || []).map(x => x.n));
+    const days = Array.from({length: 14}, (_, i) => ((o.by_day || []).find(x => x.day === i + 1) || {n: 0}).n);
+    main.innerHTML = '<h2>Overview</h2><p class="sub">The 14-Day Discovery Class at a glance. Price: <b>' + money(o.price) + '</b> for one year.</p>' +
+      '<div class="grid">' + [
+        ['Members', o.members], ['New this week', o.new_7d], ['Finished the Quick Five', o.quick_five_done], ['Class open now', o.open_access],
+        ['Completed all 14 days', o.completed], ['Paid purchases', o.paid_count], ['Revenue, all time', money(o.revenue)], ['Revenue, last 30 days', money(o.revenue_30d)],
+        ['Active guided groups', o.groups], ['Book keys used', o.keys_claimed + ' of ' + o.keys_total], ['Gifted seats accepted', o.seats_accepted + ' of ' + o.seats_given], ['Want the KYH Series', o.series_interest]
+      ].map(([l, v]) => '<div class="stat"><b>' + esc(v) + '</b><span>' + esc(l) + '</span></div>').join('') + '</div>' +
+      '<div class="card"><b style="color:#01434B">Open access by type</b><p class="muted" style="margin:4px 0 0">' +
+        (Object.keys(k).length ? Object.entries(k).map(([a, n]) => esc(KIND[a] || a) + ': <b>' + n + '</b>').join(' · ') : 'Nobody has opened the class yet.') + '</p></div>' +
+      '<div class="card"><b style="color:#01434B">Where members are in the 14 days</b><div class="bars" aria-label="Members by current day">' +
+        days.map((n, i) => '<div style="height:' + Math.round(n / max * 100) + '%" title="Day ' + (i + 1) + ': ' + n + '"><small>' + (i + 1) + '</small></div>').join('') + '</div><div style="height:22px"></div></div>';
+  },
+
+  // ---------------- members ----------------
+  async members(){
+    main.innerHTML = '<h2>Members</h2><p class="sub">Search by name or email. Click a member to open or end their access. You never see anyone\'s answers here.</p>' +
+      '<div class="row"><div><label for="q">Search</label><input id="q" placeholder="Name or email"></div><div style="flex:0 0 auto"><button class="b2" id="csvM">Download CSV</button></div></div><div id="list"></div><div id="detail"></div>';
+    const q = document.getElementById('q'); let rows = [];
+    const load = async () => {
+      rows = await rpc('admin_members', {p_search: q.value});
+      document.getElementById('list').innerHTML = '<div class="tw"><table><thead><tr><th>Name</th><th>Email</th><th>Joined</th><th>Progress</th><th>Access</th><th>Group</th></tr></thead><tbody>' +
+        (rows.length ? rows.map((m, i) => '<tr class="click" data-i="' + i + '" tabindex="0"><td><b>' + esc(m.first_name + ' ' + m.last_name) + '</b>' + (m.is_admin ? ' <span class="pill gold">Admin</span>' : '') + '</td><td>' + esc(m.email) + '</td><td>' + d(m.created_at) +
+          '</td><td>' + (m.completed_at ? '<span class="pill">Completed</span>' : 'Day ' + m.day + ' · ' + m.days_done + ' done') + '</td><td>' +
+          (m.access ? '<span class="pill">' + esc(KIND[m.access.kind] || m.access.kind) + '</span> <span class="muted">until ' + d(m.access.expires_at) + '</span>' : '<span class="pill grey">Free only</span>') +
+          '</td><td>' + esc(m.group_name || '') + '</td></tr>').join('') : '<tr><td colspan="6" class="muted">No members found.</td></tr>') + '</tbody></table></div>';
+      document.querySelectorAll('tr.click').forEach(tr => { const open = () => detail(rows[+tr.dataset.i]); tr.onclick = open; tr.onkeydown = e => { if (e.key === 'Enter') open(); }; });
+    };
+    let t; q.oninput = () => { clearTimeout(t); t = setTimeout(load, 300); };
+    document.getElementById('csvM').onclick = () => download('wholeclass-members.csv', csv([['First name','Last name','Email','Joined','Day','Days done','Completed','Access','Access until','Group']].concat(rows.map(m => [m.first_name, m.last_name, m.email, d(m.created_at), m.day, m.days_done, m.completed_at ? 'yes' : '', m.access ? (KIND[m.access.kind] || m.access.kind) : '', m.access ? d(m.access.expires_at) : '', m.group_name || '']))));
+    async function detail(m){
+      const box = document.getElementById('detail');
+      const render = grants => {
+        box.innerHTML = '<div class="card"><h3 style="margin-top:0">' + esc(m.first_name + ' ' + m.last_name) + ' <span class="muted">' + esc(m.email) + '</span></h3>' +
+          '<div class="tw"><table><thead><tr><th>Type</th><th>Note / reference</th><th>Started</th><th>Ends</th><th></th></tr></thead><tbody>' +
+          (grants.length ? grants.map(g => '<tr><td>' + esc(KIND[g.kind] || g.kind) + '</td><td class="muted">' + esc(g.kind === 'admin' ? g.ref : (g.kind === 'paid' ? 'Stripe payment' : g.ref)) + '</td><td>' + d(g.starts_at) + '</td><td>' + d(g.expires_at) + '</td><td>' +
+            (g.active ? '<button class="b2 danger" data-g="' + g.id + '">End access</button>' : '<span class="pill grey">Ended</span>') + '</td></tr>').join('') : '<tr><td colspan="5" class="muted">No access yet. They have the free Quick Five only.</td></tr>') +
+          '</tbody></table></div><div class="row" style="margin-top:6px"><div><label for="gd">Open the class for</label><select id="gd"><option value="30">30 days</option><option value="90">90 days</option><option value="365" selected>1 year</option></select></div><div><label for="gn">Note (for your records)</label><input id="gn" placeholder="e.g. Pastor comp, refund replacement"></div><div style="flex:0 0 auto"><button class="b" id="gb">Open their class</button></div></div><div id="gm"></div></div>';
+        box.querySelectorAll('button[data-g]').forEach(b => armed(b, 'Tap again to end', async () => { try { render(await rpc('admin_revoke', {p_grant: b.dataset.g})); load(); } catch (e) { msg(document.getElementById('gm'), errMsg(e)); } }));
+        document.getElementById('gb').onclick = async () => { try { render(await rpc('admin_grant', {p_member: m.id, p_days: +document.getElementById('gd').value, p_note: document.getElementById('gn').value})); load(); msg(document.getElementById('gm'), 'Their class is open.', true); } catch (e) { msg(document.getElementById('gm'), errMsg(e)); } };
+        box.scrollIntoView({behavior: 'smooth', block: 'start'});
+      };
+      render(await rpc('admin_member_grants', {p_member: m.id}));
+    }
+    await load();
+  },
+
+  // ---------------- groups ----------------
+  async groups(){
+    main.innerHTML = '<h2>Guided groups</h2><p class="sub">Churches, ministries and counselors. Members join with the group code. Facilitators see who finished each day, never answers.</p>' +
+      '<div class="card"><b style="color:#01434B" id="gfTitle">New group</b><div class="row"><div><label for="gName">Group name</label><input id="gName" placeholder="Grace Church Couples"></div><div><label for="gCode">Code (blank = make one)</label><input id="gCode" placeholder="GRACE26" style="text-transform:uppercase"></div><div><label for="gSeats">Seats</label><input id="gSeats" type="number" min="1" value="25"></div><div><label for="gEnd">Ends on</label><input id="gEnd" type="date"></div></div>' +
+      '<div class="row"><div><label for="gFac">Facilitator email (they need an account)</label><input id="gFac" type="email" placeholder="pastor@example.com"></div><div style="flex:0 0 140px"><label for="gAct">Status</label><select id="gAct"><option value="1">Active</option><option value="0">Closed</option></select></div><div style="flex:0 0 auto"><button class="b" id="gSave">Create group</button> <button class="b2" id="gCancel" hidden>Cancel</button></div></div><div id="gMsg"></div></div><div id="gList"></div><div id="gDetail"></div>';
+    const yr = new Date(); yr.setFullYear(yr.getFullYear() + 1); document.getElementById('gEnd').value = yr.toISOString().slice(0, 10);
+    let editing = null, list = [];
+    const f = id => document.getElementById(id);
+    const reset = () => { editing = null; f('gfTitle').textContent = 'New group'; f('gSave').textContent = 'Create group'; f('gCancel').hidden = true; ['gName','gCode','gFac'].forEach(i => f(i).value = ''); f('gSeats').value = 25; f('gAct').value = '1'; f('gEnd').value = yr.toISOString().slice(0, 10); };
+    const show = () => {
+      f('gList').innerHTML = '<div class="tw"><table><thead><tr><th>Group</th><th>Code</th><th>Seats used</th><th>Completed</th><th>Ends</th><th>Facilitator</th><th></th></tr></thead><tbody>' +
+        (list.length ? list.map((g, i) => '<tr><td><b>' + esc(g.name) + '</b> ' + (g.active ? '' : '<span class="pill grey">Closed</span>') + '</td><td><b>' + esc(g.code) + '</b></td><td>' + g.used + ' / ' + g.seats + '</td><td>' + g.completed + '</td><td>' + d(g.expires_at) + '</td><td>' + esc(g.facilitator_email || '—') +
+          '</td><td style="white-space:nowrap"><button class="b2" data-v="' + i + '">Completion</button> <button class="b2" data-e="' + i + '">Edit</button> <button class="b2" data-c="' + i + '">Copy invite</button></td></tr>').join('') : '<tr><td colspan="7" class="muted">No groups yet.</td></tr>') + '</tbody></table></div>';
+      f('gList').querySelectorAll('[data-e]').forEach(b => b.onclick = () => { const g = list[+b.dataset.e]; editing = g.id; f('gfTitle').textContent = 'Edit ' + g.name; f('gSave').textContent = 'Save changes'; f('gCancel').hidden = false;
+        f('gName').value = g.name; f('gCode').value = g.code; f('gSeats').value = g.seats; f('gEnd').value = (new Date(new Date(g.expires_at).getTime() - 864e5)).toISOString().slice(0, 10); f('gAct').value = g.active ? '1' : '0'; f('gFac').value = g.facilitator_email || ''; window.scrollTo({top: 0, behavior: 'smooth'}); });
+      f('gList').querySelectorAll('[data-c]').forEach(b => b.onclick = async () => { const g = list[+b.dataset.c]; const t = 'Join the ' + g.name + ' group in the 14-Day Discovery Class. Go to https://wholeclass.app, create your free account, take the Quick Five, then choose "I\'m in a guided group" and enter the code ' + g.code + '.'; try { await navigator.clipboard.writeText(t); b.textContent = 'Copied'; } catch (e) { b.textContent = g.code; } setTimeout(() => b.textContent = 'Copy invite', 2500); });
+      f('gList').querySelectorAll('[data-v]').forEach(b => b.onclick = () => completion(list[+b.dataset.v], f('gDetail')));
+    };
+    f('gCancel').onclick = reset;
+    f('gSave').onclick = async () => {
+      try { list = await rpc('admin_save_group', {p_id: editing, p_name: f('gName').value, p_code: f('gCode').value, p_seats: +f('gSeats').value, p_expires: f('gEnd').value || null, p_active: f('gAct').value === '1', p_facilitator_email: f('gFac').value});
+        msg(f('gMsg'), editing ? 'Group saved.' : 'Group created. Use "Copy invite" to send members the code.', true); reset(); show(); }
+      catch (e) { msg(f('gMsg'), errMsg(e)); }
+    };
+    list = await rpc('admin_groups'); show();
+  },
+
+  // ---------------- facilitator view ----------------
+  async mygroups(){
+    const list = await rpc('my_groups');
+    main.innerHTML = '<h2>My groups</h2><p class="sub">You can see who has finished each day. Answers always stay private to each member.</p><div id="mg"></div><div id="gDetail"></div>';
+    document.getElementById('mg').innerHTML = list.length ? list.map((g, i) => '<div class="card"><b style="color:#01434B;font-size:16px">' + esc(g.name) + '</b><p class="muted" style="margin:2px 0 10px">Code <b>' + esc(g.code) + '</b> · ' + g.used + ' of ' + g.seats + ' seats · ends ' + d(g.expires_at) + '</p><button class="b2" data-v="' + i + '">See completion</button></div>').join('') : '<div class="card muted">You are not leading any groups yet.</div>';
+    document.querySelectorAll('[data-v]').forEach(b => b.onclick = () => completion(list[+b.dataset.v], document.getElementById('gDetail')));
+  },
+
+  // ---------------- book keys ----------------
+  async keys(){
+    main.innerHTML = '<h2>Book keys</h2><p class="sub">Each key opens the class for one year, once. Print one inside the back cover of each copy of <em>Know Your Holes</em>.</p>' +
+      '<div class="card"><div class="row"><div><label for="kN">How many</label><input id="kN" type="number" min="1" max="2000" value="100"></div><div><label for="kB">Batch name</label><input id="kB" placeholder="e.g. First printing"></div><div style="flex:0 0 auto"><button class="b" id="kMake">Make keys</button></div></div><div id="kMsg"></div></div><div id="kList"></div>';
+    const f = id => document.getElementById(id);
+    const load = async (batch) => {
+      const r = await rpc('admin_keys', {p_batch: batch || null});
+      f('kList').innerHTML = '<h3>Batches</h3><div class="tw"><table><thead><tr><th>Batch</th><th>Keys</th><th>Used</th><th>Made</th><th></th></tr></thead><tbody>' +
+        (r.batches.length ? r.batches.map((b, i) => '<tr><td><b>' + esc(b.batch) + '</b></td><td>' + b.total + '</td><td>' + b.claimed + '</td><td>' + d(b.created) + '</td><td><button class="b2" data-b="' + i + '">Download CSV</button></td></tr>').join('') : '<tr><td colspan="5" class="muted">No keys yet.</td></tr>') + '</tbody></table></div>';
+      f('kList').querySelectorAll('[data-b]').forEach(b => b.onclick = async () => { const bt = r.batches[+b.dataset.b].batch; const x = await rpc('admin_keys', {p_batch: bt}); download('book-keys-' + bt.replace(/\W+/g, '-') + '.csv', csv([['Key','Batch','Used on','Used by']].concat(x.keys.map(k => [k.code, k.batch, k.claimed_at ? d(k.claimed_at) : '', k.claimed_by || ''])))); });
+    };
+    f('kMake').onclick = async () => {
+      const btn = f('kMake'); btn.disabled = true;
+      try { const codes = await rpc('admin_make_keys', {p_count: +f('kN').value, p_batch: f('kB').value});
+        f('kMsg').innerHTML = '<div class="msg ok">' + codes.length + ' keys made.</div><div class="codes">' + esc(codes.join('\n')) + '</div><button class="b2" id="kDl" style="margin-top:8px">Download these keys (CSV)</button>';
+        f('kDl').onclick = () => download('book-keys-new.csv', csv([['Key']].concat(codes.map(c => [c])))); load(); }
+      catch (e) { msg(f('kMsg'), errMsg(e)); } finally { btn.disabled = false; }
+    };
+    await load();
+  },
+
+  // ---------------- payments ----------------
+  async payments(){
+    const list = await rpc('admin_payments');
+    const paid = list.filter(p => p.status === 'paid');
+    main.innerHTML = '<h2>Payments</h2><p class="sub">Stripe purchases of the 14-Day Discovery Class. Refunds are handled in your Stripe dashboard.</p>' +
+      '<div class="grid"><div class="stat"><b>' + paid.length + '</b><span>Paid</span></div><div class="stat"><b>' + money(paid.reduce((a, p) => a + Number(p.amount), 0)) + '</b><span>Total (latest 300)</span></div></div>' +
+      '<div style="margin-top:10px"><button class="b2" id="pCsv">Download CSV</button></div>' +
+      '<div class="tw"><table><thead><tr><th>Started</th><th>Paid</th><th>Name</th><th>Email</th><th>Amount</th><th>Status</th></tr></thead><tbody>' +
+      (list.length ? list.map(p => '<tr><td>' + d(p.created_at) + '</td><td>' + d(p.paid_at) + '</td><td>' + esc(p.name || '') + '</td><td>' + esc(p.email || '') + '</td><td>' + money(p.amount) + '</td><td><span class="pill ' + (p.status === 'paid' ? '' : p.status === 'open' ? 'gold' : 'grey') + '">' + esc(p.status === 'open' ? 'Not finished' : p.status) + '</span></td></tr>').join('') : '<tr><td colspan="6" class="muted">No payments yet.</td></tr>') + '</tbody></table></div>';
+    document.getElementById('pCsv').onclick = () => download('wholeclass-payments.csv', csv([['Started','Paid','Name','Email','Amount','Status']].concat(list.map(p => [d(p.created_at), d(p.paid_at), p.name, p.email, p.amount, p.status]))));
+  },
+
+  // ---------------- the book ----------------
+  async book(){
+    const list = await rpc('admin_book');
+    main.innerHTML = '<h2>The book</h2><p class="sub"><em>Know Your Holes</em> inside the app. Day 1 reads Chapter 1, Day 2 reads Chapter 2, and so on. Chapters marked free can be read by any signed-in member.</p>' +
+      '<div class="card"><b style="color:#01434B">Load or replace the book</b><p class="muted" style="margin:4px 0 8px">Choose the Word file (.docx). Chapters are found by their "Chapter 1 -" headings. Nothing changes until you press Publish.</p><input type="file" id="bFile" accept=".docx,application/vnd.openxmlformats-officedocument.wordprocessingml.document"><div id="bPrev"></div></div>' +
+      '<h3>In the app now</h3><div class="tw"><table><thead><tr><th>#</th><th>Title</th><th>Length</th><th>Free to read</th><th></th></tr></thead><tbody>' +
+      (list.length ? list.map(c => '<tr><td>' + c.n + '</td><td><b>' + esc(c.title) + '</b></td><td>' + Math.round(c.chars / 1000) + 'k characters</td><td>' + (c.free ? '<span class="pill">Free</span>' : '<span class="pill grey">Class only</span>') + '</td><td style="white-space:nowrap"><button class="b2" data-f="' + c.n + '" data-v="' + (c.free ? 0 : 1) + '">' + (c.free ? 'Make class only' : 'Make free') + '</button> <a class="b2" style="text-decoration:none;display:inline-block" href="read.html?ch=' + c.n + '" target="_blank" rel="noopener">Read</a></td></tr>').join('') : '<tr><td colspan="5" class="muted">The book has not been loaded yet. Choose the Word file above.</td></tr>') + '</tbody></table></div>';
+    document.querySelectorAll('[data-f]').forEach(b => b.onclick = async () => { await rpc('admin_set_chapter_free', {p_n: +b.dataset.f, p_free: b.dataset.v === '1'}); PAGES.book(); });
+    document.getElementById('bFile').onchange = async e => {
+      const file = e.target.files[0], prev = document.getElementById('bPrev'); if (!file) return;
+      prev.innerHTML = '<p class="muted">Reading the Word file…</p>';
+      try {
+        if (!window.mammoth) await new Promise((res, rej) => { const s = document.createElement('script'); s.src = 'https://cdn.jsdelivr.net/npm/mammoth@1.8.0/mammoth.browser.min.js'; s.onload = res; s.onerror = () => rej(new Error('Could not load the Word reader. Check your connection.')); document.head.appendChild(s); });
+        const r = await mammoth.convertToHtml({arrayBuffer: await file.arrayBuffer()});
+        const ch = WCBook.split(r.value);
+        if (!ch.length) throw new Error('No chapters found. Chapter titles need to be Heading 1, like "Chapter 1 - What is a Hole?".');
+        prev.innerHTML = '<div class="tw"><table><thead><tr><th>#</th><th>Title</th><th>Length</th><th>Free</th></tr></thead><tbody>' + ch.map(c => '<tr><td>' + c.n + '</td><td>' + esc(c.title) + '</td><td>' + Math.round(c.html.length / 1000) + 'k</td><td>' + (c.free ? 'Yes' : '') + '</td></tr>').join('') + '</tbody></table></div>' +
+          '<p class="muted">Found ' + ch.length + ' sections. Publishing replaces the book in the app for everyone.</p><button class="b" id="bPub">Publish to the app</button><div id="bMsg"></div>';
+        armed(document.getElementById('bPub'), 'Tap again to publish', async () => { try { const x = await rpc('admin_save_book', {p_chapters: ch.map(c => ({n: c.n, title: c.title, html: c.html, free: c.free}))}); msg(document.getElementById('bMsg'), x.saved + ' sections published.', true); setTimeout(() => PAGES.book(), 1200); } catch (er) { msg(document.getElementById('bMsg'), errMsg(er)); } });
+      } catch (er) { msg(prev, errMsg(er)); }
+    };
+  },
+
+  // ---------------- settings ----------------
+  async settings(){
+    const o = await rpc('admin_overview');
+    main.innerHTML = '<h2>Settings</h2>' +
+      '<div class="card"><b style="color:#01434B">Price</b><p class="muted" style="margin:4px 0 0">One payment for one year of the 14-Day Discovery Class. A new price applies to purchases started after you save. Update the Terms of Use if you change it.</p><div class="row"><div><label for="pr">Price (USD)</label><input id="pr" type="number" min="1" max="999" step="0.01" value="' + Number(o.price) + '"></div><div style="flex:0 0 auto"><button class="b" id="prS">Save price</button></div></div><div id="prM"></div></div>' +
+      '<div class="card"><b style="color:#01434B">Admins</b><p class="muted" style="margin:4px 0 0">Admins can open this console. The person needs a WholeClass account first.</p><div class="row"><div><label for="ad">Email</label><input id="ad" type="email"></div><div style="flex:0 0 auto"><button class="b" id="adA">Make admin</button> <button class="b2 danger" id="adR">Remove admin</button></div></div><div id="adM"></div></div>';
+    const f = id => document.getElementById(id);
+    armed(f('prS'), 'Tap again to save', async () => { try { await rpc('admin_set_price', {p_amount: +f('pr').value}); msg(f('prM'), 'Price saved: ' + money(f('pr').value) + '.', true); } catch (e) { msg(f('prM'), errMsg(e)); } });
+    f('adA').onclick = async () => { try { await rpc('admin_set_admin', {p_email: f('ad').value, p_on: true}); msg(f('adM'), 'Done. They can open the console now.', true); } catch (e) { msg(f('adM'), errMsg(e)); } };
+    armed(f('adR'), 'Tap again to remove', async () => { try { await rpc('admin_set_admin', {p_email: f('ad').value, p_on: false}); msg(f('adM'), 'Admin access removed.', true); } catch (e) { msg(f('adM'), errMsg(e)); } });
+  }
+};
+
+async function completion(g, box){
+  box.innerHTML = '<div class="card"><p class="muted">Loading ' + esc(g.name) + '…</p></div>';
+  try {
+    const rows = await rpc('group_completion', {p_group: g.id});
+    box.innerHTML = '<div class="card"><h3 style="margin-top:0">' + esc(g.name) + ' · completion</h3><div class="tw"><table><thead><tr><th>Member</th><th>Days finished</th><th>On day</th><th>Joined</th></tr></thead><tbody>' +
+      (rows.length ? rows.map(r => '<tr><td><b>' + esc(r.first_name + ' ' + r.last_name) + '</b></td><td>' + (r.completed ? '<span class="pill">All 14</span>' : r.days_done + ' of 14') + '</td><td>' + r.current_day + '</td><td>' + d(r.joined_at) + '</td></tr>').join('') : '<tr><td colspan="4" class="muted">Nobody has joined yet.</td></tr>') +
+      '</tbody></table></div><p class="muted">Answers stay private to each member.</p></div>';
+    box.scrollIntoView({behavior: 'smooth', block: 'start'});
+  } catch (e) { msg(box, errMsg(e)); }
+}
+
+function setTabs(list){
+  tabs.innerHTML = list.map(([k, l]) => '<button role="tab" data-k="' + k + '" aria-selected="false">' + l + '</button>').join('');
+  tabs.querySelectorAll('button').forEach(b => b.onclick = () => go(b.dataset.k));
+}
+async function go(k){
+  current = k; tabs.querySelectorAll('button').forEach(b => b.setAttribute('aria-selected', b.dataset.k === k ? 'true' : 'false'));
+  try { history.replaceState(null, '', '#' + k); } catch (e) {}
+  main.innerHTML = '<p>Loading…</p>';
+  try { await PAGES[k](); } catch (e) { main.innerHTML = '<div class="msg err">' + esc(errMsg(e)) + '</div>'; }
+}
+
+(async () => {
+  const s = await WC.session();
+  if (!s) { main.innerHTML = '<div class="gate"><h2>Sign in first</h2><p class="sub">Open WholeClass, sign in, then come back to this page.</p><a href="./">Go to WholeClass</a></div>'; return; }
+  me = await rpc('console_me');
+  if (me.admin) {
+    setTabs([['overview','Overview'],['members','Members'],['groups','Guided groups'],['keys','Book keys'],['payments','Payments'],['book','The book'],['settings','Settings']]);
+    const h = location.hash.slice(1); go(PAGES[h] && h !== 'mygroups' ? h : 'overview');
+  } else if (me.facilitator) {
+    document.getElementById('ttl').textContent = 'My groups';
+    setTabs([['mygroups','My groups']]); go('mygroups');
+  } else {
+    main.innerHTML = '<div class="gate"><h2>This page is for WholeClass admins</h2><p class="sub">If you lead a guided group, ask the WholeClass team to add you as its facilitator.</p><a href="./">Back to WholeClass</a></div>';
+  }
+})().catch(e => { main.innerHTML = '<div class="msg err">' + esc(errMsg(e)) + '</div>'; });
+})();
+</script>
+</body>
+</html>
