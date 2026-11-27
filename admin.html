@@ -80,7 +80,7 @@ const money = n => '$' + Number(n || 0).toLocaleString('en-US', {minimumFraction
 const rpc = (name, args) => WC.rpc(name, args || {});
 const errMsg = e => (e && (e.message || e.details)) || 'Something went wrong.';
 const KIND = {paid:'Paid', book_key:'Book key', group:'Group', seat:'Gifted seat', admin:'Granted'};
-let me = null, current = null;
+let me = null, current = null, SEASONS = [];
 
 function msg(el, text, ok){ el.innerHTML = '<div class="msg ' + (ok ? 'ok' : 'err') + '">' + esc(text) + '</div>'; }
 function download(name, text, type){ const a = document.createElement('a'); a.href = URL.createObjectURL(new Blob([text], {type: type || 'text/csv'})); a.download = name; document.body.appendChild(a); a.click(); a.remove(); }
@@ -99,7 +99,7 @@ const PAGES = {
     const k = o.by_kind || {};
     const max = Math.max(1, ...(o.by_day || []).map(x => x.n));
     const days = Array.from({length: 14}, (_, i) => ((o.by_day || []).find(x => x.day === i + 1) || {n: 0}).n);
-    main.innerHTML = '<h2>Overview</h2><p class="sub">Prices: 14-Day Discovery Class <b>' + money(o.price) + '</b> · Know Your Holes Series <b>' + money(o.series_price) + '</b> (each one year).</p>' +
+    main.innerHTML = '<h2>Overview</h2><p class="sub">Prices: 14-Day Discovery Class <b>' + money(o.price) + '</b> · Series Season 1 <b>' + money(o.series_price) + '</b> (each one year; other seasons are priced in The Series tab).</p>' +
       '<div class="grid">' + [
         ['Members', o.members], ['New this week', o.new_7d], ['Finished the Quick Five', o.quick_five_done], ['Class open now', o.open_access],
         ['Completed all 14 days', o.completed], ['Class purchases', o.paid_count], ['Revenue, all time', money(o.revenue)], ['Revenue, last 30 days', money(o.revenue_30d)],
@@ -132,11 +132,11 @@ const PAGES = {
       const render = grants => {
         box.innerHTML = '<div class="card"><h3 style="margin-top:0">' + esc(m.first_name + ' ' + m.last_name) + ' <span class="muted">' + esc(m.email) + '</span></h3>' +
           '<div class="tw"><table><thead><tr><th>For</th><th>Type</th><th>Note / reference</th><th>Started</th><th>Ends</th><th></th></tr></thead><tbody>' +
-          (grants.length ? grants.map(g => '<tr><td>' + (g.product === 'series' ? '<span class="pill gold">Series</span>' : '<span class="pill">Class</span>') + '</td><td>' + esc(KIND[g.kind] || g.kind) + '</td><td class="muted">' + esc(g.kind === 'admin' ? g.ref : (g.kind === 'paid' ? 'Stripe payment' : g.ref)) + '</td><td>' + d(g.starts_at) + '</td><td>' + d(g.expires_at) + '</td><td>' +
+          (grants.length ? grants.map(g => '<tr><td>' + (g.product === 'series' ? '<span class="pill gold">Series S' + (g.season || 1) + '</span>' : '<span class="pill">Class</span>') + '</td><td>' + esc(KIND[g.kind] || g.kind) + '</td><td class="muted">' + esc(g.kind === 'admin' ? g.ref : (g.kind === 'paid' ? 'Stripe payment' : g.ref)) + '</td><td>' + d(g.starts_at) + '</td><td>' + d(g.expires_at) + '</td><td>' +
             (g.active ? '<button class="b2 danger" data-g="' + g.id + '">End access</button>' : '<span class="pill grey">Ended</span>') + '</td></tr>').join('') : '<tr><td colspan="6" class="muted">No access yet. They have the free Quick Five and free lessons only.</td></tr>') +
-          '</tbody></table></div><div class="row" style="margin-top:6px"><div><label for="gp">Open</label><select id="gp"><option value="class">14-Day Discovery Class</option><option value="series">Know Your Holes Series</option></select></div><div><label for="gd">For</label><select id="gd"><option value="30">30 days</option><option value="90">90 days</option><option value="365" selected>1 year</option></select></div><div><label for="gn">Note (for your records)</label><input id="gn" placeholder="e.g. Pastor comp, refund replacement"></div><div style="flex:0 0 auto"><button class="b" id="gb">Open it</button></div></div><div id="gm"></div></div>';
+          '</tbody></table></div><div class="row" style="margin-top:6px"><div><label for="gp">Open</label><select id="gp"><option value="class">14-Day Discovery Class</option>' + (SEASONS.length ? SEASONS : [{season: 1, title: 'The Missing Fit'}]).map(x => '<option value="series:' + x.season + '">Series · Season ' + x.season + ': ' + esc(x.title) + '</option>').join('') + '</select></div><div><label for="gd">For</label><select id="gd"><option value="30">30 days</option><option value="90">90 days</option><option value="365" selected>1 year</option></select></div><div><label for="gn">Note (for your records)</label><input id="gn" placeholder="e.g. Pastor comp, refund replacement"></div><div style="flex:0 0 auto"><button class="b" id="gb">Open it</button></div></div><div id="gm"></div></div>';
         box.querySelectorAll('button[data-g]').forEach(b => armed(b, 'Tap again to end', async () => { try { render(await rpc('admin_revoke', {p_grant: b.dataset.g})); load(); } catch (e) { msg(document.getElementById('gm'), errMsg(e)); } }));
-        document.getElementById('gb').onclick = async () => { try { const prod = document.getElementById('gp').value; render(await rpc('admin_grant', {p_member: m.id, p_days: +document.getElementById('gd').value, p_note: document.getElementById('gn').value, p_product: prod})); load(); msg(document.getElementById('gm'), (prod === 'series' ? 'Their Series' : 'Their class') + ' is open.', true); } catch (e) { msg(document.getElementById('gm'), errMsg(e)); } };
+        document.getElementById('gb').onclick = async () => { try { const [prod, sea] = document.getElementById('gp').value.split(':'); render(await rpc('admin_grant', {p_member: m.id, p_days: +document.getElementById('gd').value, p_note: document.getElementById('gn').value, p_product: prod, p_season: +sea || 1})); load(); msg(document.getElementById('gm'), (prod === 'series' ? 'Season ' + (sea || 1) + ' of the Series' : 'Their class') + ' is open.', true); } catch (e) { msg(document.getElementById('gm'), errMsg(e)); } };
         box.scrollIntoView({behavior: 'smooth', block: 'start'});
       };
       render(await rpc('admin_member_grants', {p_member: m.id}));
@@ -235,22 +235,60 @@ const PAGES = {
     };
   },
 
-  // ---------------- the series: The Missing Fit episodes ----------------
-  async series(){
-    const eps = await rpc('admin_episodes');
+  // ---------------- the series: seasons and episodes ----------------
+  async series(pick){
+    const all = await rpc('admin_episodes'); SEASONS = all;
+    const want = pick || +(sessionStorage.getItem('wc-admin-season') || 1);
+    const se = all.find(x => x.season === want) || all[0];
+    const nextN = (all.length ? Math.max(...all.map(x => x.season)) : 0) + 1;
     const mins = v => v ? Math.floor(v / 60) + ':' + String(v % 60).padStart(2, '0') : '';
-    main.innerHTML = '<h2>The Missing Fit</h2><p class="sub">The Know Your Holes Series: recorded episodes, sold separately ($14.99 for one year). An episode shows “Coming soon” to members until it has audio. Free episodes play for every signed-in member.</p>' +
-      '<div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap"><button class="b2" id="addEp">+ Add episode ' + ((eps.length ? Math.max(...eps.map(e => e.n)) : 0) + 1) + '</button><a class="b2" style="text-decoration:none;display:inline-block" href="listen.html" target="_blank" rel="noopener">See it as a member</a></div><div id="addMsg"></div>' +
+    const chips = all.map(x => '<button class="' + (x.season === se.season ? 'b' : 'b2') + '" data-pick="' + x.season + '">Season ' + x.season + (x.published ? '' : ' (hidden)') + '</button>').join('') +
+      '<button class="b2" id="newS">+ New season</button>';
+    try { sessionStorage.setItem('wc-admin-season', se.season); } catch (e) {}
+    const eps = se.episodes, s = se.season;
+    main.innerHTML = '<h2>The Know Your Holes Series</h2><p class="sub">Each season is sold on its own for one year. Episode 1 of a season is free unless you change it. An episode shows “Coming soon” until it has audio. Hidden seasons are not shown to members.</p>' +
+      '<div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:6px">' + chips + '<a class="b2" style="text-decoration:none;display:inline-block" href="listen.html" target="_blank" rel="noopener">See it as a member</a></div><div id="newBox"></div>' +
+      '<div class="card"><h3 style="margin:0 0 4px">Season ' + s + ' settings</h3><p class="muted" style="margin:0 0 8px">' + se.buyers + ' member' + (se.buyers === 1 ? '' : 's') + ' have this season open.</p>' +
+        '<div class="row"><div style="flex:1 1 240px"><label for="sT">Season title</label><input id="sT" value="' + esc(se.title) + '"></div>' +
+        '<div style="flex:0 0 130px"><label for="sP">Price (USD, one year)</label><input id="sP" type="number" min="1" max="999" step="0.01" value="' + Number(se.price) + '"></div>' +
+        '<div style="flex:0 0 170px"><label for="sV">Members can see it</label><select id="sV"><option value="1"' + (se.published ? ' selected' : '') + '>Visible</option><option value="0"' + (se.published ? '' : ' selected') + '>Hidden</option></select></div></div>' +
+        '<label for="sB" style="margin-top:8px">Short description (shown under the title)</label><input id="sB" value="' + esc(se.blurb || '') + '">' +
+        '<div style="display:flex;gap:8px;margin-top:10px;flex-wrap:wrap"><button class="b" id="sSave">Save season</button>' + (s > 1 ? '<button class="b2 danger" id="sDel">Delete season</button>' : '') + '</div><div id="sMsg"></div></div>' +
+      '<div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin:14px 0 4px"><h3 style="margin:0">Season ' + s + ' episodes</h3><button class="b2" id="addEp">+ Add episode ' + ((eps.length ? Math.max(...eps.map(e => e.n)) : 0) + 1) + '</button></div><div id="addMsg"></div>' +
       eps.map(e => '<div class="card" data-n="' + e.n + '"><div class="row" style="align-items:center">' +
         '<div style="flex:0 0 52px"><div style="width:44px;height:44px;border-radius:12px;background:' + (e.audio_path ? '#01434B' : '#E8F0EF') + ';color:' + (e.audio_path ? '#fff' : '#01434B') + ';display:flex;align-items:center;justify-content:center;font:800 16px Sora,sans-serif">' + e.n + '</div></div>' +
-        '<div style="flex:1 1 260px"><label for="t' + e.n + '">Episode ' + e.n + ' title</label><input id="t' + e.n + '" value="' + esc(e.title || '') + '" placeholder="Title (shows “Coming soon” until audio is added)"></div>' +
-        '<div style="flex:0 0 150px"><label for="f' + e.n + '">Who can play it</label><select id="f' + e.n + '"><option value="0"' + (e.free ? '' : ' selected') + '>Series only</option><option value="1"' + (e.free ? ' selected' : '') + '>Free</option></select></div></div>' +
+        '<div style="flex:1 1 260px"><label for="t' + e.n + '">Episode ' + e.n + ' title</label><input id="t' + e.n + '" value="' + esc(e.title || '') + '" placeholder="Fills in from the MP3 when you pick a file"></div>' +
+        '<div style="flex:0 0 150px"><label for="f' + e.n + '">Who can play it</label><select id="f' + e.n + '"><option value="0"' + (e.free ? '' : ' selected') + '>Season buyers</option><option value="1"' + (e.free ? ' selected' : '') + '>Free</option></select></div></div>' +
         '<div style="margin-top:10px;font-size:13.5px">' + (e.audio_path ? '<span class="pill">Live</span> <span class="muted">' + esc(e.audio_path) + (e.duration_sec ? ' · ' + mins(e.duration_sec) : '') + '</span> <audio controls preload="none" data-p="' + esc(e.audio_path) + '" style="vertical-align:middle;height:32px;max-width:100%"></audio>' : '<span class="pill grey">Coming soon</span> <span class="muted">No audio yet</span>') + '</div>' +
         '<div class="row" style="margin-top:8px;align-items:center"><div style="flex:1 1 240px"><label for="u' + e.n + '">' + (e.audio_path ? 'Replace audio' : 'Upload audio') + ' (MP3 or M4A)</label><input type="file" id="u' + e.n + '" accept="audio/mpeg,audio/mp3,audio/mp4,audio/x-m4a,audio/aac,.mp3,.m4a"></div>' +
-        '<div style="flex:0 0 auto;display:flex;gap:8px;flex-wrap:wrap"><button class="b" data-save="' + e.n + '">Save</button>' + (e.audio_path ? '<button class="b2 danger" data-del="' + e.n + '">Delete audio</button>' : '') + '</div></div><div id="m' + e.n + '"></div></div>').join('');
+        '<div style="flex:0 0 auto;display:flex;gap:8px;flex-wrap:wrap"><button class="b" data-save="' + e.n + '">Save</button>' + (e.audio_path ? '<button class="b2 danger" data-del="' + e.n + '">Delete audio</button>' : '<button class="b2 danger" data-rm="' + e.n + '">Remove episode ' + e.n + '</button>') + '</div></div><div id="m' + e.n + '"></div></div>').join('');
+
+    const f = id => document.getElementById(id);
+    main.querySelectorAll('[data-pick]').forEach(b => b.onclick = () => PAGES.series(+b.dataset.pick));
+    f('newS').onclick = () => {
+      f('newBox').innerHTML = '<div class="card"><h3 style="margin:0 0 6px">New season ' + nextN + '</h3><div class="row"><div style="flex:1 1 240px"><label for="nT">Season title</label><input id="nT" placeholder="Title of Season ' + nextN + '"></div>' +
+        '<div style="flex:0 0 130px"><label for="nP">Price (USD, one year)</label><input id="nP" type="number" min="1" max="999" step="0.01" value="14.99"></div>' +
+        '<div style="flex:0 0 120px"><label for="nE">Episodes</label><input id="nE" type="number" min="1" max="99" value="12"></div></div>' +
+        '<label for="nB" style="margin-top:8px">Short description</label><input id="nB">' +
+        '<p class="muted" style="margin:8px 0 0">The new season starts hidden, so you can upload episodes first. Switch it to Visible when you are ready.</p>' +
+        '<div style="display:flex;gap:8px;margin-top:10px"><button class="b" id="nGo">Create Season ' + nextN + '</button><button class="b2" id="nX">Cancel</button></div><div id="nMsg"></div></div>';
+      f('nX').onclick = () => { f('newBox').innerHTML = ''; };
+      f('nGo').onclick = async () => {
+        try { await rpc('admin_save_season', { p_n: nextN, p_title: f('nT').value, p_blurb: f('nB').value, p_price: +f('nP').value, p_published: false, p_episodes: +f('nE').value || 12 }); PAGES.series(nextN); }
+        catch (er) { msg(f('nMsg'), errMsg(er)); }
+      };
+    };
+    f('sSave').onclick = async () => {
+      try { await rpc('admin_save_season', { p_n: s, p_title: f('sT').value, p_blurb: f('sB').value, p_price: +f('sP').value, p_published: f('sV').value === '1', p_episodes: null });
+        msg(f('sMsg'), 'Season ' + s + ' saved' + (f('sV').value === '1' ? ' and visible to members.' : '. It is hidden from members.'), true); setTimeout(() => PAGES.series(s), 900); }
+      catch (er) { msg(f('sMsg'), errMsg(er)); }
+    };
+    if (f('sDel')) armed(f('sDel'), 'Tap again to delete Season ' + s, async () => {
+      try { await rpc('admin_delete_season', { p_n: s }); try { sessionStorage.removeItem('wc-admin-season'); } catch (e) {} PAGES.series(1); } catch (er) { msg(f('sMsg'), errMsg(er)); }
+    });
 
     // admins can preview any episode
-    main.querySelectorAll('audio[data-p]').forEach(au => au.addEventListener('play', async () => { if (!au.dataset.loaded) { au.dataset.loaded = 1; try { au.src = await WC.episodeUrl(au.dataset.p); au.play(); } catch (er) {} } }, { once: false }));
+    main.querySelectorAll('audio[data-p]').forEach(au => au.addEventListener('play', async () => { if (!au.dataset.loaded) { au.dataset.loaded = 1; try { au.src = await WC.episodeUrl(au.dataset.p); au.play(); } catch (er) {} } }));
     const durationOf = file => new Promise(res => { const a = new Audio(); a.preload = 'metadata'; a.onloadedmetadata = () => { res(isFinite(a.duration) ? Math.round(a.duration) : null); URL.revokeObjectURL(a.src); }; a.onerror = () => res(null); a.src = URL.createObjectURL(file); });
     // Reads the title tag (ID3v2 TIT2) from an MP3, e.g. "The Missing Fit, Episode 2: Title" -> "Title"
     const tagTitle = async file => {
@@ -274,51 +312,54 @@ const PAGES = {
       } catch (er) {}
       return '';
     };
-    // Fill an empty title box as soon as a file is picked
     main.querySelectorAll('input[type=file][id^=u]').forEach(inp => inp.addEventListener('change', async () => {
-      const n = inp.id.slice(1), box = document.getElementById('t' + n);
+      const n = inp.id.slice(1), box = f('t' + n);
       if (inp.files[0] && !box.value.trim()) { const t = await tagTitle(inp.files[0]); if (t) box.value = t; }
     }));
-    const find = n => eps.find(e => e.n === n) || { n, title: '', audio_path: null, duration_sec: null, free: false };
+    const find = n => eps.find(e => e.n === n) || { n, title: '', audio_path: null, duration_sec: null, free: n === 1 };
+    const save = (n, title, path, dur, free) => rpc('admin_save_episode', { p_season: s, p_n: n, p_title: title, p_audio_path: path, p_duration_sec: dur, p_free: free });
 
     main.querySelectorAll('[data-save]').forEach(btn => btn.onclick = async () => {
-      const n = +btn.dataset.save, e = find(n), box = document.getElementById('m' + n);
-      let title = document.getElementById('t' + n).value.trim(); const free = document.getElementById('f' + n).value === '1';
-      const file = document.getElementById('u' + n).files[0];
+      const n = +btn.dataset.save, e = find(n), box = f('m' + n);
+      let title = f('t' + n).value.trim(); const free = f('f' + n).value === '1';
+      const file = f('u' + n).files[0];
       btn.disabled = true;
       try {
         let path = e.audio_path, dur = e.duration_sec;
-        if (file && !title) { title = await tagTitle(file); document.getElementById('t' + n).value = title; }
+        if (file && !title) { title = await tagTitle(file); f('t' + n).value = title; }
         if (!title && (file || path)) throw new Error('Type a title for Episode ' + n + ' first. Members see it on the episode list.');
         if (file) {
           if (file.size > 200 * 1024 * 1024) throw new Error('That file is over 200 MB. Export it as an MP3 at 128 kbps.');
           const ext = (file.name.match(/\.(mp3|m4a|aac|mp4|wav)$/i) || [, 'mp3'])[1].toLowerCase();
-          const newPath = 'episode-' + String(n).padStart(2, '0') + '-' + Date.now() + '.' + ext;
+          const newPath = (s === 1 ? '' : 's' + String(s).padStart(2, '0') + '-') + 'episode-' + String(n).padStart(2, '0') + '-' + Date.now() + '.' + ext;
           box.innerHTML = '<div class="msg ok">Uploading ' + esc(file.name) + ' (' + Math.round(file.size / 1048576) + ' MB)… keep this page open.</div>';
           dur = await durationOf(file);
           await WC.uploadEpisode(newPath, file);
           const old = path; path = newPath;
-          await rpc('admin_save_episode', { p_n: n, p_title: title, p_audio_path: path, p_duration_sec: dur, p_free: free });
+          await save(n, title, path, dur, free);
           if (old && old !== path) { try { await WC.removeEpisodeFile(old); } catch (er) {} }
         } else {
-          await rpc('admin_save_episode', { p_n: n, p_title: title, p_audio_path: path, p_duration_sec: dur, p_free: free });
+          await save(n, title, path, dur, free);
         }
-        msg(box, file ? 'Episode ' + n + ' is live for members.' : 'Saved.', true);
-        setTimeout(() => PAGES.series(), 900);
+        msg(box, file ? 'Season ' + s + ', Episode ' + n + ' is live' + (se.published ? ' for members.' : '. Members will see it when the season is Visible.') : 'Saved.', true);
+        setTimeout(() => PAGES.series(s), 900);
       } catch (er) { msg(box, errMsg(er)); } finally { btn.disabled = false; }
     });
     main.querySelectorAll('[data-del]').forEach(btn => armed(btn, 'Tap again to delete', async () => {
-      const n = +btn.dataset.del, e = find(n), box = document.getElementById('m' + n);
+      const n = +btn.dataset.del, e = find(n), box = f('m' + n);
       try {
-        await rpc('admin_save_episode', { p_n: n, p_title: document.getElementById('t' + n).value, p_audio_path: null, p_duration_sec: null, p_free: document.getElementById('f' + n).value === '1' });
+        await save(n, f('t' + n).value, null, null, f('f' + n).value === '1');
         if (e.audio_path) { try { await WC.removeEpisodeFile(e.audio_path); } catch (er) {} }
         msg(box, 'Audio deleted. Members now see Episode ' + n + ' as “Coming soon”.', true);
-        setTimeout(() => PAGES.series(), 900);
+        setTimeout(() => PAGES.series(s), 900);
       } catch (er) { msg(box, errMsg(er)); }
     }));
-    document.getElementById('addEp').onclick = async () => {
+    main.querySelectorAll('[data-rm]').forEach(btn => armed(btn, 'Tap again to remove', async () => {
+      try { await rpc('admin_delete_episode', { p_season: s, p_n: +btn.dataset.rm }); PAGES.series(s); } catch (er) { msg(f('m' + btn.dataset.rm), errMsg(er)); }
+    }));
+    f('addEp').onclick = async () => {
       const n = (eps.length ? Math.max(...eps.map(e => e.n)) : 0) + 1;
-      try { await rpc('admin_save_episode', { p_n: n, p_title: '', p_audio_path: null, p_duration_sec: null, p_free: false }); PAGES.series(); } catch (er) { msg(document.getElementById('addMsg'), errMsg(er)); }
+      try { await save(n, '', null, null, n === 1); PAGES.series(s); } catch (er) { msg(f('addMsg'), errMsg(er)); }
     };
   },
 
@@ -327,11 +368,11 @@ const PAGES = {
     const o = await rpc('admin_overview');
     main.innerHTML = '<h2>Settings</h2>' +
       '<div class="card"><b style="color:#01434B">Prices</b><p class="muted" style="margin:4px 0 0">Each is one payment for one year. A new price applies to purchases started after you save. Update the Terms of Use if you change one.</p><div class="row"><div><label for="pr">14-Day Discovery Class (USD)</label><input id="pr" type="number" min="1" max="999" step="0.01" value="' + Number(o.price) + '"></div><div style="flex:0 0 auto"><button class="b" id="prS">Save class price</button></div></div>' +
-      '<div class="row"><div><label for="sr">Know Your Holes Series (USD)</label><input id="sr" type="number" min="1" max="999" step="0.01" value="' + Number(o.series_price) + '"></div><div style="flex:0 0 auto"><button class="b" id="srS">Save Series price</button></div></div><div id="prM"></div></div>' +
+      '<div class="row"><div><label for="sr">Series, Season 1 (USD)</label><input id="sr" type="number" min="1" max="999" step="0.01" value="' + Number(o.series_price) + '"></div><div style="flex:0 0 auto"><button class="b" id="srS">Save Series price</button></div></div><div id="prM"></div></div>' +
       '<div class="card"><b style="color:#01434B">Admins</b><p class="muted" style="margin:4px 0 0">Admins can open this console. The person needs a WholeClass account first.</p><div class="row"><div><label for="ad">Email</label><input id="ad" type="email"></div><div style="flex:0 0 auto"><button class="b" id="adA">Make admin</button> <button class="b2 danger" id="adR">Remove admin</button></div></div><div id="adM"></div></div>';
     const f = id => document.getElementById(id);
     armed(f('prS'), 'Tap again to save', async () => { try { await rpc('admin_set_price', {p_amount: +f('pr').value, p_kind: 'individual'}); msg(f('prM'), 'Class price saved: ' + money(f('pr').value) + '.', true); } catch (e) { msg(f('prM'), errMsg(e)); } });
-    armed(f('srS'), 'Tap again to save', async () => { try { await rpc('admin_set_price', {p_amount: +f('sr').value, p_kind: 'series'}); msg(f('prM'), 'Series price saved: ' + money(f('sr').value) + '.', true); } catch (e) { msg(f('prM'), errMsg(e)); } });
+    armed(f('srS'), 'Tap again to save', async () => { try { await rpc('admin_set_price', {p_amount: +f('sr').value, p_kind: 'series'}); msg(f('prM'), 'Season 1 price saved: ' + money(f('sr').value) + '.', true); } catch (e) { msg(f('prM'), errMsg(e)); } });
     f('adA').onclick = async () => { try { await rpc('admin_set_admin', {p_email: f('ad').value, p_on: true}); msg(f('adM'), 'Done. They can open the console now.', true); } catch (e) { msg(f('adM'), errMsg(e)); } };
     armed(f('adR'), 'Tap again to remove', async () => { try { await rpc('admin_set_admin', {p_email: f('ad').value, p_on: false}); msg(f('adM'), 'Admin access removed.', true); } catch (e) { msg(f('adM'), errMsg(e)); } });
   }
@@ -398,7 +439,8 @@ async function go(k){
   so.onclick = async () => { await WC.signOut(); location.replace('admin.html'); };
   me = await rpc('console_me');
   if (me.admin) {
-    setTabs([['overview','Overview'],['members','Members'],['groups','Guided groups'],['keys','Book keys'],['payments','Payments'],['book','The book'],['series','The Missing Fit'],['settings','Settings']]);
+    try { SEASONS = await rpc('admin_episodes'); } catch (e) {}
+    setTabs([['overview','Overview'],['members','Members'],['groups','Guided groups'],['keys','Book keys'],['payments','Payments'],['book','The book'],['series','The Series'],['settings','Settings']]);
     const h = location.hash.slice(1); go(PAGES[h] && h !== 'mygroups' ? h : 'overview');
   } else if (me.facilitator) {
     document.getElementById('ttl').textContent = 'My groups';

@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>The Missing Fit · Know Your Holes Series · WholeClass</title>
+<title>The Know Your Holes Series · WholeClass</title>
 <meta name="theme-color" content="#01434B">
 <meta name="robots" content="noindex">
 <link rel="icon" type="image/png" sizes="192x192" href="icons/icon-192.png?v=2">
@@ -55,8 +55,8 @@ h1{font-family:'Sora',sans-serif;color:#01434B;font-size:28px;line-height:1.2;ma
 <body>
 <header>
   <a href="./" aria-label="Back to WholeClass">‹ Class</a>
-  <div class="t" id="hdr">The Missing Fit</div>
-  <a href="listen.html" aria-label="All episodes">Episodes</a>
+  <div class="t" id="hdr">The Know Your Holes Series</div>
+  <a href="listen.html" aria-label="All seasons">Seasons</a>
 </header>
 <main id="main"><p>Opening the Series…</p></main>
 <script>
@@ -67,32 +67,34 @@ h1{font-family:'Sora',sans-serif;color:#01434B;font-size:28px;line-height:1.2;ma
   const fmtDate = d => new Date(d).toLocaleDateString('en-US', {month:'long', day:'numeric', year:'numeric'});
   const mins = s => s ? Math.max(1, Math.round(s / 60)) + ' min' : '';
   const clock = s => { s = Math.max(0, Math.floor(s || 0)); return Math.floor(s / 60) + ':' + String(s % 60).padStart(2, '0'); };
-  const SERIES = 'Know Your Holes: The Missing Fit';
+  const SERIES = 'The Know Your Holes Series';
+  const epLink = (sn, n) => 'listen.html?s=' + sn + '&ep=' + n;
   let notice = '';
 
   async function buy(btn){
+    const sn = +btn.dataset.season || 1, label = btn.textContent;
     btn.disabled = true; btn.textContent = 'Opening checkout…';
-    try { await WC.checkout('series'); }
-    catch (e) { btn.disabled = false; btn.textContent = 'Get the full Series'; const d = document.createElement('div'); d.className = 'msg err'; d.textContent = e.message || 'Checkout could not start.'; main.prepend(d); window.scrollTo(0, 0); }
+    try { await WC.checkout('series', sn); }
+    catch (e) { btn.disabled = false; btn.textContent = label; const d = document.createElement('div'); d.className = 'msg err'; d.textContent = e.message || 'Checkout could not start.'; main.prepend(d); window.scrollTo(0, 0); }
   }
-  const wireBuy = () => { const b = document.getElementById('buyBtn'); if (b) b.onclick = () => buy(b); };
+  const wireBuy = () => main.querySelectorAll('[data-season].buy').forEach(b => b.onclick = () => buy(b));
 
   async function run(){
     const q = new URLSearchParams(location.search);
     const s = await WC.session();
-    if (!s) { main.innerHTML = '<p class="kicker">The Know Your Holes Series</p><h1>The Missing Fit</h1><div class="note">The Series plays inside your WholeClass account. Episode 1 is free.<br><a href="./" style="display:inline-block;margin-top:12px;background:#01434B;color:#fff;border-radius:999px;padding:11px 18px;font-weight:700;text-decoration:none">Sign in or create a free account</a></div>'; return; }
-    const paid = q.get('paid');
+    if (!s) { main.innerHTML = '<p class="kicker">' + SERIES + '</p><h1>Season 1: The Missing Fit</h1><div class="note">The Series plays inside your WholeClass account. Episode 1 of every season is free.<br><a href="./" style="display:inline-block;margin-top:12px;background:#01434B;color:#fff;border-radius:999px;padding:11px 18px;font-weight:700;text-decoration:none">Sign in or create a free account</a></div>'; return; }
+    const sq = +q.get('s') || 0, paid = q.get('paid');
     if (paid) {
-      history.replaceState(null, '', 'listen.html');
+      history.replaceState(null, '', 'listen.html' + (sq ? '?s=' + sq : ''));
       main.innerHTML = '<p>Confirming your payment…</p>';
-      try { const r = await WC.confirmPayment(paid); notice = r.status === 'paid' ? '<div class="msg ok">Payment received. The full Series is open for one year.</div>' : '<div class="msg err">That payment did not go through. Nothing was charged.</div>'; }
+      try { const r = await WC.confirmPayment(paid); notice = r.status === 'paid' ? '<div class="msg ok">Payment received. Season ' + (sq || 1) + ' is open for one year.</div>' : '<div class="msg err">That payment did not go through. Nothing was charged.</div>'; }
       catch (e) { notice = '<div class="msg err">' + esc(e.message || 'We could not confirm the payment.') + '</div>'; }
     }
-    if (q.get('canceled')) { history.replaceState(null, '', 'listen.html'); notice = '<div class="msg ok">Checkout canceled. Nothing was charged.</div>'; }
-    const [a, eps] = await Promise.all([WC.access(), WC.episodes()]);
+    if (q.get('canceled')) { history.replaceState(null, '', 'listen.html' + (sq ? '?s=' + sq : '')); notice = '<div class="msg ok">Checkout canceled. Nothing was charged.</div>'; }
+    const seasons = await WC.episodes();
     const n = q.get('ep');
-    if (n === null || n === '') return list(a, eps);
-    return episode(+n, a, eps);
+    if (n === null || n === '') return list(seasons, sq);
+    return episode(sq || 1, +n, seasons);
   }
 
   function tagFor(e, open){
@@ -100,35 +102,47 @@ h1{font-family:'Sora',sans-serif;color:#01434B;font-size:28px;line-height:1.2;ma
     if (e.free) return '<span class="tag">▶ Free</span>';
     return open ? '<span class="tag">▶ Play</span>' : '<span class="tag lock">🔒 Locked</span>';
   }
+  const epTitle = e => e.title ? esc(e.title) : (e.ready ? 'Episode ' + e.n : 'Coming soon');
 
-  function list(a, eps){
-    hdr.textContent = 'The Missing Fit';
-    const open = !!a.series_unlocked, ready = eps.filter(e => e.ready).length;
-    main.innerHTML = notice + '<div class="hero"><p class="kicker">The Know Your Holes Series · C.P. Parker</p><h1>The Missing Fit</h1><p>' + eps.length + ' audio episodes of real situations that show how holes shape the way we love, argue and choose. It\'s a separate course that adds to the book and the 14-Day Discovery Class.</p>' +
-      (open ? '<span class="pill">Open until ' + fmtDate(a.series_expires_at) + '</span>' : '<button class="buy" id="buyBtn">Get the full Series · ' + money(a.series_price) + ' for one year</button><p style="font-size:12.5px;margin-top:8px">Episode 1 is free. One payment, no automatic renewal.</p>') + '</div>' +
-      '<p class="muted" style="font-size:13px;color:#5A6478;margin:0 0 10px">' + ready + ' of ' + eps.length + ' episodes available. New episodes appear here as they are released.</p>' +
+  function seasonBlock(se){
+    const eps = se.episodes || [], ready = eps.filter(e => e.ready).length;
+    return '<section id="season-' + se.season + '" style="margin-top:22px">' +
+      '<div class="hero"><p class="kicker">Season ' + se.season + '</p><h1>' + esc(se.title) + '</h1>' + (se.blurb ? '<p>' + esc(se.blurb) + '</p>' : '') +
+      (se.unlocked ? '<span class="pill">Open until ' + fmtDate(se.expires_at) + '</span>'
+        : '<button class="buy" data-season="' + se.season + '">Open Season ' + se.season + ' · ' + money(se.price) + ' for one year</button><p style="font-size:12.5px;margin-top:8px">Episode 1 is free. One payment, no automatic renewal.</p>') + '</div>' +
+      '<p style="font-size:13px;color:#5A6478;margin:0 0 10px">' + ready + ' of ' + eps.length + ' episodes available' + (ready < eps.length ? '. New episodes appear here as they are released.' : '.') + '</p>' +
       eps.map(e => {
-        const t = e.title ? esc(e.title) : (e.ready ? 'Episode ' + e.n : 'Coming soon');
         const sub = e.ready ? ['Episode ' + e.n, mins(e.duration_sec)].filter(Boolean).join(' · ') : 'Episode ' + e.n;
-        const inner = '<div class="num">' + e.n + '</div><div class="info"><div class="ti">' + t + '</div><div class="sub">' + sub + '</div></div>' + tagFor(e, open);
-        return e.ready ? '<a class="ep ready" href="listen.html?ep=' + e.n + '">' + inner + '</a>' : '<div class="ep soon" aria-disabled="true">' + inner + '</div>';
-      }).join('');
-    wireBuy();
+        const inner = '<div class="num">' + e.n + '</div><div class="info"><div class="ti">' + epTitle(e) + '</div><div class="sub">' + sub + '</div></div>' + tagFor(e, se.unlocked);
+        return e.ready ? '<a class="ep ready" href="' + epLink(se.season, e.n) + '">' + inner + '</a>' : '<div class="ep soon" aria-disabled="true">' + inner + '</div>';
+      }).join('') + '</section>';
   }
 
-  async function episode(n, a, eps){
-    const e = eps.find(x => x.n === n);
-    if (!e) { main.innerHTML = '<h1>Episode not found</h1><p><a href="listen.html">See all episodes</a></p>'; return; }
+  function list(seasons, sq){
+    hdr.textContent = SERIES;
+    document.title = SERIES + ' · WholeClass';
+    const jump = seasons.length > 1 ? '<div style="display:flex;gap:8px;flex-wrap:wrap;margin:4px 0 0">' + seasons.map(se => '<a href="#season-' + se.season + '" style="border:1.5px solid #01434B;border-radius:999px;padding:7px 13px;font-weight:700;font-size:13px;color:#01434B;text-decoration:none">Season ' + se.season + '</a>').join('') + '</div>' : '';
+    main.innerHTML = notice + '<p class="kicker">C.P. Parker</p><h1 style="margin-bottom:4px">' + SERIES + '</h1>' +
+      '<p style="color:#5A6478;line-height:1.5;margin:0 0 6px">Audio seasons of real situations that show how holes shape the way we love, argue and choose. Each season is its own one-year purchase, and Episode 1 of every season is free.</p>' + jump +
+      (seasons.length ? seasons.map(seasonBlock).join('') : '<div class="note">The first season is coming soon.</div>');
+    wireBuy();
+    if (sq) { const el = document.getElementById('season-' + sq); if (el) el.scrollIntoView(); }
+  }
+
+  async function episode(sn, n, seasons){
+    const se = seasons.find(x => x.season === sn), eps = se ? se.episodes : [], e = eps.find(x => x.n === n);
+    if (!se || !e) { main.innerHTML = '<h1>Episode not found</h1><p><a href="listen.html">See all seasons</a></p>'; return; }
     const title = e.title || (e.ready ? 'Episode ' + n : 'Coming soon');
-    hdr.textContent = 'Episode ' + n;
-    document.title = 'Episode ' + n + ': ' + title + ' · The Missing Fit';
+    hdr.textContent = 'Season ' + sn + ' · Episode ' + n;
+    document.title = 'S' + sn + ' E' + n + ': ' + title + ' · ' + se.title;
     const ready = eps.filter(x => x.ready), i = ready.findIndex(x => x.n === n), prev = ready[i - 1], next = ready[i + 1];
-    const nav = '<div class="nav">' + (prev ? '<a class="btn2" href="listen.html?ep=' + prev.n + '">‹ Episode ' + prev.n + '</a>' : '<a class="btn2" href="listen.html">All episodes</a>') +
-      (next ? '<a class="btn" href="listen.html?ep=' + next.n + '">Episode ' + next.n + ' ›</a>' : '<a class="btn" href="listen.html">All episodes</a>') + '</div>';
-    const head = notice + '<p class="kicker">The Missing Fit · Episode ' + n + '</p><h1>' + esc(title) + '</h1>';
+    const back = 'listen.html?s=' + sn;
+    const nav = '<div class="nav">' + (prev ? '<a class="btn2" href="' + epLink(sn, prev.n) + '">‹ Episode ' + prev.n + '</a>' : '<a class="btn2" href="' + back + '">All episodes</a>') +
+      (next ? '<a class="btn" href="' + epLink(sn, next.n) + '">Episode ' + next.n + ' ›</a>' : '<a class="btn" href="' + back + '">All episodes</a>') + '</div>';
+    const head = notice + '<p class="kicker">Season ' + sn + ': ' + esc(se.title) + ' · Episode ' + n + '</p><h1>' + esc(title) + '</h1>';
     if (!e.ready) { main.innerHTML = head + '<div class="note">This episode is coming soon. Check back here, it will appear as soon as it is released.</div>' + nav; return; }
     if (!e.path) {
-      main.innerHTML = head + '<div class="hero"><p class="kicker">Open the full Series</p><h1 style="font-size:22px">All ' + eps.length + ' episodes</h1><p>Episode 1 is free. Every other episode opens with one payment of <b style="color:#fff">' + money(a.series_price) + '</b> for one year. No automatic renewal.</p><button class="buy" id="buyBtn">Get the full Series · ' + money(a.series_price) + '</button></div>' + nav;
+      main.innerHTML = head + '<div class="hero"><p class="kicker">Open Season ' + sn + '</p><h1 style="font-size:22px">' + esc(se.title) + ': all ' + eps.length + ' episodes</h1><p>Episode 1 is free. Every other episode in this season opens with one payment of <b style="color:#fff">' + money(se.price) + '</b> for one year. No automatic renewal.</p><button class="buy" data-season="' + sn + '">Open Season ' + sn + ' · ' + money(se.price) + '</button></div>' + nav;
       wireBuy(); return;
     }
     main.innerHTML = head + '<div class="player"><div style="font-size:13px;color:#5A6478;font-weight:700">' + [mins(e.duration_sec), 'C.P. Parker'].filter(Boolean).join(' · ') + '</div>' +
@@ -136,7 +150,7 @@ h1{font-family:'Sora',sans-serif;color:#01434B;font-size:28px;line-height:1.2;ma
       '<div class="ctrls"><button id="back15" aria-label="Back 15 seconds">↺ 15</button><button id="fwd15" aria-label="Forward 15 seconds">15 ↻</button><span class="sp"></span>' +
       ['0.8','1','1.25','1.5'].map(r => '<button data-r="' + r + '">' + r + '×</button>').join('') + '</div><div id="resume" style="font-size:12.5px;color:#5A6478;margin-top:10px"></div></div>' + nav +
       '<p class="copy">© Merch Corporation. All rights reserved. For your personal listening in WholeClass.</p>';
-    const au = document.getElementById('au'), key = 'wc-ep-pos-' + n;
+    const au = document.getElementById('au'), key = 'wc-ep-pos-' + (sn === 1 ? n : sn + '-' + n);
     try { au.src = await WC.episodeUrl(e.path); } catch (er) { document.getElementById('resume').textContent = 'This episode could not be loaded. Check your connection and try again.'; return; }
     let rate = 1; try { rate = +localStorage.getItem('wc-ep-rate') || 1; } catch (er) {}
     const setRate = r => { rate = r; au.playbackRate = r; document.querySelectorAll('[data-r]').forEach(b => b.classList.toggle('on', +b.dataset.r === r)); try { localStorage.setItem('wc-ep-rate', r); } catch (er) {} };
@@ -151,11 +165,11 @@ h1{font-family:'Sora',sans-serif;color:#01434B;font-size:28px;line-height:1.2;ma
     });
     let last = 0;
     au.addEventListener('timeupdate', () => { if (Math.abs(au.currentTime - last) > 5) { last = au.currentTime; try { localStorage.setItem(key, Math.floor(au.currentTime)); } catch (er) {} } });
-    au.addEventListener('ended', () => { try { localStorage.removeItem(key); } catch (er) {} document.getElementById('resume').innerHTML = next ? 'Finished. <a href="listen.html?ep=' + next.n + '" style="color:#0E6B6B;font-weight:800">Play Episode ' + next.n + ' ›</a>' : 'Finished. That is the latest episode for now.'; });
+    au.addEventListener('ended', () => { try { localStorage.removeItem(key); } catch (er) {} document.getElementById('resume').innerHTML = next ? 'Finished. <a href="' + epLink(sn, next.n) + '" style="color:#0E6B6B;font-weight:800">Play Episode ' + next.n + ' ›</a>' : 'Finished. That is the latest episode in this season for now.'; });
     au.addEventListener('ratechange', () => { if (au.playbackRate !== rate) setRate(au.playbackRate); });
     if ('mediaSession' in navigator) {
       try {
-        navigator.mediaSession.metadata = new MediaMetadata({ title: 'Episode ' + n + ': ' + title, artist: 'C.P. Parker', album: SERIES,
+        navigator.mediaSession.metadata = new MediaMetadata({ title: 'S' + sn + ' E' + n + ': ' + title, artist: 'C.P. Parker', album: SERIES + ', Season ' + sn + ': ' + se.title,
           artwork: [{ src: 'icons/icon-512.png?v=2', sizes: '512x512', type: 'image/png' }] });
         navigator.mediaSession.setActionHandler('seekbackward', () => { au.currentTime = Math.max(0, au.currentTime - 15); });
         navigator.mediaSession.setActionHandler('seekforward', () => { au.currentTime = au.currentTime + 15; });

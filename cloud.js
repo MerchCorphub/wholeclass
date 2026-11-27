@@ -64,7 +64,7 @@
     if (!r.ok) throw new Error(d.error || 'Payment could not be started.');
     return d;
   }
-  async function checkout(product) { const d = await pay('checkout', product ? { product } : {}); location.href = d.url; }
+  async function checkout(product, season) { const d = await pay('checkout', product ? (season ? { product, season } : { product }) : {}); location.href = d.url; }
   async function confirmPayment(id) { return pay('confirm', { session_id: id }); }
 
   window.WC = { session, onAuth, signUp, signIn, signOut, resetPassword, setPassword, ensureMember, loadProgress, saveProgress, saveDay, updateMember,

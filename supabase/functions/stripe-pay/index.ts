@@ -1,5 +1,5 @@
 // WholeClass stripe-pay: starts a Stripe Checkout payment for the 14-Day Discovery Class or the
-// Know Your Holes Series (each one year, no automatic renewal) and confirms it when the buyer returns.
+// Know Your Holes Series, one season at a time (each one year, no automatic renewal) and confirms it when the buyer returns.
 // The price always comes from the database (public.prices), never from the browser.
 // Secret (Supabase › Edge Functions › Secrets): STRIPE_SECRET_KEY.
 import { createClient } from 'npm:@supabase/supabase-js@2';
@@ -50,7 +50,8 @@ Deno.serve(async (req) => {
   try {
     if (body.action === 'checkout') {
       const product = body.product === 'series' ? 'series' : 'class';
-      const { data: prep, error } = await admin.rpc('stripe_prepare', { p_user: who.user.id, p_product: product });
+      const season = Math.max(1, Math.min(99, parseInt(String(body.season || '1'), 10) || 1));
+      const { data: prep, error } = await admin.rpc('stripe_prepare', { p_user: who.user.id, p_product: product, p_season: season });
       if (error) return json({ error: error.message }, 400, origin);
       const base = origin && ALLOWED_ORIGINS.includes(origin) ? origin : SITE;
       const path = base.includes('github.io') ? '/wholeclass/' : '/';
@@ -63,10 +64,11 @@ Deno.serve(async (req) => {
         client_reference_id: prep.payment_id,
         'metadata[payment_id]': prep.payment_id,
         'metadata[product]': product,
+        'metadata[season]': String(prep.season || 1),
         'payment_intent_data[metadata][payment_id]': prep.payment_id,
         'custom_text[submit][message]': 'One payment, one year of access. No automatic renewal.',
-        success_url: `${base}${path}${product === 'series' ? 'listen.html' : ''}?paid={CHECKOUT_SESSION_ID}`,
-        cancel_url: `${base}${path}${product === 'series' ? 'listen.html' : ''}?canceled=1`,
+        success_url: `${base}${path}${product === 'series' ? 'listen.html' : ''}?paid={CHECKOUT_SESSION_ID}${product === 'series' ? '&s=' + (prep.season || 1) : ''}`,
+        cancel_url: `${base}${path}${product === 'series' ? 'listen.html' : ''}?canceled=1${product === 'series' ? '&s=' + (prep.season || 1) : ''}`,
         ...(prep.email ? { customer_email: prep.email } : {}),
       }, prep.payment_id);
       await admin.rpc('stripe_attach_session', { p_payment: prep.payment_id, p_session: session.id });
