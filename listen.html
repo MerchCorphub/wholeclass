@@ -3,16 +3,15 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>The Know Your Holes Series · WholeClass</title>
+<title>The Missing Fit · Know Your Holes Series · WholeClass</title>
 <meta name="theme-color" content="#01434B">
 <meta name="robots" content="noindex">
 <link rel="icon" type="image/png" sizes="192x192" href="icons/icon-192.png?v=2">
 <link rel="apple-touch-icon" sizes="180x180" href="icons/apple-touch-icon.png?v=2">
 <link rel="manifest" href="manifest.json?v=2">
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Sora:wght@600;700;800&family=Manrope:wght@400;500;600;700&family=Source+Serif+4:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Sora:wght@600;700;800&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 <script src="./cloud.js"></script>
-<script src="./listen.js"></script>
 <style>
 *{box-sizing:border-box}
 body{margin:0;background:#FEF9F2;color:#2A3446;font-family:'Manrope',system-ui,sans-serif;-webkit-text-size-adjust:100%}
@@ -22,10 +21,6 @@ header .t{flex:1;min-width:0;font-family:'Sora',sans-serif;font-size:14px;font-w
 main{max-width:720px;margin:0 auto;padding:22px 20px 80px}
 .kicker{font-family:'Sora',sans-serif;font-size:11px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:#8A5A00;margin:8px 0 0}
 h1{font-family:'Sora',sans-serif;color:#01434B;font-size:28px;line-height:1.2;margin:6px 0 14px}
-.book{font-family:'Source Serif 4',Georgia,serif;font-size:18px;line-height:1.7}
-.book p{margin:0 0 14px}
-.book li{margin:6px 0}
-.book .cue{font-family:'Manrope',sans-serif;font-size:12px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;color:#8A5A00;margin:22px 0 6px}
 .hero{background:#01434B;color:#fff;border-radius:20px;padding:20px;margin:6px 0 16px}
 .hero h1{color:#fff;margin:4px 0 6px}
 .hero p{color:#CFE3E1;line-height:1.55;margin:0}
@@ -33,25 +28,35 @@ h1{font-family:'Sora',sans-serif;color:#01434B;font-size:28px;line-height:1.2;ma
 .buy{display:block;width:100%;border:none;border-radius:999px;padding:15px;margin-top:14px;font:700 15px 'Sora',sans-serif;cursor:pointer;background:linear-gradient(135deg,#E9B53F,#C48504);color:#2A1C00}
 .buy:disabled{opacity:.6}
 .pill{display:inline-block;border-radius:999px;padding:4px 11px;font-size:12px;font-weight:800;background:#1A6A70;color:#fff;margin-top:12px}
-.toc a{display:flex;justify-content:space-between;gap:10px;align-items:center;background:#fff;border:1px solid #EADFCB;border-radius:14px;padding:13px 14px;margin-bottom:8px;text-decoration:none;color:#01434B;font-weight:700}
-.toc small{font-weight:700;color:#0E6B6B;white-space:nowrap}
-.toc small.lock{color:#8A5A00}
-.nav{display:flex;gap:10px;margin-top:34px}
+.ep{display:flex;gap:12px;align-items:center;background:#fff;border:1px solid #EADFCB;border-radius:16px;padding:12px 14px;margin-bottom:8px;text-decoration:none;color:#01434B}
+.ep .num{width:42px;height:42px;flex:none;border-radius:12px;background:#E8F0EF;color:#01434B;display:flex;align-items:center;justify-content:center;font:800 15px 'Sora',sans-serif}
+.ep.ready .num{background:#01434B;color:#fff}
+.ep .info{flex:1;min-width:0}
+.ep .ti{font-weight:800;font-size:15px}
+.ep .sub{font-size:12.5px;color:#5A6478;font-weight:600;margin-top:2px}
+.ep .tag{font-size:12px;font-weight:800;white-space:nowrap;color:#0E6B6B}
+.ep .tag.lock{color:#8A5A00}.ep .tag.soon{color:#7A8598}
+.ep.soon{opacity:.75}
+.player{background:#fff;border:1px solid #EADFCB;border-radius:20px;padding:18px;margin-top:6px}
+.player audio{width:100%;margin-top:4px}
+.ctrls{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px;align-items:center}
+.ctrls button{font:700 14px 'Manrope',sans-serif;border-radius:999px;border:1.5px solid #01434B;background:#fff;color:#01434B;padding:9px 14px;cursor:pointer}
+.ctrls button.on{background:#01434B;color:#fff}
+.ctrls .sp{flex:1}
+.nav{display:flex;gap:10px;margin-top:28px}
 .nav a{flex:1;text-align:center;border-radius:999px;padding:13px;font-weight:700;text-decoration:none;font-family:'Sora',sans-serif;font-size:14px}
-.btn{background:#01434B;color:#fff}
-.btn2{border:1.5px solid #01434B;color:#01434B;background:#fff}
+.btn{background:#01434B;color:#fff}.btn2{border:1.5px solid #01434B;color:#01434B;background:#fff}
 .note{background:#fff;border:1px solid #EADFCB;border-radius:16px;padding:18px;margin-top:10px;line-height:1.55}
 .msg{border-radius:12px;padding:11px 13px;margin:0 0 14px;font-size:14px;line-height:1.45}
 .msg.ok{background:#E3F2F1;color:#0A5656}.msg.err{background:#FDECEA;color:#8A1F11}
-.lbtn{display:inline-flex;align-items:center;gap:8px;border:none;border-radius:999px;padding:12px 20px;background:#01434B;color:#fff;font:700 15px 'Sora',sans-serif;cursor:pointer;margin:0 0 20px}
 .copy{font-size:12px;color:#5A6478;margin-top:40px;text-align:center}
 </style>
 </head>
 <body>
 <header>
   <a href="./" aria-label="Back to WholeClass">‹ Class</a>
-  <div class="t" id="hdr">The Know Your Holes Series</div>
-  <a href="listen.html" aria-label="All lessons">Lessons</a>
+  <div class="t" id="hdr">The Missing Fit</div>
+  <a href="listen.html" aria-label="All episodes">Episodes</a>
 </header>
 <main id="main"><p>Opening the Series…</p></main>
 <script>
@@ -60,62 +65,102 @@ h1{font-family:'Sora',sans-serif;color:#01434B;font-size:28px;line-height:1.2;ma
   const esc = s => String(s).replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
   const money = n => '$' + (Number(n) % 1 ? Number(n).toFixed(2) : Number(n));
   const fmtDate = d => new Date(d).toLocaleDateString('en-US', {month:'long', day:'numeric', year:'numeric'});
-  const label = n => n === 0 ? 'Introduction' : 'Chapter ' + n;
+  const mins = s => s ? Math.max(1, Math.round(s / 60)) + ' min' : '';
+  const clock = s => { s = Math.max(0, Math.floor(s || 0)); return Math.floor(s / 60) + ':' + String(s % 60).padStart(2, '0'); };
+  const SERIES = 'Know Your Holes: The Missing Fit';
   let notice = '';
 
   async function buy(btn){
     btn.disabled = true; btn.textContent = 'Opening checkout…';
     try { await WC.checkout('series'); }
-    catch (e) { btn.disabled = false; btn.textContent = 'Get the full Series'; alertBox(e.message || 'Checkout could not start.'); }
+    catch (e) { btn.disabled = false; btn.textContent = 'Get the full Series'; const d = document.createElement('div'); d.className = 'msg err'; d.textContent = e.message || 'Checkout could not start.'; main.prepend(d); window.scrollTo(0, 0); }
   }
-  function alertBox(t){ const d = document.createElement('div'); d.className = 'msg err'; d.textContent = t; main.prepend(d); window.scrollTo(0, 0); }
-  function buyPanel(a){
-    return '<div class="hero"><p class="kicker">Open the full Series</p><h1 style="font-size:22px">All 14 audio lessons</h1><p>Your Introduction and Chapter 1 are free. Chapters 2 to 13 open with one payment of <b style="color:#fff">' + money(a.series_price) + '</b> for one year. No automatic renewal.</p><button class="buy" id="buyBtn">Get the full Series · ' + money(a.series_price) + '</button></div>';
-  }
-  function wireBuy(){ const b = document.getElementById('buyBtn'); if (b) b.onclick = () => buy(b); }
+  const wireBuy = () => { const b = document.getElementById('buyBtn'); if (b) b.onclick = () => buy(b); };
 
   async function run(){
     const q = new URLSearchParams(location.search);
     const s = await WC.session();
-    if (!s) { main.innerHTML = '<p class="kicker">Audio lessons</p><h1>The Know Your Holes Series</h1><div class="note">The Series opens inside your WholeClass account. The Introduction and Chapter 1 are free.<br><a href="./" style="display:inline-block;margin-top:12px;background:#01434B;color:#fff;border-radius:999px;padding:11px 18px;font-weight:700;text-decoration:none">Sign in or create a free account</a></div>'; return; }
+    if (!s) { main.innerHTML = '<p class="kicker">The Know Your Holes Series</p><h1>The Missing Fit</h1><div class="note">The Series plays inside your WholeClass account. Episode 1 is free.<br><a href="./" style="display:inline-block;margin-top:12px;background:#01434B;color:#fff;border-radius:999px;padding:11px 18px;font-weight:700;text-decoration:none">Sign in or create a free account</a></div>'; return; }
     const paid = q.get('paid');
     if (paid) {
       history.replaceState(null, '', 'listen.html');
       main.innerHTML = '<p>Confirming your payment…</p>';
-      try { const r = await WC.confirmPayment(paid); notice = r.status === 'paid' ? '<div class="msg ok">Payment received. Your Series is open for one year.</div>' : '<div class="msg err">That payment did not go through. Nothing was charged.</div>'; }
+      try { const r = await WC.confirmPayment(paid); notice = r.status === 'paid' ? '<div class="msg ok">Payment received. The full Series is open for one year.</div>' : '<div class="msg err">That payment did not go through. Nothing was charged.</div>'; }
       catch (e) { notice = '<div class="msg err">' + esc(e.message || 'We could not confirm the payment.') + '</div>'; }
     }
     if (q.get('canceled')) { history.replaceState(null, '', 'listen.html'); notice = '<div class="msg ok">Checkout canceled. Nothing was charged.</div>'; }
-    const [a, list] = await Promise.all([WC.access(), WC.seriesContents()]);
-    const n = q.get('n');
-    if (n === null || n === '') return contents(a, list);
-    return lesson(+n, a, list);
+    const [a, eps] = await Promise.all([WC.access(), WC.episodes()]);
+    const n = q.get('ep');
+    if (n === null || n === '') return list(a, eps);
+    return episode(+n, a, eps);
   }
 
-  function contents(a, list){
-    hdr.textContent = 'The Know Your Holes Series';
-    const open = !!a.series_unlocked;
-    main.innerHTML = notice + '<div class="hero"><p class="kicker">Audio lessons · C.P. Parker</p><h1>The Know Your Holes Series</h1><p>Listen your way through the ideas in <em>Know Your Holes</em>, with real situations and reflection pauses. It\'s a separate course that adds to the book and the 14-Day Discovery Class.</p>' +
-      (open ? '<span class="pill">Open until ' + fmtDate(a.series_expires_at) + '</span>' : '<button class="buy" id="buyBtn">Get the full Series · ' + money(a.series_price) + ' for one year</button><p style="font-size:12.5px;margin-top:8px">The Introduction and Chapter 1 are free. One payment, no automatic renewal.</p>') + '</div>' +
-      '<div class="toc">' + list.map(l => '<a href="listen.html?n=' + l.n + '"><span>' + (l.n === 0 ? '' : l.n + '. ') + esc(l.title) + '</span><small' + (l.free || open ? '' : ' class="lock"') + '>' + (l.free ? 'Free' : (open ? '🔊 Listen' : 'Locked')) + '</small></a>').join('') + '</div>' +
-      (list.length ? '' : '<div class="note">Lessons are on the way. Check back soon.</div>');
+  function tagFor(e, open){
+    if (!e.ready) return '<span class="tag soon">Coming soon</span>';
+    if (e.free) return '<span class="tag">▶ Free</span>';
+    return open ? '<span class="tag">▶ Play</span>' : '<span class="tag lock">🔒 Locked</span>';
+  }
+
+  function list(a, eps){
+    hdr.textContent = 'The Missing Fit';
+    const open = !!a.series_unlocked, ready = eps.filter(e => e.ready).length;
+    main.innerHTML = notice + '<div class="hero"><p class="kicker">The Know Your Holes Series · C.P. Parker</p><h1>The Missing Fit</h1><p>' + eps.length + ' audio episodes of real situations that show how holes shape the way we love, argue and choose. It\'s a separate course that adds to the book and the 14-Day Discovery Class.</p>' +
+      (open ? '<span class="pill">Open until ' + fmtDate(a.series_expires_at) + '</span>' : '<button class="buy" id="buyBtn">Get the full Series · ' + money(a.series_price) + ' for one year</button><p style="font-size:12.5px;margin-top:8px">Episode 1 is free. One payment, no automatic renewal.</p>') + '</div>' +
+      '<p class="muted" style="font-size:13px;color:#5A6478;margin:0 0 10px">' + ready + ' of ' + eps.length + ' episodes available. New episodes appear here as they are released.</p>' +
+      eps.map(e => {
+        const t = e.title ? esc(e.title) : 'Coming soon';
+        const sub = e.ready ? ['Episode ' + e.n, mins(e.duration_sec)].filter(Boolean).join(' · ') : 'Episode ' + e.n;
+        const inner = '<div class="num">' + e.n + '</div><div class="info"><div class="ti">' + t + '</div><div class="sub">' + sub + '</div></div>' + tagFor(e, open);
+        return e.ready ? '<a class="ep ready" href="listen.html?ep=' + e.n + '">' + inner + '</a>' : '<div class="ep soon" aria-disabled="true">' + inner + '</div>';
+      }).join('');
     wireBuy();
   }
 
-  async function lesson(n, a, list){
-    const meta = list.find(l => l.n === n);
-    if (!meta) { main.innerHTML = '<h1>Lesson not found</h1><p><a href="listen.html">See all lessons</a></p>'; return; }
-    hdr.textContent = label(n);
-    document.title = label(n) + ': ' + meta.title + ' · Know Your Holes Series';
-    const i = list.findIndex(l => l.n === n), prev = list[i - 1], next = list[i + 1];
-    const nav = '<div class="nav">' + (prev ? '<a class="btn2" href="listen.html?n=' + prev.n + '">‹ ' + label(prev.n) + '</a>' : '<a class="btn2" href="listen.html">All lessons</a>') +
-      (next ? '<a class="btn" href="listen.html?n=' + next.n + '">' + label(next.n) + ' ›</a>' : '<a class="btn" href="listen.html">All lessons</a>') + '</div>';
-    const head = notice + '<p class="kicker">The Know Your Holes Series · ' + label(n) + '</p><h1>' + esc(meta.title) + '</h1>';
-    const row = await WC.lesson(n);
-    if (!row) { main.innerHTML = head + buyPanel(a) + nav; wireBuy(); return; }
-    main.innerHTML = head + (WCListen.supported ? '<button class="lbtn" id="listenBtn">🔊 Listen to this lesson</button>' : '<div class="note" style="margin-bottom:16px">This device can\'t read aloud, but you can read the lesson below.</div>') +
-      '<div class="book">' + row.html + '</div>' + nav + '<p class="copy">© Merch Corporation. All rights reserved. For your personal listening in WholeClass.</p>';
-    if (WCListen.supported) WCListen.setup({ n, title: meta.title, main, keyPrefix: 'wc-series-', headPrefix: n === 0 ? 'Introduction. ' : 'Chapter ' + n + '. ' });
+  async function episode(n, a, eps){
+    const e = eps.find(x => x.n === n);
+    if (!e) { main.innerHTML = '<h1>Episode not found</h1><p><a href="listen.html">See all episodes</a></p>'; return; }
+    const title = e.title || 'Coming soon';
+    hdr.textContent = 'Episode ' + n;
+    document.title = 'Episode ' + n + ': ' + title + ' · The Missing Fit';
+    const ready = eps.filter(x => x.ready), i = ready.findIndex(x => x.n === n), prev = ready[i - 1], next = ready[i + 1];
+    const nav = '<div class="nav">' + (prev ? '<a class="btn2" href="listen.html?ep=' + prev.n + '">‹ Episode ' + prev.n + '</a>' : '<a class="btn2" href="listen.html">All episodes</a>') +
+      (next ? '<a class="btn" href="listen.html?ep=' + next.n + '">Episode ' + next.n + ' ›</a>' : '<a class="btn" href="listen.html">All episodes</a>') + '</div>';
+    const head = notice + '<p class="kicker">The Missing Fit · Episode ' + n + '</p><h1>' + esc(title) + '</h1>';
+    if (!e.ready) { main.innerHTML = head + '<div class="note">This episode is coming soon. Check back here, it will appear as soon as it is released.</div>' + nav; return; }
+    if (!e.path) {
+      main.innerHTML = head + '<div class="hero"><p class="kicker">Open the full Series</p><h1 style="font-size:22px">All ' + eps.length + ' episodes</h1><p>Episode 1 is free. Every other episode opens with one payment of <b style="color:#fff">' + money(a.series_price) + '</b> for one year. No automatic renewal.</p><button class="buy" id="buyBtn">Get the full Series · ' + money(a.series_price) + '</button></div>' + nav;
+      wireBuy(); return;
+    }
+    main.innerHTML = head + '<div class="player"><div style="font-size:13px;color:#5A6478;font-weight:700">' + [mins(e.duration_sec), 'C.P. Parker'].filter(Boolean).join(' · ') + '</div>' +
+      '<audio id="au" controls preload="metadata" controlsList="nodownload"></audio>' +
+      '<div class="ctrls"><button id="back15" aria-label="Back 15 seconds">↺ 15</button><button id="fwd15" aria-label="Forward 15 seconds">15 ↻</button><span class="sp"></span>' +
+      ['0.8','1','1.25','1.5'].map(r => '<button data-r="' + r + '">' + r + '×</button>').join('') + '</div><div id="resume" style="font-size:12.5px;color:#5A6478;margin-top:10px"></div></div>' + nav +
+      '<p class="copy">© Merch Corporation. All rights reserved. For your personal listening in WholeClass.</p>';
+    const au = document.getElementById('au'), key = 'wc-ep-pos-' + n;
+    try { au.src = await WC.episodeUrl(e.path); } catch (er) { document.getElementById('resume').textContent = 'This episode could not be loaded. Check your connection and try again.'; return; }
+    let rate = 1; try { rate = +localStorage.getItem('wc-ep-rate') || 1; } catch (er) {}
+    const setRate = r => { rate = r; au.playbackRate = r; document.querySelectorAll('[data-r]').forEach(b => b.classList.toggle('on', +b.dataset.r === r)); try { localStorage.setItem('wc-ep-rate', r); } catch (er) {} };
+    document.querySelectorAll('[data-r]').forEach(b => b.onclick = () => setRate(+b.dataset.r));
+    setRate(rate);
+    document.getElementById('back15').onclick = () => { au.currentTime = Math.max(0, au.currentTime - 15); };
+    document.getElementById('fwd15').onclick = () => { au.currentTime = Math.min(au.duration || 1e9, au.currentTime + 15); };
+    let saved = 0; try { saved = +localStorage.getItem(key) || 0; } catch (er) {}
+    au.addEventListener('loadedmetadata', () => {
+      au.playbackRate = rate;
+      if (saved > 10 && saved < (au.duration || 0) - 10) { au.currentTime = saved; document.getElementById('resume').textContent = 'Picking up where you left off at ' + clock(saved) + '.'; }
+    });
+    let last = 0;
+    au.addEventListener('timeupdate', () => { if (Math.abs(au.currentTime - last) > 5) { last = au.currentTime; try { localStorage.setItem(key, Math.floor(au.currentTime)); } catch (er) {} } });
+    au.addEventListener('ended', () => { try { localStorage.removeItem(key); } catch (er) {} document.getElementById('resume').innerHTML = next ? 'Finished. <a href="listen.html?ep=' + next.n + '" style="color:#0E6B6B;font-weight:800">Play Episode ' + next.n + ' ›</a>' : 'Finished. That is the latest episode for now.'; });
+    au.addEventListener('ratechange', () => { if (au.playbackRate !== rate) setRate(au.playbackRate); });
+    if ('mediaSession' in navigator) {
+      try {
+        navigator.mediaSession.metadata = new MediaMetadata({ title: 'Episode ' + n + ': ' + title, artist: 'C.P. Parker', album: SERIES,
+          artwork: [{ src: 'icons/icon-512.png?v=2', sizes: '512x512', type: 'image/png' }] });
+        navigator.mediaSession.setActionHandler('seekbackward', () => { au.currentTime = Math.max(0, au.currentTime - 15); });
+        navigator.mediaSession.setActionHandler('seekforward', () => { au.currentTime = au.currentTime + 15; });
+      } catch (er) {}
+    }
     window.scrollTo(0, 0);
   }
 

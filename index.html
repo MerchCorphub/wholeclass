@@ -103,7 +103,7 @@ html,body{background:#01262B}
       <div style="background:#01434B;border-radius:16px;padding:14px 15px;margin-top:10px;color:#fff">
         <div style="font-family:'Sora',sans-serif;font-size:11px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:#E9B53F">Courses</div>
         <div style="display:flex;justify-content:space-between;align-items:center;margin-top:8px;padding-bottom:8px;border-bottom:1px solid #165F66"><span style="font-weight:700;font-size:14.5px">The 14-Day Discovery Class</span><span style="font-size:12px;font-weight:700;color:#CFE3E1">Open now</span></div>
-        <a href="listen.html" style="display:flex;justify-content:space-between;align-items:center;padding-top:8px;color:#fff;text-decoration:none"><span style="font-weight:700;font-size:14.5px">The Know Your Holes Series</span><span style="font-size:12px;font-weight:700;color:#E9B53F">Audio · Open ›</span></a>
+        <a href="listen.html" style="display:flex;justify-content:space-between;align-items:center;padding-top:8px;color:#fff;text-decoration:none"><span style="font-weight:700;font-size:14.5px">The Missing Fit (Know Your Holes Series)</span><span style="font-size:12px;font-weight:700;color:#E9B53F">Audio · Open ›</span></a>
       </div>
       <p style="text-align:center;font-family:'Sora',sans-serif;font-weight:800;font-size:15px;color:#01434B;margin:20px 0 4px">WholeClass™ — Become Your <span style="color:#8A5A00">Discovery.</span></p>
       <p style="text-align:center;margin:0"><a href="https://www.wholeclass.app" style="color:#0E6B6B;font-weight:700;font-size:14px">www.wholeclass.app</a></p>
@@ -612,7 +612,7 @@ html,body{background:#01262B}
         <div><h2 style="font-family:'Sora',sans-serif;font-size:20px;font-weight:800;color:#01434B;margin:0">Know Your Holes</h2><div style="font-size:13px;color:#4A5468;margin-top:2px">C.P. Parker · Merch Corporation</div><div style="font-size:12.5px;font-weight:700;color:{{ bookStatusInk }};margin-top:6px">{{ bookStatus }}</div></div>
       </div>
       <p style="font-size:13.5px;color:#4A5468;line-height:1.5;margin:0 0 12px">Each day of the class has a chapter. Day 1 reads Chapter 1, Day 2 reads Chapter 2, and so on.</p>
-      <a href="listen.html" style="display:flex;justify-content:space-between;align-items:center;gap:10px;background:#01434B;border-radius:12px;padding:12px 14px;margin-bottom:12px;text-decoration:none"><span><span style="display:block;color:#fff;font-weight:800;font-size:14px">🔊 The Know Your Holes Series</span><span style="display:block;color:#CFE3E1;font-size:12.5px;margin-top:2px">Audio lessons · Introduction and Chapter 1 free</span></span><span style="color:#E9B53F;font-weight:800;font-size:13px">Open ›</span></a>
+      <a href="listen.html" style="display:flex;justify-content:space-between;align-items:center;gap:10px;background:#01434B;border-radius:12px;padding:12px 14px;margin-bottom:12px;text-decoration:none"><span><span style="display:block;color:#fff;font-weight:800;font-size:14px">🎧 The Missing Fit</span><span style="display:block;color:#CFE3E1;font-size:12.5px;margin-top:2px">The Know Your Holes Series · 12 audio episodes · Episode 1 free</span></span><span style="color:#E9B53F;font-weight:800;font-size:13px">Open ›</span></a>
       <sc-for list="{{ bookChapters }}" as="c" hint-placeholder-count="15">
         <button style="display:flex;width:100%;justify-content:space-between;align-items:center;gap:10px;background:#fff;border:1px solid {{ c.border }};border-radius:12px;padding:11px 12px;margin-bottom:6px;cursor:pointer;text-align:left" onClick="{{ c.read }}"><span style="font-weight:700;font-size:14px;color:#01434B">{{ c.label }}</span><span style="font-size:12px;font-weight:700;color:{{ c.tagInk }};white-space:nowrap">{{ c.tag }}</span></button>
       </sc-for>
@@ -662,8 +662,8 @@ html,body{background:#01262B}
 
       <div style="background:#01434B;border-radius:16px;padding:16px 15px;margin-top:10px;color:#fff">
         <div style="font-family:'Sora',sans-serif;font-size:11px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:#E9B53F">Audio course</div>
-        <div style="font-family:'Sora',sans-serif;font-weight:800;font-size:16px;margin-top:4px">The Know Your Holes Series</div>
-        <p style="font-size:13px;color:#CFE3E1;line-height:1.45;margin:4px 0 10px">14 audio lessons with real situations and reflection pauses. The Introduction and Chapter 1 are free.</p>
+        <div style="font-family:'Sora',sans-serif;font-weight:800;font-size:16px;margin-top:4px">The Missing Fit</div>
+        <p style="font-size:13px;color:#CFE3E1;line-height:1.45;margin:4px 0 10px">The Know Your Holes Series: 12 audio episodes of real situations, read by C.P. Parker. Episode 1 is free.</p>
         <a href="listen.html" style="display:inline-block;border-radius:999px;padding:10px 16px;background:linear-gradient(135deg,#E9B53F,#C48504);color:#2A1C00;font-weight:800;font-size:13.5px;text-decoration:none">{{ seriesCta }}</a>
       </div>
 <sc-if value="{{ sample }}" hint-placeholder-val="{{ false }}">
@@ -1304,7 +1304,7 @@ class Component extends DCLogic {
       hasGift:!!s.gift, giftCode:s.gift?s.gift.code:'', giftLink:s.gift?s.gift.link:'', shareGift:()=>this.shareGift(), copyGift:()=>this.copyGift(),
       faithLabel: s.faith==='biblical'?'Biblical (NIV)':(s.faith==='informed'?'Faith-informed':'Practical only'),
       cycleFaith:()=>{ const o=['biblical','informed','secular'], f=o[(o.indexOf(s.faith)+1)%3]; this.setState({faith:f}); if(s.real&&!s.sample) WC.updateMember({faith:f}).catch(()=>{}); },
-      seriesCta: s.access&&s.access.series_unlocked ? '🔊 Keep listening' : `Listen free · full Series ${'$'}${s.access&&s.access.series_price ? s.access.series_price : '14.99'}`,
+      seriesCta: s.access&&s.access.series_unlocked ? '🎧 Keep listening' : `Play Episode 1 free · full Series ${'$'}${s.access&&s.access.series_price ? s.access.series_price : '14.99'}`,
       joinGroup:()=>this.openCode('group','more'),
       accessLabel: s.unlocked ? (s.access&&s.access.expires_at ? `Open until ${new Date(s.access.expires_at).toLocaleDateString('en-US',{month:'long',day:'numeric',year:'numeric'})}` : 'Open') : 'Not opened yet',
       toUnlockMore:()=>this.go('unlock'),

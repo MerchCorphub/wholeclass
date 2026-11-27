@@ -227,26 +227,61 @@ const PAGES = {
     };
   },
 
-  // ---------------- the series ----------------
+  // ---------------- the series: The Missing Fit episodes ----------------
   async series(){
-    const list = await rpc('admin_series');
-    main.innerHTML = '<h2>The Know Your Holes Series</h2><p class="sub">Audio lessons, sold separately. Members hear them read aloud by their device. Free lessons can be heard by any signed-in member.</p>' +
-      '<div class="card"><b style="color:#01434B">Load or replace the lessons</b><p class="muted" style="margin:4px 0 8px">Choose the audiobook script (.docx) with the Introduction and every chapter. Lessons are found by their "Introduction –" and "Chapter 1 –" headings. Lines in [brackets] are shown as stage notes and are never read aloud. Nothing changes until you press Publish.</p><input type="file" id="sFile" accept=".docx,application/vnd.openxmlformats-officedocument.wordprocessingml.document"><div id="sPrev"></div></div>' +
-      '<h3>In the app now</h3><div class="tw"><table><thead><tr><th>#</th><th>Lesson</th><th>Length</th><th>Free to hear</th><th></th></tr></thead><tbody>' +
-      (list.length ? list.map(c => '<tr><td>' + c.n + '</td><td><b>' + esc(c.title) + '</b></td><td>' + Math.round(c.chars / 1000) + 'k characters</td><td>' + (c.free ? '<span class="pill">Free</span>' : '<span class="pill gold">Paid</span>') + '</td><td style="white-space:nowrap"><button class="b2" data-f="' + c.n + '" data-v="' + (c.free ? 0 : 1) + '">' + (c.free ? 'Make paid' : 'Make free') + '</button> <a class="b2" style="text-decoration:none;display:inline-block" href="listen.html?n=' + c.n + '" target="_blank" rel="noopener">Open</a></td></tr>').join('') : '<tr><td colspan="5" class="muted">No lessons yet. Choose the script above.</td></tr>') + '</tbody></table></div>';
-    document.querySelectorAll('[data-f]').forEach(b => b.onclick = async () => { await rpc('admin_set_lesson_free', {p_n: +b.dataset.f, p_free: b.dataset.v === '1'}); PAGES.series(); });
-    document.getElementById('sFile').onchange = async e => {
-      const file = e.target.files[0], prev = document.getElementById('sPrev'); if (!file) return;
-      prev.innerHTML = '<p class="muted">Reading the Word file…</p>';
+    const eps = await rpc('admin_episodes');
+    const mins = v => v ? Math.floor(v / 60) + ':' + String(v % 60).padStart(2, '0') : '';
+    main.innerHTML = '<h2>The Missing Fit</h2><p class="sub">The Know Your Holes Series: recorded episodes, sold separately ($14.99 for one year). An episode shows “Coming soon” to members until it has audio. Free episodes play for every signed-in member.</p>' +
+      '<div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap"><button class="b2" id="addEp">+ Add episode ' + ((eps.length ? Math.max(...eps.map(e => e.n)) : 0) + 1) + '</button><a class="b2" style="text-decoration:none;display:inline-block" href="listen.html" target="_blank" rel="noopener">See it as a member</a></div><div id="addMsg"></div>' +
+      eps.map(e => '<div class="card" data-n="' + e.n + '"><div class="row" style="align-items:center">' +
+        '<div style="flex:0 0 52px"><div style="width:44px;height:44px;border-radius:12px;background:' + (e.audio_path ? '#01434B' : '#E8F0EF') + ';color:' + (e.audio_path ? '#fff' : '#01434B') + ';display:flex;align-items:center;justify-content:center;font:800 16px Sora,sans-serif">' + e.n + '</div></div>' +
+        '<div style="flex:1 1 260px"><label for="t' + e.n + '">Episode ' + e.n + ' title</label><input id="t' + e.n + '" value="' + esc(e.title || '') + '" placeholder="Title (shows “Coming soon” until audio is added)"></div>' +
+        '<div style="flex:0 0 150px"><label for="f' + e.n + '">Who can play it</label><select id="f' + e.n + '"><option value="0"' + (e.free ? '' : ' selected') + '>Series only</option><option value="1"' + (e.free ? ' selected' : '') + '>Free</option></select></div></div>' +
+        '<div style="margin-top:10px;font-size:13.5px">' + (e.audio_path ? '<span class="pill">Live</span> <span class="muted">' + esc(e.audio_path) + (e.duration_sec ? ' · ' + mins(e.duration_sec) : '') + '</span> <audio controls preload="none" data-p="' + esc(e.audio_path) + '" style="vertical-align:middle;height:32px;max-width:100%"></audio>' : '<span class="pill grey">Coming soon</span> <span class="muted">No audio yet</span>') + '</div>' +
+        '<div class="row" style="margin-top:8px;align-items:center"><div style="flex:1 1 240px"><label for="u' + e.n + '">' + (e.audio_path ? 'Replace audio' : 'Upload audio') + ' (MP3 or M4A)</label><input type="file" id="u' + e.n + '" accept="audio/mpeg,audio/mp3,audio/mp4,audio/x-m4a,audio/aac,.mp3,.m4a"></div>' +
+        '<div style="flex:0 0 auto;display:flex;gap:8px;flex-wrap:wrap"><button class="b" data-save="' + e.n + '">Save</button>' + (e.audio_path ? '<button class="b2 danger" data-del="' + e.n + '">Delete audio</button>' : '') + '</div></div><div id="m' + e.n + '"></div></div>').join('');
+
+    // admins can preview any episode
+    main.querySelectorAll('audio[data-p]').forEach(au => au.addEventListener('play', async () => { if (!au.dataset.loaded) { au.dataset.loaded = 1; try { au.src = await WC.episodeUrl(au.dataset.p); au.play(); } catch (er) {} } }, { once: false }));
+    const durationOf = file => new Promise(res => { const a = new Audio(); a.preload = 'metadata'; a.onloadedmetadata = () => { res(isFinite(a.duration) ? Math.round(a.duration) : null); URL.revokeObjectURL(a.src); }; a.onerror = () => res(null); a.src = URL.createObjectURL(file); });
+    const find = n => eps.find(e => e.n === n) || { n, title: '', audio_path: null, duration_sec: null, free: false };
+
+    main.querySelectorAll('[data-save]').forEach(btn => btn.onclick = async () => {
+      const n = +btn.dataset.save, e = find(n), box = document.getElementById('m' + n);
+      const title = document.getElementById('t' + n).value, free = document.getElementById('f' + n).value === '1';
+      const file = document.getElementById('u' + n).files[0];
+      btn.disabled = true;
       try {
-        if (!window.mammoth) await new Promise((res, rej) => { const s = document.createElement('script'); s.src = 'https://cdn.jsdelivr.net/npm/mammoth@1.8.0/mammoth.browser.min.js'; s.onload = res; s.onerror = () => rej(new Error('Could not load the Word reader. Check your connection.')); document.head.appendChild(s); });
-        const r = await mammoth.convertToHtml({arrayBuffer: await file.arrayBuffer()});
-        const ls = WCBook.splitSeries(r.value);
-        if (!ls.length) throw new Error('No lessons found. Lesson titles need to be headings like "Chapter 1 – What Is a Hole?".');
-        prev.innerHTML = '<div class="tw"><table><thead><tr><th>#</th><th>Lesson</th><th>Length</th><th>Free</th></tr></thead><tbody>' + ls.map(c => '<tr><td>' + c.n + '</td><td>' + esc(c.title) + '</td><td>' + Math.round(c.html.length / 1000) + 'k</td><td>' + (c.free ? 'Yes' : '') + '</td></tr>').join('') + '</tbody></table></div>' +
-          '<p class="muted">Found ' + ls.length + ' lessons. Publishing replaces the Series for everyone.</p><button class="b" id="sPub">Publish to the app</button><div id="sMsg"></div>';
-        armed(document.getElementById('sPub'), 'Tap again to publish', async () => { try { const x = await rpc('admin_save_series', {p_lessons: ls.map(c => ({n: c.n, title: c.title, html: c.html, free: c.free}))}); msg(document.getElementById('sMsg'), x.saved + ' lessons published.', true); setTimeout(() => PAGES.series(), 1200); } catch (er) { msg(document.getElementById('sMsg'), errMsg(er)); } });
-      } catch (er) { msg(prev, errMsg(er)); }
+        let path = e.audio_path, dur = e.duration_sec;
+        if (file) {
+          if (file.size > 200 * 1024 * 1024) throw new Error('That file is over 200 MB. Export it as an MP3 at 128 kbps.');
+          const ext = (file.name.match(/\.(mp3|m4a|aac|mp4|wav)$/i) || [, 'mp3'])[1].toLowerCase();
+          const newPath = 'episode-' + String(n).padStart(2, '0') + '-' + Date.now() + '.' + ext;
+          box.innerHTML = '<div class="msg ok">Uploading ' + esc(file.name) + ' (' + Math.round(file.size / 1048576) + ' MB)… keep this page open.</div>';
+          dur = await durationOf(file);
+          await WC.uploadEpisode(newPath, file);
+          const old = path; path = newPath;
+          await rpc('admin_save_episode', { p_n: n, p_title: title, p_audio_path: path, p_duration_sec: dur, p_free: free });
+          if (old && old !== path) { try { await WC.removeEpisodeFile(old); } catch (er) {} }
+        } else {
+          await rpc('admin_save_episode', { p_n: n, p_title: title, p_audio_path: path, p_duration_sec: dur, p_free: free });
+        }
+        msg(box, file ? 'Episode ' + n + ' is live for members.' : 'Saved.', true);
+        setTimeout(() => PAGES.series(), 900);
+      } catch (er) { msg(box, errMsg(er)); } finally { btn.disabled = false; }
+    });
+    main.querySelectorAll('[data-del]').forEach(btn => armed(btn, 'Tap again to delete', async () => {
+      const n = +btn.dataset.del, e = find(n), box = document.getElementById('m' + n);
+      try {
+        await rpc('admin_save_episode', { p_n: n, p_title: document.getElementById('t' + n).value, p_audio_path: null, p_duration_sec: null, p_free: document.getElementById('f' + n).value === '1' });
+        if (e.audio_path) { try { await WC.removeEpisodeFile(e.audio_path); } catch (er) {} }
+        msg(box, 'Audio deleted. Members now see Episode ' + n + ' as “Coming soon”.', true);
+        setTimeout(() => PAGES.series(), 900);
+      } catch (er) { msg(box, errMsg(er)); }
+    }));
+    document.getElementById('addEp').onclick = async () => {
+      const n = (eps.length ? Math.max(...eps.map(e => e.n)) : 0) + 1;
+      try { await rpc('admin_save_episode', { p_n: n, p_title: '', p_audio_path: null, p_duration_sec: null, p_free: false }); PAGES.series(); } catch (er) { msg(document.getElementById('addMsg'), errMsg(er)); }
     };
   },
 
@@ -292,7 +327,7 @@ async function go(k){
   if (!s) { main.innerHTML = '<div class="gate"><h2>Sign in first</h2><p class="sub">Open WholeClass, sign in, then come back to this page.</p><a href="./">Go to WholeClass</a></div>'; return; }
   me = await rpc('console_me');
   if (me.admin) {
-    setTabs([['overview','Overview'],['members','Members'],['groups','Guided groups'],['keys','Book keys'],['payments','Payments'],['book','The book'],['series','The Series'],['settings','Settings']]);
+    setTabs([['overview','Overview'],['members','Members'],['groups','Guided groups'],['keys','Book keys'],['payments','Payments'],['book','The book'],['series','The Missing Fit'],['settings','Settings']]);
     const h = location.hash.slice(1); go(PAGES[h] && h !== 'mygroups' ? h : 'overview');
   } else if (me.facilitator) {
     document.getElementById('ttl').textContent = 'My groups';
