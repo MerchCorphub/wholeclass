@@ -64,7 +64,7 @@
     if (!r.ok) throw new Error(d.error || 'Payment could not be started.');
     return d;
   }
-  async function checkout() { const d = await pay('checkout'); location.href = d.url; }
+  async function checkout(product) { const d = await pay('checkout', product ? { product } : {}); location.href = d.url; }
   async function confirmPayment(id) { return pay('confirm', { session_id: id }); }
 
   window.WC = { session, onAuth, signUp, signIn, signOut, resetPassword, setPassword, ensureMember, loadProgress, saveProgress, saveDay, updateMember,
@@ -75,6 +75,8 @@
     acceptSeat: code => rpc('accept_seat', { p_code: code }),
     exportData: () => rpc('export_my_data'),
     bookContents: () => rpc('book_contents'),
+    seriesContents: () => rpc('series_contents'),
+    lesson: async n => { const c = await sb(); return ok(await c.from('series_lessons').select('n,title,html').eq('n', n).maybeSingle()); },
     chapter: async n => { const c = await sb(); return ok(await c.from('book_chapters').select('n,title,html').eq('n', n).maybeSingle()); },
     rpc,
     eraseAnswers: () => rpc('erase_my_answers') };

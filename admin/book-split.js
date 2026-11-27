@@ -55,5 +55,37 @@ window.WCBook = (function () {
     out.sort((a, b) => a.n - b.n);
     return out;
   }
-  return { split, HOLES, slug };
+  // The audiobook script: "Introduction –" and "Chapter N –" headings, lines inside paragraphs split by
+  // line breaks, [bracketed] lines become stage notes (shown, never read aloud), "- " lines become bullets.
+  function splitSeries(html) {
+    const doc = new DOMParser().parseFromString('<div id="r">' + html + '</div>', 'text/html');
+    const root = doc.getElementById('r');
+    const esc = t => t.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+    const out = []; let cur = null;
+    for (const node of Array.from(root.children)) {
+      if (/^H[1-3]$/.test(node.tagName)) {
+        const t = text(node);
+        const m = t.match(/^Chapter\s*(\d+)\s*[-–—:]\s*(.*)$/i);
+        if (m) { cur = { n: +m[1], title: m[2].trim() || ('Chapter ' + m[1]), lines: [] }; out.push(cur); }
+        else if (/^introduction/i.test(t)) { cur = { n: 0, title: t.replace(/^introduction\s*[-–—:]?\s*/i, '') || 'Introduction', lines: [] }; out.push(cur); }
+        else cur = null;
+        continue;
+      }
+      if (!cur) continue;
+      if (node.tagName === 'UL' || node.tagName === 'OL') { node.querySelectorAll('li').forEach(li => cur.lines.push('- ' + text(li))); continue; }
+      node.innerHTML.split(/<br\s*\/?>/i).forEach(part => { const d = doc.createElement('div'); d.innerHTML = part; const t = (d.textContent || '').replace(/\s+/g, ' ').trim(); if (t) cur.lines.push(t); });
+    }
+    return out.map(c => {
+      let h = '', inList = false;
+      c.lines.forEach(l => {
+        if (/^[-•]\s+/.test(l)) { if (!inList) { h += '<ul>'; inList = true; } h += '<li>' + esc(l.replace(/^[-•]\s+/, '')) + '</li>'; return; }
+        if (inList) { h += '</ul>'; inList = false; }
+        const cue = l.match(/^\[([^\]]+)\]$/);
+        h += cue ? '<p class="cue">' + esc(cue[1]) + '</p>' : '<p>' + esc(l) + '</p>';
+      });
+      if (inList) h += '</ul>';
+      return { n: c.n, title: c.title, html: h, free: c.n <= 1 };
+    }).sort((a, b) => a.n - b.n);
+  }
+  return { split, splitSeries, HOLES, slug };
 })();

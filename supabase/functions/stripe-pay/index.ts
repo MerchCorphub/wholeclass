@@ -1,6 +1,6 @@
-// WholeClass stripe-pay: starts a Stripe Checkout payment for the 14-Day Discovery Class ($20, one year)
-// and confirms it when the buyer returns. The price always comes from the database (public.prices),
-// never from the browser. One-time payment, no automatic renewal.
+// WholeClass stripe-pay: starts a Stripe Checkout payment for the 14-Day Discovery Class or the
+// Know Your Holes Series (each one year, no automatic renewal) and confirms it when the buyer returns.
+// The price always comes from the database (public.prices), never from the browser.
 // Secret (Supabase › Edge Functions › Secrets): STRIPE_SECRET_KEY.
 import { createClient } from 'npm:@supabase/supabase-js@2';
 
@@ -49,7 +49,8 @@ Deno.serve(async (req) => {
 
   try {
     if (body.action === 'checkout') {
-      const { data: prep, error } = await admin.rpc('stripe_prepare', { p_user: who.user.id });
+      const product = body.product === 'series' ? 'series' : 'class';
+      const { data: prep, error } = await admin.rpc('stripe_prepare', { p_user: who.user.id, p_product: product });
       if (error) return json({ error: error.message }, 400, origin);
       const base = origin && ALLOWED_ORIGINS.includes(origin) ? origin : SITE;
       const path = base.includes('github.io') ? '/wholeclass/' : '/';
@@ -61,10 +62,11 @@ Deno.serve(async (req) => {
         'line_items[0][price_data][product_data][name]': prep.description,
         client_reference_id: prep.payment_id,
         'metadata[payment_id]': prep.payment_id,
+        'metadata[product]': product,
         'payment_intent_data[metadata][payment_id]': prep.payment_id,
         'custom_text[submit][message]': 'One payment, one year of access. No automatic renewal.',
-        success_url: `${base}${path}?paid={CHECKOUT_SESSION_ID}`,
-        cancel_url: `${base}${path}?canceled=1`,
+        success_url: `${base}${path}${product === 'series' ? 'listen.html' : ''}?paid={CHECKOUT_SESSION_ID}`,
+        cancel_url: `${base}${path}${product === 'series' ? 'listen.html' : ''}?canceled=1`,
         ...(prep.email ? { customer_email: prep.email } : {}),
       }, prep.payment_id);
       await admin.rpc('stripe_attach_session', { p_payment: prep.payment_id, p_session: session.id });

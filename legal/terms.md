@@ -11,7 +11,7 @@ By creating an account, buying access, using a book key, joining a guided group,
 
 ## 1. What the Service is
 
-WholeClass is a personal development and educational platform inspired by the book *Know Your Holes* by C.P. Parker. It includes the free Quick Five assessment, the 14-Day Discovery Class (daily readings, questions, reflection, the Daily Diagnosis Box™, the Hole Map™ and the IWK Letter), guided groups led by churches, ministries or counselors, and other courses we may add.
+WholeClass is a personal development and educational platform inspired by the book *Know Your Holes* by C.P. Parker. It includes the free Quick Five assessment, the 14-Day Discovery Class (daily readings, questions, reflection, the Daily Diagnosis Box™, the Hole Map™ and the IWK Letter), guided groups led by churches, ministries or counselors, the Know Your Holes Series of audio lessons, and other courses we may add.
 
 ## 2. Who may use the Service
 
@@ -25,6 +25,7 @@ Give us true, current information. Keep your password private; you are responsib
 
 - The account and the Quick Five are free. **Days 2 to 14 of the Discovery Class require access**, which you can get by purchase, with a book key, through a guided group, or with a gifted seat.
 - **Purchased access is a one-time payment of $20 (U.S.) for one year** from the date of purchase. It does not renew automatically. Prices are shown before you pay and may change for future purchases.
+- **The Know Your Holes Series** (audio lessons) is a separate one-time payment of **$14.99 (U.S.) for one year** from the date of purchase. It does not renew automatically and is not included in class access. Its Introduction and Chapter 1 are free.
 - Payments are processed by Stripe. We do not receive or store your full card number. Your payment is also subject to Stripe's terms.
 - **All sales are final.** Because access begins immediately, payments are not refundable, except where the law requires otherwise.
 

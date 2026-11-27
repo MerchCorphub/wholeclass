@@ -1,6 +1,6 @@
 // WholeClass service worker: caches only the app's own static files so it opens fast and offline.
 // Account data from the database is never cached.
-const CACHE = 'wholeclass-static-v6';
+const CACHE = 'wholeclass-static-v7';
 const STATIC = /\.(?:html|js|css|png|jpe?g|webp|svg|ico|json|woff2?)$/i;
 self.addEventListener('install', () => self.skipWaiting());
 self.addEventListener('activate', e => e.waitUntil(caches.keys().then(keys => Promise.all(keys.filter(k => k !== CACHE).map(k => caches.delete(k)))).then(() => self.clients.claim())));
