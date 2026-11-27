@@ -52,13 +52,21 @@ button:disabled{opacity:.55;cursor:default}
 .bars small{position:absolute;bottom:-20px;left:0;right:0;text-align:center;font-size:11px;color:#5A6478;font-weight:700}
 .codes{font-family:ui-monospace,Menlo,monospace;background:#FAF7F1;border-radius:10px;padding:10px;max-height:240px;overflow:auto;white-space:pre-wrap;font-size:13px}
 .gate{max-width:440px;margin:60px auto;text-align:center}
+.login{max-width:400px;margin:48px auto;background:#fff;border:1px solid #EADFCB;border-radius:20px;padding:26px 22px;text-align:left}
+.login img{width:56px;height:56px;border-radius:14px;display:block;margin:0 auto 10px}
+.login h2{text-align:center;margin:0 0 4px}.login .sub{text-align:center}
+.login label{display:block;margin-top:14px}
+.login input{width:100%}
+.login .go{width:100%;margin-top:18px;padding:13px}
+.login .lnk{background:none;border:none;color:#0E6B6B;font-weight:700;cursor:pointer;padding:6px 0;font-size:13.5px}
+#signout{background:none;border:1.5px solid #fff;color:#fff;border-radius:999px;padding:6px 12px;font-weight:700;cursor:pointer;margin-left:8px;font-size:13px}
 .gate a{display:inline-block;margin-top:12px;background:#01434B;color:#fff;border-radius:999px;padding:11px 18px;font-weight:700;text-decoration:none}
 .muted{color:#5A6478;font-size:13px}
 </style>
 </head>
 <body>
 <header>
-  <div class="hrow"><img src="assets/wholeclass-icon.png" alt=""><h1 id="ttl">WholeClass console</h1><a href="./">‹ Back to the app</a></div>
+  <div class="hrow"><img src="assets/wholeclass-icon.png" alt=""><h1 id="ttl">WholeClass console</h1><a href="./">‹ Back to the app</a><button id="signout" hidden>Sign out</button></div>
   <nav id="tabs" role="tablist"></nav>
 </header>
 <main id="main"><p>Loading…</p></main>
@@ -340,6 +348,38 @@ async function completion(g, box){
   } catch (e) { msg(box, errMsg(e)); }
 }
 
+function login(note){
+  tabs.innerHTML = '';
+  main.innerHTML = '<form class="login" id="lf" novalidate><img src="assets/wholeclass-icon.png" alt=""><h2>Console sign in</h2><p class="sub">For WholeClass admins and guided-group facilitators.</p>' +
+    '<div id="lm">' + (note || '') + '</div>' +
+    '<label for="le">Email</label><input id="le" type="email" autocomplete="username" required>' +
+    '<label for="lp">Password</label><input id="lp" type="password" autocomplete="current-password" required>' +
+    '<button class="b go" type="submit">Sign in to the console</button>' +
+    '<div style="display:flex;justify-content:space-between;margin-top:10px"><button type="button" class="lnk" id="lfp">Forgot password?</button><button type="button" class="lnk" id="lsh">Show password</button></div></form>';
+  const box = document.getElementById('lm'), em = document.getElementById('le'), pw = document.getElementById('lp');
+  try { em.value = localStorage.getItem('wc-admin-email') || ''; } catch (e) {}
+  (em.value ? pw : em).focus();
+  document.getElementById('lsh').onclick = e => { const t = pw.type === 'password'; pw.type = t ? 'text' : 'password'; e.target.textContent = t ? 'Hide password' : 'Show password'; };
+  document.getElementById('lfp').onclick = async () => {
+    if (!/\S+@\S+\.\S+/.test(em.value)) return msg(box, 'Type your email above first.');
+    try { await WC.resetPassword(em.value.trim()); msg(box, 'Check your email for a link to set a new password. Then come back to wholeclass.app/admin.', true); } catch (e) { msg(box, errMsg(e)); }
+  };
+  document.getElementById('lf').onsubmit = async e => {
+    e.preventDefault();
+    const btn = e.target.querySelector('.go');
+    if (!em.value.trim() || !pw.value) return msg(box, 'Enter your email and password.');
+    btn.disabled = true; btn.textContent = 'Signing in…';
+    try {
+      await WC.signIn(em.value.trim(), pw.value);
+      try { localStorage.setItem('wc-admin-email', em.value.trim()); } catch (er) {}
+      location.reload();
+    } catch (er) {
+      btn.disabled = false; btn.textContent = 'Sign in to the console';
+      msg(box, /invalid/i.test(errMsg(er)) ? 'That email and password do not match. Try again or use Forgot password.' : /confirm/i.test(errMsg(er)) ? 'Confirm your email first, using the link we sent you.' : errMsg(er));
+    }
+  };
+}
+
 function setTabs(list){
   tabs.innerHTML = list.map(([k, l]) => '<button role="tab" data-k="' + k + '" aria-selected="false">' + l + '</button>').join('');
   tabs.querySelectorAll('button').forEach(b => b.onclick = () => go(b.dataset.k));
@@ -353,7 +393,9 @@ async function go(k){
 
 (async () => {
   const s = await WC.session();
-  if (!s) { main.innerHTML = '<div class="gate"><h2>Sign in first</h2><p class="sub">Open WholeClass, sign in, then come back to this page.</p><a href="./">Go to WholeClass</a></div>'; return; }
+  if (!s) return login();
+  const so = document.getElementById('signout'); so.hidden = false;
+  so.onclick = async () => { await WC.signOut(); location.replace('admin.html'); };
   me = await rpc('console_me');
   if (me.admin) {
     setTabs([['overview','Overview'],['members','Members'],['groups','Guided groups'],['keys','Book keys'],['payments','Payments'],['book','The book'],['series','The Missing Fit'],['settings','Settings']]);
@@ -363,6 +405,7 @@ async function go(k){
     setTabs([['mygroups','My groups']]); go('mygroups');
   } else {
     main.innerHTML = '<div class="gate"><h2>This page is for WholeClass admins</h2><p class="sub">If you lead a guided group, ask the WholeClass team to add you as its facilitator.</p><a href="./">Back to WholeClass</a></div>';
+    document.getElementById('signout').textContent = 'Sign out and use another account';
   }
 })().catch(e => { main.innerHTML = '<div class="msg err">' + esc(errMsg(e)) + '</div>'; });
 })();
