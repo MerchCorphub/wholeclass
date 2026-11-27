@@ -244,15 +244,44 @@ const PAGES = {
     // admins can preview any episode
     main.querySelectorAll('audio[data-p]').forEach(au => au.addEventListener('play', async () => { if (!au.dataset.loaded) { au.dataset.loaded = 1; try { au.src = await WC.episodeUrl(au.dataset.p); au.play(); } catch (er) {} } }, { once: false }));
     const durationOf = file => new Promise(res => { const a = new Audio(); a.preload = 'metadata'; a.onloadedmetadata = () => { res(isFinite(a.duration) ? Math.round(a.duration) : null); URL.revokeObjectURL(a.src); }; a.onerror = () => res(null); a.src = URL.createObjectURL(file); });
+    // Reads the title tag (ID3v2 TIT2) from an MP3, e.g. "The Missing Fit, Episode 2: Title" -> "Title"
+    const tagTitle = async file => {
+      try {
+        const b = new Uint8Array(await file.slice(0, 256 * 1024).arrayBuffer());
+        if (b[0] !== 73 || b[1] !== 68 || b[2] !== 51) return '';
+        const ver = b[3], end = 10 + ((b[6] & 127) << 21 | (b[7] & 127) << 14 | (b[8] & 127) << 7 | (b[9] & 127));
+        let i = 10;
+        while (i + 10 < Math.min(end, b.length)) {
+          const id = String.fromCharCode(b[i], b[i+1], b[i+2], b[i+3]);
+          const size = ver === 4 ? ((b[i+4] & 127) << 21 | (b[i+5] & 127) << 14 | (b[i+6] & 127) << 7 | (b[i+7] & 127)) : (b[i+4] << 24 | b[i+5] << 16 | b[i+6] << 8 | b[i+7]);
+          if (!/^[A-Z0-9]{4}$/.test(id) || size <= 0) break;
+          if (id === 'TIT2') {
+            const enc = b[i+10], body = b.slice(i + 11, i + 10 + size);
+            const txt = enc === 1 || enc === 2 ? new TextDecoder(enc === 2 ? 'utf-16be' : 'utf-16').decode(body) : new TextDecoder(enc === 3 ? 'utf-8' : 'latin1').decode(body);
+            const t = txt.replace(/\u0000/g, '').trim();
+            return t.includes(':') ? t.slice(t.lastIndexOf(':') + 1).trim() : t;
+          }
+          i += 10 + size;
+        }
+      } catch (er) {}
+      return '';
+    };
+    // Fill an empty title box as soon as a file is picked
+    main.querySelectorAll('input[type=file][id^=u]').forEach(inp => inp.addEventListener('change', async () => {
+      const n = inp.id.slice(1), box = document.getElementById('t' + n);
+      if (inp.files[0] && !box.value.trim()) { const t = await tagTitle(inp.files[0]); if (t) box.value = t; }
+    }));
     const find = n => eps.find(e => e.n === n) || { n, title: '', audio_path: null, duration_sec: null, free: false };
 
     main.querySelectorAll('[data-save]').forEach(btn => btn.onclick = async () => {
       const n = +btn.dataset.save, e = find(n), box = document.getElementById('m' + n);
-      const title = document.getElementById('t' + n).value, free = document.getElementById('f' + n).value === '1';
+      let title = document.getElementById('t' + n).value.trim(); const free = document.getElementById('f' + n).value === '1';
       const file = document.getElementById('u' + n).files[0];
       btn.disabled = true;
       try {
         let path = e.audio_path, dur = e.duration_sec;
+        if (file && !title) { title = await tagTitle(file); document.getElementById('t' + n).value = title; }
+        if (!title && (file || path)) throw new Error('Type a title for Episode ' + n + ' first. Members see it on the episode list.');
         if (file) {
           if (file.size > 200 * 1024 * 1024) throw new Error('That file is over 200 MB. Export it as an MP3 at 128 kbps.');
           const ext = (file.name.match(/\.(mp3|m4a|aac|mp4|wav)$/i) || [, 'mp3'])[1].toLowerCase();

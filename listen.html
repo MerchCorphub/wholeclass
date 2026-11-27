@@ -108,7 +108,7 @@ h1{font-family:'Sora',sans-serif;color:#01434B;font-size:28px;line-height:1.2;ma
       (open ? '<span class="pill">Open until ' + fmtDate(a.series_expires_at) + '</span>' : '<button class="buy" id="buyBtn">Get the full Series · ' + money(a.series_price) + ' for one year</button><p style="font-size:12.5px;margin-top:8px">Episode 1 is free. One payment, no automatic renewal.</p>') + '</div>' +
       '<p class="muted" style="font-size:13px;color:#5A6478;margin:0 0 10px">' + ready + ' of ' + eps.length + ' episodes available. New episodes appear here as they are released.</p>' +
       eps.map(e => {
-        const t = e.title ? esc(e.title) : 'Coming soon';
+        const t = e.title ? esc(e.title) : (e.ready ? 'Episode ' + e.n : 'Coming soon');
         const sub = e.ready ? ['Episode ' + e.n, mins(e.duration_sec)].filter(Boolean).join(' · ') : 'Episode ' + e.n;
         const inner = '<div class="num">' + e.n + '</div><div class="info"><div class="ti">' + t + '</div><div class="sub">' + sub + '</div></div>' + tagFor(e, open);
         return e.ready ? '<a class="ep ready" href="listen.html?ep=' + e.n + '">' + inner + '</a>' : '<div class="ep soon" aria-disabled="true">' + inner + '</div>';
@@ -119,7 +119,7 @@ h1{font-family:'Sora',sans-serif;color:#01434B;font-size:28px;line-height:1.2;ma
   async function episode(n, a, eps){
     const e = eps.find(x => x.n === n);
     if (!e) { main.innerHTML = '<h1>Episode not found</h1><p><a href="listen.html">See all episodes</a></p>'; return; }
-    const title = e.title || 'Coming soon';
+    const title = e.title || (e.ready ? 'Episode ' + n : 'Coming soon');
     hdr.textContent = 'Episode ' + n;
     document.title = 'Episode ' + n + ': ' + title + ' · The Missing Fit';
     const ready = eps.filter(x => x.ready), i = ready.findIndex(x => x.n === n), prev = ready[i - 1], next = ready[i + 1];
