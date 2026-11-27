@@ -222,7 +222,7 @@ html,body{background:#01262B}
       </div>
       <h2 style="font-family:'Sora',sans-serif;font-size:21px;font-weight:800;color:{{ quickTier.ink }};margin:6px 0 2px">{{ quickTier.label }}</h2>
       <p style="font-size:13px;color:#4A5468;line-height:1.45;margin:0">{{ quickTier.blurb }}</p>
-      <p style="font-size:12.5px;color:#5A6478;margin:8px 0 0"><strong style="color:#01434B">1</strong> = filled in my relationships right now · <strong style="color:#01434B">10</strong> = wide open and costing me</p>
+      <p style="font-size:12.5px;color:#5A6478;margin:8px 0 0">How filled is each one in your relationships right now? <strong style="color:#01434B">1</strong> = empty · <strong style="color:#01434B">10</strong> = completely filled</p>
     </div>
     <div style="flex:1;overflow-y:auto;padding:4px 22px 10px">
       <sc-for list="{{ quickRows }}" as="r" hint-placeholder-count="7">
@@ -410,7 +410,7 @@ html,body{background:#01262B}
       <sc-if value="{{ stDiag }}" hint-placeholder-val="{{ false }}">
         <p style="font-family:'Sora',sans-serif;font-size:11px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:#0E6B6B;margin:4px 0 0">D · Diagnose</p>
         <h2 style="font-family:'Sora',sans-serif;font-size:21px;font-weight:800;color:#01434B;margin:4px 0 4px">Daily Diagnosis Box™</h2>
-        <p style="font-size:13.5px;color:#4A5468;line-height:1.5;margin:0 0 10px">How open is each hole right now? 1 is filled, 10 is wide open.</p>
+        <p style="font-size:13.5px;color:#4A5468;line-height:1.5;margin:0 0 10px">How filled is each hole right now? 1 is empty, 10 is completely filled.</p>
         <sc-for list="{{ sevRows }}" as="r" hint-placeholder-count="2">
           <div style="padding:10px 0">
             <div style="display:flex;justify-content:space-between"><span style="font-family:'Sora',sans-serif;font-weight:700;font-size:14.5px;color:#01434B">{{ r.k }}</span><span style="font-family:'Sora',sans-serif;font-weight:800;font-size:14px;color:#01434B">{{ r.valLabel }}</span></div>
@@ -850,11 +850,14 @@ class Component extends DCLogic {
   rank(){ const s=this.state; return this.rankWith(s.base,s.mid,s.fin,s.sev,s.sight); }
 
   segStyle(sel, n){
-    const hot = n>=7;
+    const hot = n<=4; // low "filled" scores mark an open hole
     return `border:1.5px solid ${sel?(hot?'#01434B':'#0E7C7B'):'#E3E9F2'};background:${sel?(hot?'#01434B':'#E3F2F1'):'#fff'};color:${sel?(hot?'#fff':'#0A5656'):'#4A5468'};border-radius:8px;height:32px;padding:0;font-size:12.5px;font-weight:800;cursor:pointer;font-family:'Sora',sans-serif`;
   }
+  // Members answer "how filled is this?" (1 = empty, 10 = completely filled). Scores are stored as how OPEN the hole is
+  // (open = 11 - filled), so the biggest holes still rank highest. fill() converts a stored score back for display.
+  fill(v){ return v==null ? null : 11 - v; }
   segRow(k, cur, setter){
-    return [1,2,3,4,5,6,7,8,9,10].map(n=>({n, aria:`${k}: ${n} of 10`, style:this.segStyle(cur===n,n), pick:()=>setter(n)}));
+    return [1,2,3,4,5,6,7,8,9,10].map(n=>({n, aria:`${k}: ${n} of 10 filled`, style:this.segStyle(cur!=null && 11-cur===n,n), pick:()=>setter(11-n)}));
   }
   pillStyle(sel){
     return `border:1.5px solid ${sel?'#0E7C7B':'#D5DCE7'};background:${sel?'#E3F2F1':'#fff'};color:${sel?'#0A5656':'#2A3446'};border-radius:999px;padding:8px 13px;font-size:13px;font-weight:700;cursor:pointer`;
@@ -1108,9 +1111,9 @@ class Component extends DCLogic {
 
     // quick five
     const qTierKey=this.TIER_ORDER[s.quickStep], qTier=this.TIERS[qTierKey];
-    const quickRows=this.HOLES.filter(h=>h.t===qTierKey).map(h=>({k:h.k, def:h.def, ink:h.ink, valLabel: s.base[h.k]!=null? `${s.base[h.k]}/10`:'', opts:this.segRow(h.k, s.base[h.k], n=>this.setState(st=>({base:{...st.base,[h.k]:n}})))}));
+    const quickRows=this.HOLES.filter(h=>h.t===qTierKey).map(h=>({k:h.k, def:h.def, ink:h.ink, valLabel: s.base[h.k]!=null? `${this.fill(s.base[h.k])}/10`:'', opts:this.segRow(h.k, s.base[h.k], n=>this.setState(st=>({base:{...st.base,[h.k]:n}})))}));
     const qMissing=this.HOLES.filter(h=>h.t===qTierKey && s.base[h.k]==null).length;
-    const provisionalTop=this.rankWith(s.base,{},{},{},{}).filter(h=>h.score!=null).slice(0,5).map((h,i)=>({...h, rank:i+1, baseLabel:`${s.base[h.k]}/10`}));
+    const provisionalTop=this.rankWith(s.base,{},{},{},{}).filter(h=>h.score!=null).slice(0,5).map((h,i)=>({...h, rank:i+1, baseLabel:`${this.fill(s.base[h.k])}/10 filled`}));
 
     // home
     const todayHoles = plan.s ? [].concat(...plan.s.map(id=>this.SESSIONS[id].holes)) : (plan.kind==='baseline'?['All 25']:(plan.kind==='final'?['Re-score top 10','Confirm your five']:['Hole Map','IWK Letter']));
@@ -1142,13 +1145,13 @@ class Component extends DCLogic {
         huntMoment:ss.moment, setHuntMoment:e=>this.updSess({moment:e.target.value}),
         whyRows:ss.whys.map((v,i)=>({n:i+1, id:`why${i}`, v, set:e=>{const w=[...this.state.sess.whys]; w[i]=e.target.value; this.updSess({whys:w});}})),
         huntPoint:[...holes, 'Another hole'].map(label=>({label, style:this.pillStyle(ss.point===label), pick:()=>this.updSess({point:label})})),
-        sevRows:holes.map(k=>({k, valLabel: ss.sev[k]!=null?`${ss.sev[k]}/10`:'', opts:this.segRow(k, ss.sev[k], n=>this.updSess({sev:{...this.state.sess.sev,[k]:n}}))})),
+        sevRows:holes.map(k=>({k, valLabel: ss.sev[k]!=null?`${this.fill(ss.sev[k])}/10`:'', opts:this.segRow(k, ss.sev[k], n=>this.updSess({sev:{...this.state.sess.sev,[k]:n}}))})),
         diagFields:[
           {id:'dTrig', label:'Trigger', ph:'What set it off?', v:ss.trig, set:e=>this.updSess({trig:e.target.value})},
           {id:'dWho', label:"Who's affected", ph:'You, your spouse, your kids…', v:ss.who, set:e=>this.updSess({who:e.target.value})},
           {id:'dStr', label:'Hidden strength beneath it', ph:'What this hole says you value', v:ss.strength, set:e=>this.updSess({strength:e.target.value})}
         ],
-        checkRows:this.HOLES.map(h=>{const v=ss.check[h.k], b=s.base[h.k]; const diff=(v!=null&&b!=null)?v-b:0; return {k:h.k, move: diff===0?'Same as Day 1':(diff>0?`Up ${diff}`:`Down ${-diff}`), moveInk: diff>0?'#B0331F':(diff<0?'#0E6B6B':'#5A6478'), opts:this.segRow(h.k, v, n=>this.updSess({check:{...this.state.sess.check,[h.k]:n}}))};}),
+        checkRows:this.HOLES.map(h=>{const v=ss.check[h.k], b=s.base[h.k]; const diff=(v!=null&&b!=null)?b-v:0; return {k:h.k, move: diff===0?'Same as Day 1':(diff>0?`Fuller by ${diff}`:`Emptier by ${-diff}`), moveInk: diff<0?'#B0331F':(diff>0?'#0E6B6B':'#5A6478'), opts:this.segRow(h.k, v, n=>this.updSess({check:{...this.state.sess.check,[h.k]:n}}))};}),
         respondAction:ss.action, setRespond:e=>this.updSess({action:e.target.value}),
         growLine:ss.grow, setGrow:e=>this.updSess({grow:e.target.value}),
         sNextLabel: ss.step===steps.length-1 ? `Finish Day ${ss.day}` : 'Next'
@@ -1158,7 +1161,7 @@ class Component extends DCLogic {
     // final
     const finalTopRows=(s.finalTop||[]).map((k,i)=>{const h=ranked.find(x=>x.k===k); return {...h, rank:i+1, seenLabel:seenLabel(h), up:()=>this.moveTop(i,-1), down:()=>this.moveTop(i,1)};});
     const finalBench=ranked.filter(h=>!(s.finalTop||[]).includes(h.k)).slice(0,5).map(h=>({...h, seenLabel:seenLabel(h), swap:()=>this.swapIn(h.k)}));
-    const finalRows=Object.keys(s.fin).map(k=>{const v=s.fin[k], prev=s.mid[k]??s.base[k]; const diff=(v!=null&&prev!=null)?v-prev:0; return {k, move: diff===0?'No change':(diff>0?`Up ${diff}`:`Down ${-diff}`), moveInk: diff>0?'#B0331F':(diff<0?'#0E6B6B':'#5A6478'), opts:this.segRow(k, v, n=>this.setState(st=>({fin:{...st.fin,[k]:n}})))};});
+    const finalRows=Object.keys(s.fin).map(k=>{const v=s.fin[k], prev=s.mid[k]??s.base[k]; const diff=(v!=null&&prev!=null)?prev-v:0; return {k, move: diff===0?'No change':(diff>0?`Fuller by ${diff}`:`Emptier by ${-diff}`), moveInk: diff<0?'#B0331F':(diff>0?'#0E6B6B':'#5A6478'), opts:this.segRow(k, v, n=>this.setState(st=>({fin:{...st.fin,[k]:n}})))};});
 
     // map
     const top5=(s.finalTop||ranked.slice(0,5).map(h=>h.k));
@@ -1186,7 +1189,7 @@ class Component extends DCLogic {
     const filters=[['all','All'],['core','Core Needs'],['wants','Strong Wants'],['desires','Personal Desires']];
     const holeList=ranked.map((h,i)=>({...h, rank:h.score==null?'–':i+1})).filter(h=>s.tierFilter==='all'||h.t===s.tierFilter).map(h=>({...h, bar:bar(h), seenLabel:seenLabel(h), seenInk:seenInk(h), open:()=>this.setState({selHole:h.k, screen:'hole'})}));
     const sh=ranked.find(h=>h.k===s.selHole)||ranked[0];
-    const fmt=v=> v==null?'—':v;
+    const fmt=v=> v==null?'—':this.fill(v);
     const selHole={...sh, seenInk:seenInk(sh), status: sh.score==null?'Not scored yet':(sh.confirmed?'Confirmed':`Watching · seen ${sh.seen}×`), sightLabel: `${sh.sightings}×`,
       readings:[{k:'Day 1',v:fmt(s.base[sh.k])},{k:'Day 7',v:fmt(s.mid[sh.k])},{k:'Day 13',v:fmt(s.fin[sh.k])},{k:'Diagnosis',v:fmt(s.sev[sh.k])}]};
 
