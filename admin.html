@@ -305,7 +305,8 @@ const PAGES = {
             const enc = b[i+10], body = b.slice(i + 11, i + 10 + size);
             const txt = enc === 1 || enc === 2 ? new TextDecoder(enc === 2 ? 'utf-16be' : 'utf-16').decode(body) : new TextDecoder(enc === 3 ? 'utf-8' : 'latin1').decode(body);
             const t = txt.replace(/\u0000/g, '').trim();
-            return t.includes(':') ? t.slice(t.lastIndexOf(':') + 1).trim() : t;
+            const m = t.match(/\bEp(?:isode)?\s*\d+\s*[-–:]\s*(.+)$/i);
+            return m ? m[1].trim() : t.includes(':') ? t.slice(t.lastIndexOf(':') + 1).trim() : t;
           }
           i += 10 + size;
         }
