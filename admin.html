@@ -403,6 +403,33 @@ const PAGES = {
     };
   },
 
+  // ---------------- pronunciation (phone read-aloud voice) ----------------
+  async pron(){
+    const list = await rpc('admin_pronunciations');
+    const can = 'speechSynthesis' in window;
+    const say = t => { if (!can) return; speechSynthesis.cancel(); const u = new SpeechSynthesisUtterance(t); u.lang = 'en-US'; speechSynthesis.speak(u); };
+    const apply = t => { let x = t.replace(/[‘’]/g, "'"); [...list].sort((a, b) => b.phrase.length - a.phrase.length).forEach(f => {
+      const re = new RegExp('(^|[^A-Za-z\'])' + f.phrase.replace(/[‘’]/g, "'").replace(/[.*+?^${}()|[\]\\]/g, '\\$&') + '(?=$|[^A-Za-z\'])', 'gi');
+      x = x.replace(re, (m, pre) => pre + f.say_as); }); return x; };
+    main.innerHTML = '<h2>Pronunciation</h2><p class="sub">Some words are spelled the same but sound different: “I <b>read</b> every day” (reed) and “I had <b>read</b> it” (red); “where I <b>live</b>” (liv) and “<b>live</b> music” (lyve). The phone’s voice can’t tell them apart. Each line below tells the Listen voice how to say a phrase. Only the sound changes; the book text stays as written. Use a few words around the tricky word so the fix applies only where it should.</p>' +
+      (can ? '' : '<div class="msg err">This browser has no read-aloud voice, so the Test buttons won’t play here. Try on your phone.</div>') +
+      '<div class="card"><b style="color:#01434B">Test a sentence</b><p class="muted" style="margin:4px 0 8px">Type or paste a sentence from the book to hear it the way members will.</p><input id="pt" placeholder="e.g. She had read the letter before the live broadcast."><div style="display:flex;gap:8px;margin-top:8px;flex-wrap:wrap"><button class="b" id="ptGo">▶ Hear it with fixes</button><button class="b2" id="ptRaw">Hear it without fixes</button></div><div id="ptOut" class="muted" style="margin-top:8px"></div></div>' +
+      '<div class="card"><b style="color:#01434B">Add a fix</b><div class="row" style="margin-top:6px"><div style="flex:1 1 200px"><label for="nP">When the text says</label><input id="nP" placeholder="e.g. had read"></div><div style="flex:1 1 200px"><label for="nS">The voice says</label><input id="nS" placeholder="e.g. had red"></div><div style="flex:1 1 160px"><label for="nN">Note (optional)</label><input id="nN" placeholder="e.g. past tense"></div></div>' +
+      '<div style="display:flex;gap:8px;margin-top:8px;flex-wrap:wrap"><button class="b2" id="nT">▶ Test</button><button class="b" id="nGo">Add to the list</button></div><div id="nM"></div></div>' +
+      '<h3>The list (' + list.length + ')</h3>' +
+      (list.length ? '<div class="tw"><table><thead><tr><th>When the text says</th><th>The voice says</th><th>Note</th><th></th></tr></thead><tbody>' + list.map(f => '<tr data-id="' + f.id + '"><td><input value="' + esc(f.phrase) + '" data-k="phrase" aria-label="Text"></td><td><input value="' + esc(f.say_as) + '" data-k="say_as" aria-label="Spoken as"></td><td><input value="' + esc(f.note || '') + '" data-k="note" aria-label="Note"></td>' +
+        '<td style="white-space:nowrap"><button class="b2" data-t="' + f.id + '">▶</button> <button class="b2" data-s="' + f.id + '">Save</button> <button class="b2 danger" data-x="' + f.id + '">Delete</button></td></tr>').join('') + '</tbody></table></div>' : '<p class="muted">No fixes yet.</p>') + '<div id="lM"></div>';
+    const f = id => document.getElementById(id);
+    f('ptGo').onclick = () => { const t = f('pt').value.trim(); if (!t) return; const x = apply(t); f('ptOut').textContent = x === t.replace(/[‘’]/g, "'") ? 'No fixes apply to this sentence.' : 'The voice reads: ' + x; say(x); };
+    f('ptRaw').onclick = () => { const t = f('pt').value.trim(); if (t) say(t); };
+    f('nT').onclick = () => say(f('nS').value || f('nP').value);
+    f('nGo').onclick = async () => { try { await rpc('admin_save_pronunciation', { p_id: null, p_phrase: f('nP').value, p_say_as: f('nS').value, p_note: f('nN').value }); PAGES.pron(); } catch (e) { msg(f('nM'), errMsg(e)); } };
+    const row = id => main.querySelector('tr[data-id="' + id + '"]'), val = (id, k) => row(id).querySelector('[data-k="' + k + '"]').value;
+    main.querySelectorAll('[data-t]').forEach(b => b.onclick = () => say(val(b.dataset.t, 'say_as')));
+    main.querySelectorAll('[data-s]').forEach(b => b.onclick = async () => { const id = b.dataset.s; try { await rpc('admin_save_pronunciation', { p_id: id, p_phrase: val(id, 'phrase'), p_say_as: val(id, 'say_as'), p_note: val(id, 'note') }); msg(f('lM'), 'Saved. Members hear the change the next time they open the app.', true); } catch (e) { msg(f('lM'), errMsg(e)); } });
+    main.querySelectorAll('[data-x]').forEach(b => armed(b, 'Tap again', async () => { try { await rpc('admin_delete_pronunciation', { p_id: b.dataset.x }); PAGES.pron(); } catch (e) { msg(f('lM'), errMsg(e)); } }));
+  },
+
   // ---------------- reviews & feedback ----------------
   async reviews(view){
     view = view || sessionStorage.getItem('wc-admin-rv') || 'pending';
@@ -520,7 +547,7 @@ async function go(k){
   me = await rpc('console_me');
   if (me.admin) {
     try { SEASONS = await rpc('admin_episodes'); } catch (e) {}
-    setTabs([['overview','Overview'],['members','Members'],['groups','Guided groups'],['keys','Book keys'],['payments','Payments'],['book','The book'],['series','The Series'],['reviews','Reviews'],['settings','Settings']]);
+    setTabs([['overview','Overview'],['members','Members'],['groups','Guided groups'],['keys','Book keys'],['payments','Payments'],['book','The book'],['series','The Series'],['reviews','Reviews'],['pron','Pronunciation'],['settings','Settings']]);
     const h = location.hash.slice(1); go(PAGES[h] && h !== 'mygroups' ? h : 'overview');
   } else if (me.facilitator) {
     document.getElementById('ttl').textContent = 'My groups';

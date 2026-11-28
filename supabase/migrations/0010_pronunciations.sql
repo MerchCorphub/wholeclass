@@ -1,0 +1,3 @@
+-- WholeClass 0010: pronunciation list for the phone read-aloud voice (applied via Supabase as "pronunciations").
+-- When the text says `phrase`, the voice says `say_as`. Only the audio changes; the page text stays as written.
+-- See the applied migration for the full function bodies and starter list (read/red, live/lyve).

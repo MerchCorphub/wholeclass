@@ -29,6 +29,27 @@ body.listening main{padding-bottom:120px}
     const st = document.createElement('style'); st.textContent = CSS; document.head.appendChild(st);
     const w = document.createElement('div'); w.innerHTML = BAR; document.body.appendChild(w.firstElementChild);
   }
+  // ---------- Pronunciation list: fixes words the phone voice says wrong (read/red, live/lyve) ----------
+  // The admin keeps the list in the console. Only what the voice SAYS changes; the page text stays as written.
+  let fixes = [], fixesReady = null;
+  const escRe = t => t.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+  function loadFixes(){
+    if (fixesReady) return fixesReady;
+    fixesReady = (async () => {
+      let list = null;
+      try { const c = sessionStorage.getItem('wc-pron'); if (c) list = JSON.parse(c); } catch (e) {}
+      if (!list && window.WC) { try { list = await window.WC.rpc('list_pronunciations'); sessionStorage.setItem('wc-pron', JSON.stringify(list)); } catch (e) { list = []; } }
+      fixes = (list || []).filter(f => f.phrase && f.say_as).sort((a, b) => b.phrase.length - a.phrase.length)
+        .map(f => ({ re: new RegExp('(^|[^A-Za-z\'])' + escRe(f.phrase.replace(/[\u2018\u2019]/g, "'")) + '(?=$|[^A-Za-z\'])', 'gi'), say: f.say_as }));
+    })();
+    return fixesReady;
+  }
+  function spoken(text){
+    let t = text.replace(/[\u2018\u2019]/g, "'");
+    fixes.forEach(f => { t = t.replace(f.re, (m, pre) => pre + f.say); });
+    return t;
+  }
+
   // ---------- Listen: reads the chapter aloud with the device's built-in voice ----------
   function setup(opts){
     const n = opts.n, title = opts.title, main = opts.main, keyPrefix = opts.keyPrefix || 'wc-listen-', headPrefix = opts.headPrefix;
@@ -62,6 +83,7 @@ body.listening main{padding-bottom:120px}
       addText(el, el.textContent);
     });
     if (!items.length) return;
+    loadFixes();
     const key = keyPrefix + n;
     let i = 0, playing = false, voice = null, rate = 1;
     try { i = Math.min(+localStorage.getItem(key) || 0, items.length - 1); rate = +localStorage.getItem('wc-listen-rate') || 1; } catch (e) {}
@@ -87,7 +109,7 @@ body.listening main{padding-bottom:120px}
       const my = ++token; synth.cancel();
       if (i >= items.length) { playing = false; setBtn(); awake(false); i = 0; document.getElementById('lWhere').textContent = 'Finished this chapter'; try { localStorage.removeItem(key); } catch (e) {} return; }
       mark();
-      const u = new SpeechSynthesisUtterance(items[i].text);
+      const u = new SpeechSynthesisUtterance(spoken(items[i].text));
       if (voice) u.voice = voice; u.lang = voice ? voice.lang : 'en-US'; u.rate = rate;
       u.onend = () => { if (my !== token || !playing) return; i++; speak(); };
       u.onerror = e => { if (my !== token || !playing || e.error === 'interrupted' || e.error === 'canceled') return; i++; speak(); };
@@ -120,5 +142,5 @@ body.listening main{padding-bottom:120px}
     if (i > 0) document.getElementById('listenBtn').textContent = '🔊 Keep listening where you left off';
   }
 
-  return { supported, setup };
+  return { supported, setup, spoken, loadFixes, reloadFixes(){ try { sessionStorage.removeItem('wc-pron'); } catch (e) {} fixesReady = null; return loadFixes(); } };
 })();
