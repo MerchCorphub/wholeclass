@@ -403,6 +403,46 @@ const PAGES = {
     };
   },
 
+  // ---------------- reviews & feedback ----------------
+  async reviews(view){
+    view = view || sessionStorage.getItem('wc-admin-rv') || 'pending';
+    try { sessionStorage.setItem('wc-admin-rv', view); } catch (e) {}
+    const data = await rpc('admin_reviews', { p_status: view === 'feedback' || view === 'checkins' ? 'pending' : view });
+    const c = data.counts || {}, stars = n => '★★★★★'.slice(0, n) + '☆☆☆☆☆'.slice(0, 5 - n);
+    const course = r => r.course === 'class' ? '14-Day Discovery Class' : 'Series · Season ' + r.season;
+    const chip = (k, label) => '<button class="' + (view === k ? 'b' : 'b2') + '" data-v="' + k + '">' + label + '</button>';
+    let body = '';
+    if (view === 'feedback') {
+      const fb = await rpc('admin_feedback', { p_status: 'all' });
+      body = fb.length ? fb.map(f => '<div class="card"><div style="display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap"><b>' + esc(f.name || 'Member') + '</b><span class="muted">' + d(f.created_at) + (f.page ? ' · from ' + esc(f.page) : '') + '</span></div>' +
+        '<div class="muted">' + esc(f.email || '') + '</div><p style="white-space:pre-wrap;line-height:1.5;margin:8px 0">' + esc(f.message) + '</p>' +
+        '<div style="display:flex;gap:8px;align-items:center">' + (f.status === 'new' ? '<span class="pill gold">New</span><button class="b2" data-read="' + f.id + '">Mark as read</button>' : '<span class="pill grey">Read</span><button class="b2" data-unread="' + f.id + '">Mark as new</button>') +
+        (f.email ? '<a class="b2" style="text-decoration:none;display:inline-block" href="mailto:' + esc(f.email) + '?subject=' + encodeURIComponent('Your WholeClass feedback') + '">Reply by email</a>' : '') + '</div></div>').join('') : '<p class="muted">No feedback yet. Members send it from More › Tell us how to improve.</p>';
+    } else if (view === 'checkins') {
+      const ci = data.checkins;
+      body = '<div class="card"><b>Day 7 check-ins</b><p class="muted" style="margin:4px 0 0">Private. Members never see these. ' + ci.count + ' check-in' + (ci.count === 1 ? '' : 's') + (ci.count ? ', average ' + Number(ci.average).toFixed(1) + ' ★' : '') + '.</p></div>' +
+        (ci.recent.length ? '<div class="tw"><table><thead><tr><th>When</th><th>Member</th><th>Stars</th><th>Comment</th></tr></thead><tbody>' + ci.recent.map(x => '<tr><td>' + d(x.updated_at) + '</td><td>' + esc(x.member) + '</td><td style="color:#C48504;white-space:nowrap">' + stars(x.stars) + '</td><td>' + esc(x.comment || '') + '</td></tr>').join('') + '</tbody></table></div>' : '');
+    } else {
+      body = data.reviews.length ? data.reviews.map(r => '<div class="card"><div style="display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap"><span><b>' + esc(course(r)) + '</b> <span style="color:#C48504">' + stars(r.stars) + '</span></span><span class="muted">' + d(r.updated_at) + '</span></div>' +
+        '<div class="muted" style="margin-top:2px">By ' + esc(r.member) + ' (' + esc(r.email) + ') · shows as <b>' + esc(r.display_name) + '</b> · ' + (r.marketing_ok ? '<span class="pill">OK for marketing</span>' : '<span class="pill grey">Not for marketing</span>') + (r.helpful ? ' · ' + r.helpful + ' helpful' : '') + '</div>' +
+        (r.hole ? '<p style="margin:8px 0 0"><b>Hole:</b> ' + esc(r.hole) + '</p>' : '') +
+        (r.changed ? '<p style="margin:8px 0 0;line-height:1.5"><b>What changed:</b> ' + esc(r.changed) + '</p>' : '') +
+        (r.recommend ? '<p style="margin:8px 0 0;line-height:1.5"><b>Recommend to:</b> ' + esc(r.recommend) + '</p>' : '') +
+        '<div style="display:flex;gap:8px;margin-top:10px;align-items:center;flex-wrap:wrap"><span class="pill ' + (r.status === 'approved' ? '' : r.status === 'pending' ? 'gold' : 'grey') + '">' + esc(r.status === 'approved' ? 'Live' : r.status === 'pending' ? 'Pending' : 'Hidden') + '</span>' +
+        (r.status !== 'approved' ? '<button class="b" data-ap="' + r.id + '">Approve</button>' : '') + (r.status !== 'hidden' ? '<button class="b2 danger" data-hide="' + r.id + '">Hide</button>' : '') + '</div><div id="rm' + r.id + '"></div></div>').join('')
+        : '<p class="muted">' + (view === 'pending' ? 'No reviews waiting. New reviews appear here before members can see them.' : 'Nothing here yet.') + '</p>';
+    }
+    main.innerHTML = '<h2>Reviews and feedback</h2><p class="sub">Reviews show on the course pages only after you approve them. Day 7 check-ins and feedback are private.</p>' +
+      '<div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:12px">' + chip('pending', 'Pending (' + (c.pending || 0) + ')') + chip('approved', 'Live (' + (c.approved || 0) + ')') + chip('hidden', 'Hidden (' + (c.hidden || 0) + ')') +
+      chip('checkins', 'Day 7 check-ins (' + data.checkins.count + ')') + chip('feedback', 'Feedback inbox' + (data.feedback_new ? ' (' + data.feedback_new + ' new)' : '')) + '</div>' + body;
+    main.querySelectorAll('[data-v]').forEach(b => b.onclick = () => PAGES.reviews(b.dataset.v));
+    const setR = async (id, st) => { try { await rpc('admin_set_review_status', { p_id: id, p_status: st }); PAGES.reviews(view); } catch (e) { msg(document.getElementById('rm' + id), errMsg(e)); } };
+    main.querySelectorAll('[data-ap]').forEach(b => b.onclick = () => setR(b.dataset.ap, 'approved'));
+    main.querySelectorAll('[data-hide]').forEach(b => b.onclick = () => setR(b.dataset.hide, 'hidden'));
+    main.querySelectorAll('[data-read]').forEach(b => b.onclick = async () => { await rpc('admin_set_feedback_status', { p_id: b.dataset.read, p_status: 'read' }); PAGES.reviews('feedback'); });
+    main.querySelectorAll('[data-unread]').forEach(b => b.onclick = async () => { await rpc('admin_set_feedback_status', { p_id: b.dataset.unread, p_status: 'new' }); PAGES.reviews('feedback'); });
+  },
+
   // ---------------- settings ----------------
   async settings(){
     const o = await rpc('admin_overview');
@@ -480,7 +520,7 @@ async function go(k){
   me = await rpc('console_me');
   if (me.admin) {
     try { SEASONS = await rpc('admin_episodes'); } catch (e) {}
-    setTabs([['overview','Overview'],['members','Members'],['groups','Guided groups'],['keys','Book keys'],['payments','Payments'],['book','The book'],['series','The Series'],['settings','Settings']]);
+    setTabs([['overview','Overview'],['members','Members'],['groups','Guided groups'],['keys','Book keys'],['payments','Payments'],['book','The book'],['series','The Series'],['reviews','Reviews'],['settings','Settings']]);
     const h = location.hash.slice(1); go(PAGES[h] && h !== 'mygroups' ? h : 'overview');
   } else if (me.facilitator) {
     document.getElementById('ttl').textContent = 'My groups';

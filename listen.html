@@ -13,6 +13,7 @@
 <link href="https://fonts.googleapis.com/css2?family=Sora:wght@600;700;800&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 <script src="./cloud.js"></script>
 <script src="./awake.js"></script>
+<script src="./reviews.js"></script>
 <style>
 *{box-sizing:border-box}
 body{margin:0;background:#FEF9F2;color:#2A3446;font-family:'Manrope',system-ui,sans-serif;-webkit-text-size-adjust:100%}
@@ -116,7 +117,7 @@ h1{font-family:'Sora',sans-serif;color:#01434B;font-size:28px;line-height:1.2;ma
         const sub = e.ready ? ['Episode ' + e.n, mins(e.duration_sec)].filter(Boolean).join(' · ') : 'Episode ' + e.n;
         const inner = '<div class="num">' + e.n + '</div><div class="info"><div class="ti">' + epTitle(e) + '</div><div class="sub">' + sub + '</div></div>' + tagFor(e, se.unlocked);
         return e.ready ? '<a class="ep ready" href="' + epLink(se.season, e.n) + '">' + inner + '</a>' : '<div class="ep soon" aria-disabled="true">' + inner + '</div>';
-      }).join('') + '</section>';
+      }).join('') + '<div data-rev="' + se.season + '"></div></section>';
   }
 
   function list(seasons, sq){
@@ -127,6 +128,7 @@ h1{font-family:'Sora',sans-serif;color:#01434B;font-size:28px;line-height:1.2;ma
       '<p style="color:#5A6478;line-height:1.5;margin:0 0 6px">Audio seasons of real situations that show how holes shape the way we love, argue and choose. Each season is its own one-year purchase, and Episode 1 of every season is free.</p>' + jump +
       (seasons.length ? seasons.map(seasonBlock).join('') : '<div class="note">The first season is coming soon.</div>');
     wireBuy();
+    if (window.WCReviews) seasons.forEach(se => { const el = main.querySelector('[data-rev="' + se.season + '"]'); if (el) WCReviews.summary(el, 'series', se.season, { canWrite: se.unlocked, title: se.title, signedIn: true }); });
     if (sq) { const el = document.getElementById('season-' + sq); if (el) el.scrollIntoView(); }
   }
 

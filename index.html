@@ -20,6 +20,7 @@
 <x-dc>
 <helmet>
 <script src="./cloud.js"></script>
+<script src="./reviews.js"></script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Sora:wght@400;600;700;800&family=Manrope:wght@400;500;600;700&display=swap" rel="stylesheet">
 <style>
@@ -274,6 +275,13 @@ html,body{background:#01262B}
         <button style="text-align:left;border:1.5px solid #E3E9F2;background:#fff;border-radius:16px;padding:14px 16px;cursor:pointer" onClick="{{ unlockChurch }}"><div style="font-family:'Sora',sans-serif;font-weight:700;font-size:15px;color:#01434B">I'm in a guided group</div><div style="font-size:13px;color:#4A5468;margin-top:3px">Enter the class code from your facilitator, church or group.</div></button>
         <button style="text-align:left;border:1.5px solid #E3E9F2;background:#fff;border-radius:16px;padding:14px 16px;cursor:pointer" onClick="{{ unlockSeat }}"><div style="font-family:'Sora',sans-serif;font-weight:700;font-size:15px;color:#01434B">Someone challenged me</div><div style="font-size:13px;color:#4A5468;margin-top:3px">Enter the invitation code they sent you. Your seat is free for 30 days.</div></button>
       </div>
+      <sc-if value="{{ hasClassRev }}" hint-placeholder-val="{{ false }}">
+      <div style="background:#fff;border:1px solid #EADFCB;border-radius:16px;padding:14px 15px;margin-top:14px">
+        <div style="display:flex;align-items:center;gap:12px"><div style="font-family:'Sora',sans-serif;font-weight:800;font-size:28px;color:#01434B">{{ classRevAvg }}</div><div><div style="color:#C48504;font-size:17px;letter-spacing:1px">{{ classRevStars }}</div><div style="font-size:12.5px;color:#5A6478;font-weight:700">{{ classRevCount }} from members</div></div></div>
+        <sc-for list="{{ classTop }}" as="r" hint-placeholder-count="3"><div style="border-top:1px solid #F0E8DA;margin-top:10px;padding-top:10px"><div style="color:#C48504;font-size:13px;letter-spacing:1px">{{ r.stars }}</div><div style="font-size:14px;color:#2A3446;line-height:1.5;margin-top:4px">“{{ r.quote }}”</div><div style="font-size:12px;color:#5A6478;font-weight:600;margin-top:4px">{{ r.name }}{{ r.hole }}</div></div></sc-for>
+        <a href="reviews.html?c=class" style="display:inline-block;margin-top:10px;font-weight:800;color:#0E6B6B;text-decoration:none;font-size:14px">See all reviews ›</a>
+      </div>
+      </sc-if>
     </div>
     <div style="padding:10px 22px 24px"><button style="display:block;width:100%;border:none;background:none;font-family:'Sora',sans-serif;font-size:15px;font-weight:600;cursor:pointer;color:#4A5468;padding:10px" onClick="{{ unlockLater }}">{{ unlockLaterLabel }}</button></div>
   </section>
@@ -552,8 +560,14 @@ html,body{background:#01262B}
         <div style="background:#0A525A;border-radius:14px;padding:12px 14px"><strong>Before I Talk™</strong><div style="font-size:13px;color:#CFE3E1;margin-top:2px">Prepare a hard conversation around their hole and yours.</div></div>
         <div style="background:#0A525A;border-radius:14px;padding:12px 14px"><strong>Share your Hole Map</strong><div style="font-size:13px;color:#CFE3E1;margin-top:2px">Only with someone you choose, and only if they share theirs.</div></div>
       </div>
+      <div style="margin-top:18px;background:#0A525A;border:1px solid #E9B53F;border-radius:16px;padding:14px">
+        <div style="font-family:'Sora',sans-serif;font-size:11px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:#E9B53F">What's next</div>
+        <div style="font-family:'Sora',sans-serif;font-weight:800;font-size:16px;margin-top:4px;line-height:1.3">Members who finished the Discovery Class went on to Season 1: The Missing Fit</div>
+        <div style="font-size:13px;color:#CFE3E1;margin-top:4px;line-height:1.45">Audio episodes of real situations, read by C.P. Parker. Episode 1 is free.</div>
+        <div style="display:flex;gap:8px;margin-top:10px;flex-wrap:wrap"><a href="listen.html?s=1&amp;ep=1" style="flex:1;min-width:150px;text-align:center;border-radius:999px;padding:11px;background:linear-gradient(135deg,#E9B53F,#C48504);color:#2A1C00;font-weight:800;font-size:13.5px;text-decoration:none">▶ Play Episode 1 free</a><button style="flex:1;min-width:150px;border:1.5px solid #CFE3E1;background:none;border-radius:999px;padding:10px;color:#fff;font-weight:700;font-size:13.5px;cursor:pointer" onClick="{{ seeSeason1 }}">See Season 1 reviews</button></div>
+      </div>
     </div>
-    <div style="padding:10px 22px 24px"><button style="display:block;width:100%;border:none;border-radius:999px;padding:15px;font-family:'Sora',sans-serif;font-size:15px;font-weight:700;cursor:pointer;background:linear-gradient(135deg,#E9B53F,#C48504);color:#2A1C00" onClick="{{ toHolesNav }}">See all 25 holes</button></div>
+    <div style="padding:10px 22px 24px"><button style="display:block;width:100%;border:none;border-radius:999px;padding:15px;font-family:'Sora',sans-serif;font-size:15px;font-weight:700;cursor:pointer;background:linear-gradient(135deg,#E9B53F,#C48504);color:#2A1C00" onClick="{{ writeReview }}">★ Review the Discovery Class</button><button style="display:block;width:100%;margin-top:8px;border:1.5px solid #CFE3E1;background:none;border-radius:999px;padding:13px;font-family:'Sora',sans-serif;font-size:14.5px;font-weight:700;cursor:pointer;color:#fff" onClick="{{ toHolesNav }}">See all 25 holes</button></div>
   </section>
 
   <!-- ============ JOURNEY ============ -->
@@ -653,6 +667,8 @@ html,body{background:#01262B}
         <button style="display:flex;width:100%;justify-content:space-between;align-items:center;background:none;border:none;border-bottom:1px solid #EEF1F6;padding:14px 15px;cursor:pointer;text-align:left" onClick="{{ toUnlockMore }}"><span><span style="display:block;font-weight:700;font-size:14px;color:#01434B">Class access</span><span style="display:block;font-size:12.5px;color:#5A6478">{{ accessLabel }}</span></span><span style="font-size:13px;font-weight:700;color:#0E6B6B">Manage</span></button>
         <button style="display:flex;width:100%;justify-content:space-between;align-items:center;background:none;border:none;border-bottom:1px solid #EEF1F6;padding:14px 15px;cursor:pointer;text-align:left" onClick="{{ exportData }}"><span><span style="display:block;font-weight:700;font-size:14px;color:#01434B">My data</span><span style="display:block;font-size:12.5px;color:#5A6478">Export or delete everything</span></span><span style="font-size:13px;font-weight:700;color:#0E6B6B">Export</span></button>
         <button style="display:flex;width:100%;justify-content:space-between;align-items:center;background:none;border:none;border-bottom:1px solid #EEF1F6;padding:14px 15px;cursor:pointer;text-align:left" onClick="{{ eraseTap }}"><span><span style="display:block;font-weight:700;font-size:14px;color:#8A1F11">{{ eraseLabel }}</span><span style="display:block;font-size:12.5px;color:#5A6478">{{ eraseSub }}</span></span><span style="font-size:13px;font-weight:700;color:#8A1F11">{{ eraseCta }}</span></button>
+        <button style="display:flex;width:100%;justify-content:space-between;align-items:center;background:none;border:none;border-bottom:1px solid #EEF1F6;padding:14px 15px;cursor:pointer;text-align:left" onClick="{{ feedbackTap }}"><span><span style="display:block;font-weight:700;font-size:14px;color:#01434B">Tell us how to improve</span><span style="display:block;font-size:12.5px;color:#5A6478">Private feedback to the WholeClass team</span></span><span style="font-size:13px;font-weight:700;color:#0E6B6B">Write</span></button>
+        <a href="reviews.html?c=class" style="display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid #EEF1F6;padding:14px 15px;text-decoration:none"><span><span style="display:block;font-weight:700;font-size:14px;color:#01434B">Member reviews</span><span style="display:block;font-size:12.5px;color:#5A6478">What members say about the Discovery Class</span></span><span style="font-size:13px;font-weight:700;color:#0E6B6B">Read</span></a>
         <button style="display:flex;width:100%;justify-content:space-between;align-items:center;background:none;border:none;border-bottom:1px solid #EEF1F6;padding:14px 15px;cursor:pointer;text-align:left" onClick="{{ openAbout }}"><span><span style="display:block;font-weight:700;font-size:14px;color:#01434B">About WholeClass</span><span style="display:block;font-size:12.5px;color:#5A6478">Mission, vision and core values</span></span><span style="font-size:13px;font-weight:700;color:#0E6B6B">Read</span></button>
         <a href="terms.html" style="display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid #EEF1F6;padding:14px 15px;text-decoration:none"><span style="font-weight:700;font-size:14px;color:#01434B">Terms of Use</span><span style="font-size:13px;font-weight:700;color:#0E6B6B">Read</span></a>
         <a href="privacy.html" style="display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid #EEF1F6;padding:14px 15px;text-decoration:none"><span style="font-weight:700;font-size:14px;color:#01434B">Privacy Policy</span><span style="font-size:13px;font-weight:700;color:#0E6B6B">Read</span></a>
@@ -806,7 +822,7 @@ class Component extends DCLogic {
       screen:'loading', faith:'biblical', agree:false,
       real:false, member:null, access:null, price:20, lastDone:null,
       authMode:'up', aFirst:'', aLast:'', aEmail:'', aPw:'', authErr:'', authMsg:'', busy:false,
-      codeMode:'key', codeVal:'', codeErr:'', codeFrom:'unlock', gift:null, eraseArm:false, pendingSeat:null, completedAt:null,
+      codeMode:'key', codeVal:'', codeErr:'', codeFrom:'unlock', gift:null, eraseArm:false, pendingSeat:null, completedAt:null, classRev:null,
       quickStep:0, base:{}, mid:{}, fin:{}, sev:{}, sight:{},
       day:1, unlocked:false, sample:false, lightUsed:0, done:{},
       sess:null, finalStep:0, finalTop:null,
@@ -880,6 +896,7 @@ class Component extends DCLogic {
     try{
       WC.onAuth((ev)=>{ if(ev==='PASSWORD_RECOVERY') this.setState({screen:'newpw', authErr:'', aPw:''}); });
       WC.price().then(v=>this.setState({price:v})).catch(()=>{});
+      WC.rpc('course_reviews',{p_course:'class', p_season:0, p_hole:null, p_limit:3, p_offset:0}).then(r=>this.setState({classRev:r})).catch(()=>{});
       const ses=await WC.session();
       if(reset && ses){ this.setState({screen:'newpw'}); return; }
       if(ses){ await this.loadAccount(); }
@@ -1075,7 +1092,16 @@ class Component extends DCLogic {
         who_affected:ss.who||null, hidden_strength:ss.strength||null, action:ss.action||null, grow:ss.grow||null}).catch(()=>this.toast('Your answers could not be saved. Check your connection.'));
     }
     this.toast(`Day ${ss.day} done. See you tomorrow.`);
+    if(ss.day===7 && s.real && !s.sample && window.WCReviews) setTimeout(()=>WCReviews.checkin(), 900);
   }
+  // ---- reviews ----
+  openReview(){
+    const s=this.state; if(!window.WCReviews) return;
+    if(!s.real || s.sample){ this.toast('Reviews are written from a real account.'); return; }
+    WCReviews.reviewForm({course:'class', hole:(s.finalTop&&s.finalTop[0])||'', onClose:ok=>{ if(ok){ this.toast('Thank you. Your review was sent.'); setTimeout(()=>WCReviews.crossSell(), 400); } }});
+  }
+  openCrossSell(){ if(window.WCReviews) WCReviews.crossSell(); else location.href='listen.html?s=1'; }
+  openFeedback(){ if(!this.state.real || this.state.sample){ this.toast('Sign in to send feedback.'); return; } if(window.WCReviews) WCReviews.feedback('app'); }
   sBack(){ const s=this.state; if(s.sess.step>0) this.updSess({step:s.sess.step-1}); else this.setState({screen:'home', sess:null}); }
 
   // ---- final ----
@@ -1287,7 +1313,13 @@ class Component extends DCLogic {
       mapCards, toLetter:()=>this.go('letter'), toMapBack:()=>this.go('map'),
       keystoneName:keystone,
       letterParts:this.LETTER.map((p,i)=>({...p, n:i+1, id:`ltr${p.key}`, v:s.letter[p.key]||'', set:e=>this.setState(st=>({letter:{...st.letter,[p.key]:e.target.value}}))})),
-      finishChallenge:()=>{ this.setState({done:{...s.done,14:true}, completedAt:s.completedAt||new Date().toISOString(), lastDone:this.today(), screen:'done'}); },
+      finishChallenge:()=>{ this.setState({done:{...s.done,14:true}, completedAt:s.completedAt||new Date().toISOString(), lastDone:this.today(), screen:'done'}); if(s.real && !s.sample) setTimeout(()=>this.openReview(), 800); },
+      writeReview:()=>this.openReview(), seeSeason1:()=>this.openCrossSell(), feedbackTap:()=>this.openFeedback(),
+      hasClassRev: !!(s.classRev && s.classRev.count), noClassRev: !(s.classRev && s.classRev.count),
+      classRevAvg: s.classRev && s.classRev.count ? Number(s.classRev.average).toFixed(1) : '',
+      classRevStars: s.classRev && s.classRev.count ? '★★★★★'.slice(0, Math.round(s.classRev.average)) + '☆☆☆☆☆'.slice(0, 5 - Math.round(s.classRev.average)) : '',
+      classRevCount: s.classRev && s.classRev.count ? `${s.classRev.count} review${s.classRev.count===1?'':'s'}` : '',
+      classTop: (s.classRev && s.classRev.reviews || []).map(r=>({name:r.name, stars:'★★★★★'.slice(0,r.stars)+'☆☆☆☆☆'.slice(0,5-r.stars), quote:r.changed||r.recommend||'', hole:r.hole?` · Discovered: ${r.hole}`:'', helpful:r.helpful?`${r.helpful} found this helpful`:''})),
       doneTop:top5.map((k,i)=>({k, rank:i+1, tag: k===keystone?'Keystone':this.holeBy(k).tierLabel})),
 
       journeyRows,

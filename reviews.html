@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Member reviews · WholeClass</title>
+<meta name="theme-color" content="#01434B">
+<link rel="icon" type="image/png" sizes="192x192" href="icons/icon-192.png?v=2">
+<link rel="apple-touch-icon" sizes="180x180" href="icons/apple-touch-icon.png?v=2">
+<link rel="manifest" href="manifest.json?v=2">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Sora:wght@600;700;800&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<script src="./cloud.js"></script>
+<script src="./reviews.js"></script>
+<style>
+*{box-sizing:border-box}
+body{margin:0;background:#FEF9F2;color:#2A3446;font-family:'Manrope',system-ui,sans-serif;-webkit-text-size-adjust:100%}
+header{position:sticky;top:0;z-index:5;background:#01434B;color:#fff;padding:calc(10px + env(safe-area-inset-top)) 16px 10px;display:flex;align-items:center;gap:10px}
+header a{color:#fff;text-decoration:none;font-weight:700;font-size:14px;padding:6px 4px}
+header .t{flex:1;min-width:0;font-family:'Sora',sans-serif;font-size:14px;font-weight:700;text-align:center;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+main{max-width:720px;margin:0 auto;padding:20px 20px 80px}
+.kicker{font-family:'Sora',sans-serif;font-size:11px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:#8A5A00;margin:8px 0 0}
+h1{font-family:'Sora',sans-serif;color:#01434B;font-size:26px;line-height:1.2;margin:6px 0 10px}
+.bars{display:grid;grid-template-columns:auto 1fr auto;gap:4px 8px;align-items:center;font-size:12.5px;color:#5A6478;font-weight:700;margin-top:10px}
+.bars i{display:block;height:7px;border-radius:999px;background:#EEF1F6;overflow:hidden}.bars i b{display:block;height:100%;background:#E9B53F}
+.filters{display:flex;gap:6px;flex-wrap:wrap;margin:16px 0 4px}
+.filters button{border:1.5px solid #D5DCE7;background:#fff;border-radius:999px;padding:7px 12px;font:700 13px 'Manrope',sans-serif;color:#01434B;cursor:pointer}
+.filters button.on{background:#01434B;color:#fff;border-color:#01434B}
+.more{display:block;width:100%;border:1.5px solid #01434B;background:#fff;color:#01434B;border-radius:999px;padding:12px;font:700 14px 'Sora',sans-serif;cursor:pointer;margin-top:14px}
+.cta{display:flex;gap:10px;flex-wrap:wrap;margin-top:18px}
+.cta a,.cta button{flex:1;min-width:180px;text-align:center;border-radius:999px;padding:13px;font:700 14px 'Sora',sans-serif;text-decoration:none;cursor:pointer;border:none}
+.c1{background:#01434B;color:#fff}.c2{background:linear-gradient(135deg,#E9B53F,#C48504);color:#2A1C00}
+</style>
+</head>
+<body>
+<header><a href="./" aria-label="Back to WholeClass">‹ WholeClass</a><div class="t" id="hdr">Member reviews</div><span style="width:70px"></span></header>
+<main id="main"><p>Loading reviews…</p></main>
+<script>
+(function(){
+  const R = window.WCReviews, esc = R.esc, main = document.getElementById('main');
+  const q = new URLSearchParams(location.search);
+  const course = q.get('c') === 'series' ? 'series' : 'class', season = course === 'series' ? (+q.get('s') || 1) : 0;
+  let hole = q.get('hole') || null, offset = 0, total = 0, signedIn = false, seasonTitle = '';
+  const PAGE = 10;
+  async function head(){
+    const s = await WC.session(); signedIn = !!s;
+    if (course === 'series') { try { const ss = await WC.episodes(); const se = (ss || []).find(x => x.season === season); if (se) seasonTitle = se.title; } catch (e) {} }
+    const name = course === 'class' ? '14-Day Discovery Class' : 'Season ' + season + (seasonTitle ? ': ' + seasonTitle : '');
+    document.getElementById('hdr').textContent = 'Reviews · ' + (course === 'class' ? 'Discovery Class' : 'Season ' + season);
+    document.title = 'Reviews · ' + name + ' · WholeClass';
+    const d = await WC.rpc('course_reviews', { p_course: course, p_season: season, p_hole: null, p_limit: 1, p_offset: 0 });
+    total = d.count;
+    const bars = d.count ? '<div class="bars">' + [5,4,3,2,1].map(n => { const c = +(d.stars[n] || 0); return '<span>' + n + ' ★</span><i><b style="width:' + Math.round(c / d.count * 100) + '%"></b></i><span>' + c + '</span>'; }).join('') + '</div>' : '';
+    let canWrite = false; if (signedIn) { try { canWrite = !!(await WC.rpc('my_review', { p_course: course, p_season: season })).can_review; } catch (e) {} }
+    main.innerHTML = '<p class="kicker">' + (course === 'class' ? 'WholeClass' : 'The Know Your Holes Series') + '</p><h1>' + esc(name) + '</h1>' +
+      (d.count ? '<div style="display:flex;align-items:center;gap:12px"><div style="font:800 34px Sora,sans-serif;color:#01434B">' + Number(d.average).toFixed(1) + '</div><div><div class="wcr-gold" style="font-size:20px">' + R.starsText(d.average) + '</div><div class="wcr-meta">' + d.count + ' review' + (d.count === 1 ? '' : 's') + ' from members</div></div></div>' + bars
+        : '<p style="color:#5A6478">No reviews yet.</p>') +
+      (d.holes.length ? '<div class="filters" role="group" aria-label="Filter by hole"><button data-h="">All holes</button>' + d.holes.map(h => '<button data-h="' + esc(h.hole) + '">' + esc(h.hole) + ' (' + h.n + ')</button>').join('') + '</div>' : '') +
+      '<div id="list"></div><div id="moreBox"></div>' +
+      '<div class="cta">' + (canWrite ? '<button class="c1" id="write">✎ Write a review</button>' : '') +
+        (course === 'class' ? '<a class="c2" href="./">Start the class</a>' : '<a class="c2" href="listen.html?s=' + season + '&ep=1">▶ Play Episode 1 free</a>') + '</div>';
+    R.ensureCss();
+    main.querySelectorAll('[data-h]').forEach(b => b.onclick = () => { hole = b.dataset.h || null; paintFilters(); load(true); });
+    const w = document.getElementById('write'); if (w) w.onclick = () => R.reviewForm({ course, season, title: seasonTitle });
+    paintFilters(); load(true);
+  }
+  const paintFilters = () => main.querySelectorAll('[data-h]').forEach(b => b.classList.toggle('on', (b.dataset.h || null) === hole));
+  async function load(reset){
+    if (reset) { offset = 0; document.getElementById('list').innerHTML = ''; }
+    const d = await WC.rpc('course_reviews', { p_course: course, p_season: season, p_hole: hole, p_limit: PAGE, p_offset: offset });
+    const list = document.getElementById('list'), wrap = document.createElement('div');
+    wrap.innerHTML = d.reviews.map(r => R.card(r, signedIn)).join('');
+    list.appendChild(wrap); R.wireHelp(wrap);
+    offset += d.reviews.length;
+    if (!offset) list.innerHTML = '<p style="color:#5A6478">' + (hole ? 'No reviews mention ' + esc(hole) + ' yet.' : '') + '</p>';
+    const mb = document.getElementById('moreBox');
+    mb.innerHTML = offset < d.filtered ? '<button class="more" id="more">Show more reviews (' + (d.filtered - offset) + ' more)</button>' : '';
+    const m = document.getElementById('more'); if (m) m.onclick = () => load(false);
+  }
+  head().catch(e => { main.innerHTML = '<h1>Reviews could not load</h1><p>' + esc(R.errMsg(e)) + '</p>'; });
+})();
+</script>
+</body>
+</html>
