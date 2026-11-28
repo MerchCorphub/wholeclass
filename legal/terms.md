@@ -1,7 +1,7 @@
 # Terms of Use
 
 **WholeClass™ · The Know Your Holes Discovery Class**
-Effective date: November 25, 2026
+Effective date: November 28, 2026
 
 These Terms of Use ("Terms") are a binding agreement between you and **Merch Corporation** ("we," "us" or "our"), the company that owns and operates WholeClass, wholeclass.app and the related websites, emails and services (together, the "Service").
 
@@ -46,6 +46,10 @@ Do not misuse the Service: no unlawful, harmful, harassing or deceptive use; no 
 ## 8. Your content
 
 You keep ownership of what you write in the Service, such as your answers, Hunts, Diagnosis Boxes and letters ("Your Content"). You give us a limited license to store and process Your Content only to operate and protect the Service, as our Privacy Policy describes. You can export or erase your answers in the app at any time.
+
+**Reviews.** If you write a review, it must be honest, about your own experience, and must not include anyone else's private information, contact details, or anything unlawful, hateful or misleading. You give Merch Corporation a non-exclusive, royalty-free, worldwide license to display your approved review in the Service with the name you chose (first name and last initial, or Anonymous). If you check "OK to use my review in WholeClass marketing," you also give us that license to quote your review, with the name you chose, in WholeClass marketing in any media, and to shorten it for length without changing its meaning; you can withdraw this for future uses by emailing us. You are not paid for reviews and no review is required. We review every submission before it appears and may decline, hide or remove any review. Reviews reflect individual members' experiences, not promised results.
+
+**Check-ins and feedback.** Day 7 check-ins and messages sent through "Tell us how to improve" are private to the WholeClass team. You give us permission to use your ideas and suggestions to improve the Service without owing you anything for them.
 
 ## 9. Our content and intellectual property
 
