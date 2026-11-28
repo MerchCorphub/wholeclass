@@ -10,6 +10,8 @@ window.WCListen = (function(){
 .listen .play{background:#E9B53F;border-color:#E9B53F;color:#2A1C00;min-width:92px}
 .listen .where{flex:1;min-width:0;font-size:12.5px;color:#CFE3E1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .listen select{padding:8px 6px;max-width:120px}
+.listen #lAwake[aria-pressed=true]{background:#E9B53F33;border-color:#E9B53F}
+.listen .tip{max-width:720px;margin:6px auto 0;font-size:12px;color:#CFE3E1;text-align:center}
 .lbtn{display:inline-flex;align-items:center;gap:8px;border:none;border-radius:999px;padding:11px 18px;background:#01434B;color:#fff;font:700 14px 'Sora',sans-serif;cursor:pointer;margin:0 0 18px}
 body.listening main{padding-bottom:120px}
 @media (max-width:420px){.listen .where{display:none}}`;
@@ -18,9 +20,10 @@ body.listening main{padding-bottom:120px}
   <button class="play" id="lPlay">▶ Play</button>
   <button id="lNext" aria-label="Forward one paragraph">⏭</button>
   <span class="where" id="lWhere" aria-live="polite"></span>
+  <button id="lAwake" aria-pressed="true" title="Keep the screen on while listening">☀</button>
   <select id="lRate" aria-label="Reading speed"><option value="0.8">0.8×</option><option value="1" selected>1×</option><option value="1.2">1.2×</option><option value="1.5">1.5×</option></select>
   <button id="lClose" aria-label="Close the player">✕</button>
-</div></div>`;
+</div><div class="tip" id="lTip"></div></div>`;
   function ensureUi(){
     if (document.getElementById('lbar')) return;
     const st = document.createElement('style'); st.textContent = CSS; document.head.appendChild(st);
@@ -82,7 +85,7 @@ body.listening main{padding-bottom:120px}
     let token = 0;
     const speak = () => {
       const my = ++token; synth.cancel();
-      if (i >= items.length) { playing = false; setBtn(); i = 0; document.getElementById('lWhere').textContent = 'Finished this chapter'; try { localStorage.removeItem(key); } catch (e) {} return; }
+      if (i >= items.length) { playing = false; setBtn(); awake(false); i = 0; document.getElementById('lWhere').textContent = 'Finished this chapter'; try { localStorage.removeItem(key); } catch (e) {} return; }
       mark();
       const u = new SpeechSynthesisUtterance(items[i].text);
       if (voice) u.voice = voice; u.lang = voice ? voice.lang : 'en-US'; u.rate = rate;
@@ -90,8 +93,20 @@ body.listening main{padding-bottom:120px}
       u.onerror = e => { if (my !== token || !playing || e.error === 'interrupted' || e.error === 'canceled') return; i++; speak(); };
       synth.speak(u);
     };
-    const play = () => { playing = true; setBtn(); speak(); };
-    const pause = () => { playing = false; token++; synth.cancel(); setBtn(); }; // stop and resume from the same part (pause() is unreliable on some phones)
+    // the phone's voice stops when the screen sleeps, so keep the screen on while it reads
+    const A = window.WCAwake, awBtn = document.getElementById('lAwake'), tip = document.getElementById('lTip');
+    const awake = v => { if (A) v ? A.on() : A.off(); };
+    const showAwake = () => {
+      const on = !A || A.enabled();
+      awBtn.setAttribute('aria-pressed', on ? 'true' : 'false');
+      awBtn.setAttribute('aria-label', on ? 'Screen stays on while listening. Tap to let it sleep.' : 'Screen may sleep. Tap to keep it on while listening.');
+      tip.textContent = !A || !A.supported ? 'Keep this screen open while listening. Reading stops if the phone locks.'
+        : on ? 'The screen stays on while this reads aloud. Reading stops if the phone is locked.' : 'Screen can sleep. Reading stops when it does. Tap ☀ to keep it on.';
+    };
+    if (A && A.supported) awBtn.onclick = () => { A.setEnabled(!A.enabled()); showAwake(); if (playing) awake(true); }; else awBtn.hidden = true;
+    showAwake();
+    const play = () => { playing = true; setBtn(); awake(true); speak(); };
+    const pause = () => { playing = false; token++; synth.cancel(); setBtn(); awake(false); }; // stop and resume from the same part (pause() is unreliable on some phones)
     const open = () => { bar.classList.add('on'); document.body.classList.add('listening'); };
     document.getElementById('listenBtn').onclick = () => { open(); play(); };
     playBtn.onclick = () => playing ? pause() : play();
