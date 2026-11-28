@@ -220,6 +220,45 @@ const PAGES = {
       '<h3>In the app now</h3><div class="tw"><table><thead><tr><th>#</th><th>Title</th><th>Length</th><th>Free to read</th><th></th></tr></thead><tbody>' +
       (list.length ? list.map(c => '<tr><td>' + c.n + '</td><td><b>' + esc(c.title) + '</b></td><td>' + Math.round(c.chars / 1000) + 'k characters</td><td>' + (c.free ? '<span class="pill">Free</span>' : '<span class="pill grey">Class only</span>') + '</td><td style="white-space:nowrap"><button class="b2" data-f="' + c.n + '" data-v="' + (c.free ? 0 : 1) + '">' + (c.free ? 'Make class only' : 'Make free') + '</button> <a class="b2" style="text-decoration:none;display:inline-block" href="read.html?ch=' + c.n + '" target="_blank" rel="noopener">Read</a></td></tr>').join('') : '<tr><td colspan="5" class="muted">The book has not been loaded yet. Choose the Word file above.</td></tr>') + '</tbody></table></div>';
     document.querySelectorAll('[data-f]').forEach(b => b.onclick = async () => { await rpc('admin_set_chapter_free', {p_n: +b.dataset.f, p_free: b.dataset.v === '1'}); PAGES.book(); });
+    // ---- chapter recordings ----
+    const mm = v => v ? Math.floor(v / 60) + ':' + String(v % 60).padStart(2, '0') : '';
+    const recBox = document.createElement('div');
+    recBox.innerHTML = '<h3 style="margin-top:22px">Chapter recordings</h3><p class="muted" style="margin:0 0 10px">Upload an MP3 for any chapter. Members then get a real audio player for that chapter that keeps playing with the screen locked (in Safari and on Android). Chapters without a recording keep the phone’s read-aloud voice. Recordings stay when you re-publish the Word file. A recording opens to the same members who can read that chapter.</p>' +
+      (list.length ? list.map(c => '<div class="card" style="padding:12px 14px"><div class="row" style="align-items:center">' +
+        '<div style="flex:1 1 220px"><b>' + (c.n === 0 ? '' : c.n + '. ') + esc(c.title) + '</b><div style="margin-top:4px;font-size:13px">' +
+          (c.audio_path ? '<span class="pill">Recording live</span> <span class="muted">' + mm(c.duration_sec) + '</span> <audio controls preload="none" data-cp="' + esc(c.audio_path) + '" style="vertical-align:middle;height:32px;max-width:100%"></audio>' : '<span class="pill grey">Phone voice</span> <span class="muted">No recording yet</span>') + '</div></div>' +
+        '<div style="flex:1 1 220px"><input type="file" id="ca' + c.n + '" accept="audio/mpeg,audio/mp3,audio/mp4,audio/x-m4a,audio/aac,.mp3,.m4a" aria-label="Recording for ' + esc(c.title) + '"></div>' +
+        '<div style="flex:0 0 auto;display:flex;gap:8px"><button class="b" data-cup="' + c.n + '">' + (c.audio_path ? 'Replace' : 'Upload') + '</button>' + (c.audio_path ? '<button class="b2 danger" data-cdel="' + c.n + '">Delete</button>' : '') + '</div>' +
+        '</div><div id="cm' + c.n + '"></div></div>').join('') : '<p class="muted">Load the book first, then add recordings here.</p>');
+    main.appendChild(recBox);
+    recBox.querySelectorAll('audio[data-cp]').forEach(au => au.addEventListener('play', async () => { if (!au.dataset.loaded) { au.dataset.loaded = 1; try { au.src = await WC.chapterAudioUrl(au.dataset.cp); au.play(); } catch (er) {} } }));
+    const durOf = file => new Promise(res => { const a = new Audio(); a.preload = 'metadata'; a.onloadedmetadata = () => { res(isFinite(a.duration) ? Math.round(a.duration) : null); URL.revokeObjectURL(a.src); }; a.onerror = () => res(null); a.src = URL.createObjectURL(file); });
+    recBox.querySelectorAll('[data-cup]').forEach(btn => btn.onclick = async () => {
+      const n = +btn.dataset.cup, c = list.find(x => x.n === n), box = document.getElementById('cm' + n), file = document.getElementById('ca' + n).files[0];
+      if (!file) return msg(box, 'Choose the MP3 for this chapter first.');
+      if (file.size > 200 * 1024 * 1024) return msg(box, 'That file is over 200 MB. Export it as an MP3 at 128 kbps.');
+      btn.disabled = true;
+      try {
+        const ext = (file.name.match(/\.(mp3|m4a|aac|mp4|wav)$/i) || [, 'mp3'])[1].toLowerCase();
+        const path = 'chapter-' + String(n).padStart(2, '0') + '-' + Date.now() + '.' + ext;
+        box.innerHTML = '<div class="msg ok">Uploading ' + esc(file.name) + ' (' + Math.round(file.size / 1048576) + ' MB)… keep this page open.</div>';
+        const dur = await durOf(file);
+        await WC.uploadChapterAudio(path, file);
+        await rpc('admin_save_chapter_audio', { p_n: n, p_audio_path: path, p_duration_sec: dur });
+        if (c.audio_path && c.audio_path !== path) { try { await WC.removeChapterAudioFile(c.audio_path); } catch (er) {} }
+        msg(box, 'The recording is live for this chapter.', true);
+        setTimeout(() => PAGES.book(), 900);
+      } catch (er) { msg(box, errMsg(er)); } finally { btn.disabled = false; }
+    });
+    recBox.querySelectorAll('[data-cdel]').forEach(btn => armed(btn, 'Tap again to delete', async () => {
+      const n = +btn.dataset.cdel, c = list.find(x => x.n === n), box = document.getElementById('cm' + n);
+      try {
+        await rpc('admin_save_chapter_audio', { p_n: n, p_audio_path: null, p_duration_sec: null });
+        if (c.audio_path) { try { await WC.removeChapterAudioFile(c.audio_path); } catch (er) {} }
+        msg(box, 'Recording deleted. This chapter uses the phone’s voice again.', true);
+        setTimeout(() => PAGES.book(), 900);
+      } catch (er) { msg(box, errMsg(er)); }
+    }));
     document.getElementById('bFile').onchange = async e => {
       const file = e.target.files[0], prev = document.getElementById('bPrev'); if (!file) return;
       prev.innerHTML = '<p class="muted">Reading the Word file…</p>';

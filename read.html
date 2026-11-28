@@ -48,6 +48,14 @@ h1{font-family:'Sora',sans-serif;color:#01434B;font-size:28px;line-height:1.2;ma
 .note a{display:inline-block;margin-top:12px;background:#01434B;color:#fff;border-radius:999px;padding:11px 18px;font-weight:700;text-decoration:none}
 .size{display:flex;gap:2px}
 .copy{font-size:12px;color:#5A6478;margin-top:40px;text-align:center}
+.rec{background:#fff;border:1px solid #EADFCB;border-radius:18px;padding:14px 16px;margin:6px 0 20px}
+.rec .rt{font-family:'Sora',sans-serif;font-weight:700;color:#01434B;font-size:14px}
+.rec audio{width:100%;margin-top:8px}
+.rec .ctrls{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px;align-items:center}
+.rec .ctrls button{font:700 13.5px 'Manrope',sans-serif;border-radius:999px;border:1.5px solid #01434B;background:#fff;color:#01434B;padding:8px 12px;cursor:pointer}
+.rec .ctrls button.on{background:#01434B;color:#fff}
+.rec .sp{flex:1}
+.rec .tip{font-size:12.5px;color:#5A6478;margin-top:8px;line-height:1.45}
 
 </style>
 </head>
@@ -88,19 +96,70 @@ h1{font-family:'Sora',sans-serif;color:#01434B;font-size:28px;line-height:1.2;ma
       main.innerHTML = head + '<div class="note">This chapter opens with the full 14-Day Discovery Class. Your note from the author and Chapter 1 are free.<br><a href="./">Open the full class</a></div>' + navHtml;
       return;
     }
-    const canSpeak = WCListen.supported;
-    main.innerHTML = head + (canSpeak ? '<button class="lbtn" id="listenBtn" aria-label="Listen to this chapter">🔊 Listen to this chapter</button>' : '') + '<div class="book">' + row.html + '</div>' + navHtml + '<p class="copy">© Merch Corporation. All rights reserved. For your personal reading in WholeClass.</p>';
+    // a recorded chapter plays as real audio (keeps playing with the screen locked); otherwise the phone's voice reads it
+    let rec = null;
+    if (meta.audio) { try { rec = await WC.chapterAudio(n); } catch (e) { rec = null; } }
+    const hasRec = !!(rec && rec.path);
+    const canSpeak = !hasRec && WCListen.supported;
+    const recHtml = hasRec ? '<div class="rec"><div class="rt">🎧 Listen to this chapter' + (rec.duration_sec ? ' · ' + Math.max(1, Math.round(rec.duration_sec / 60)) + ' min' : '') + '</div>' +
+      '<audio id="cau" controls preload="metadata" controlsList="nodownload"></audio>' +
+      '<div class="ctrls"><button id="cb15" aria-label="Back 15 seconds">↺ 15</button><button id="cf15" aria-label="Forward 15 seconds">15 ↻</button><span class="sp"></span>' +
+      ['0.8','1','1.25','1.5'].map(r => '<button data-r="' + r + '">' + r + '×</button>').join('') + '</div>' +
+      '<div class="ctrls"><button id="cawake" aria-pressed="true">☀ Screen stays on</button></div><div class="tip" id="ctip"></div><div class="tip" id="cres"></div></div>' : '';
+    main.innerHTML = head + recHtml + (canSpeak ? '<button class="lbtn" id="listenBtn" aria-label="Listen to this chapter">🔊 Listen to this chapter</button>' : '') + '<div class="book">' + row.html + '</div>' + navHtml + '<p class="copy">© Merch Corporation. All rights reserved. For your personal reading in WholeClass.</p>';
     main.querySelectorAll('.book table').forEach(t => { const w = document.createElement('div'); w.className = 'tw'; t.parentNode.insertBefore(w, t); w.appendChild(t); });
     applySize();
     if (canSpeak) WCListen.setup({ n, title: meta.title, main });
+    if (hasRec) recorder(n, meta, rec, next);
     if (location.hash) { const el = document.getElementById(decodeURIComponent(location.hash.slice(1))); if (el) { el.classList.add('hit'); setTimeout(() => el.scrollIntoView({ block: 'center' }), 50); } }
     else window.scrollTo(0, 0);
+  }
+  async function recorder(n, meta, rec, next){
+    const au = document.getElementById('cau'), res = document.getElementById('cres'), key = 'wc-ch-pos-' + n;
+    const clock = v => { v = Math.max(0, Math.floor(v || 0)); return Math.floor(v / 60) + ':' + String(v % 60).padStart(2, '0'); };
+    try { au.src = await WC.chapterAudioUrl(rec.path); } catch (e) { res.textContent = 'The recording could not be loaded. Check your connection and try again.'; return; }
+    let rate = 1; try { rate = +localStorage.getItem('wc-ep-rate') || 1; } catch (e) {}
+    const setRate = r => { rate = r; au.playbackRate = r; document.querySelectorAll('.rec [data-r]').forEach(b => b.classList.toggle('on', +b.dataset.r === r)); try { localStorage.setItem('wc-ep-rate', r); } catch (e) {} };
+    document.querySelectorAll('.rec [data-r]').forEach(b => b.onclick = () => setRate(+b.dataset.r));
+    setRate(rate);
+    document.getElementById('cb15').onclick = () => { au.currentTime = Math.max(0, au.currentTime - 15); };
+    document.getElementById('cf15').onclick = () => { au.currentTime = Math.min(au.duration || 1e9, au.currentTime + 15); };
+    let saved = 0; try { saved = +localStorage.getItem(key) || 0; } catch (e) {}
+    au.addEventListener('loadedmetadata', () => { au.playbackRate = rate; if (saved > 10 && saved < (au.duration || 0) - 10) { au.currentTime = saved; res.textContent = 'Picking up where you left off at ' + clock(saved) + '.'; } });
+    let last = 0;
+    au.addEventListener('timeupdate', () => { if (Math.abs(au.currentTime - last) > 5) { last = au.currentTime; try { localStorage.setItem(key, Math.floor(au.currentTime)); } catch (e) {} } });
+    au.addEventListener('ratechange', () => { if (au.playbackRate !== rate) setRate(au.playbackRate); });
+    au.addEventListener('ended', () => { try { localStorage.removeItem(key); } catch (e) {} res.innerHTML = next ? 'Finished. <a href="read.html?ch=' + next.n + '" style="color:#0E6B6B;font-weight:800">Go to Chapter ' + next.n + ' ›</a>' : 'Finished.'; });
+    const A = window.WCAwake, aw = document.getElementById('cawake'), tip = document.getElementById('ctip');
+    const showAwake = () => {
+      const on = A && A.enabled();
+      aw.setAttribute('aria-pressed', on ? 'true' : 'false'); aw.classList.toggle('on', !!on);
+      aw.textContent = on ? '☀ Screen stays on' : '☾ Screen can sleep';
+      tip.innerHTML = A && A.isIPhoneHomeApp
+        ? (on ? 'The screen stays on while the chapter plays. ' : '') + 'On iPhone, audio opened from the home-screen icon pauses when the phone locks. To listen with the screen locked, open <b>wholeclass.app</b> in Safari and play the chapter there.'
+        : on ? 'The screen stays on while the chapter plays. Tap the button to let it sleep and keep listening on the lock screen.' : 'You can lock the phone and keep listening, with controls on the lock screen.';
+    };
+    if (A && A.supported) { aw.onclick = () => { A.setEnabled(!A.enabled()); showAwake(); if (!au.paused) A.on(); }; showAwake(); }
+    else { aw.hidden = true; if (A && A.isIPhoneHomeApp) showAwake(); }
+    au.addEventListener('play', () => { if (A) A.on(); });
+    au.addEventListener('pause', () => { if (A) A.off(); });
+    au.addEventListener('ended', () => { if (A) A.off(); });
+    if ('mediaSession' in navigator) {
+      try {
+        navigator.mediaSession.metadata = new MediaMetadata({ title: (n === 0 ? '' : 'Chapter ' + n + ': ') + meta.title, artist: 'C.P. Parker', album: 'Know Your Holes',
+          artwork: [{ src: 'assets/kyh-cover.jpg', sizes: '512x512', type: 'image/jpeg' }] });
+        navigator.mediaSession.setActionHandler('play', () => au.play());
+        navigator.mediaSession.setActionHandler('pause', () => au.pause());
+        navigator.mediaSession.setActionHandler('seekbackward', () => { au.currentTime = Math.max(0, au.currentTime - 15); });
+        navigator.mediaSession.setActionHandler('seekforward', () => { au.currentTime = au.currentTime + 15; });
+      } catch (e) {}
+    }
   }
   function toc(list){
     hdr.textContent = 'Know Your Holes';
     main.innerHTML = '<div class="cover"><img src="assets/kyh-cover.jpg" alt="Know Your Holes book cover"><div><p class="kicker">The book</p><h1 style="margin:4px 0 2px">Know Your Holes</h1><div style="color:#5A6478;font-weight:600">C.P. Parker · Merch Corporation</div></div></div>' +
       '<p style="line-height:1.55">Each day of the 14-Day Discovery Class has a chapter to go with it. Day 1 reads Chapter 1, Day 2 reads Chapter 2, and so on.</p>' +
-      '<div class="toc">' + list.map(c => '<a href="read.html?ch=' + c.n + '"><span>' + (c.n === 0 ? '' : c.n + '. ') + esc(c.title) + '</span><small' + (c.free ? '' : ' class="lock"') + '>' + (c.free ? (c.n === 0 ? 'Free' : 'Free · Day 1') : dayFor(c.n)) + '</small></a>').join('') + '</div>' +
+      '<div class="toc">' + list.map(c => '<a href="read.html?ch=' + c.n + '"><span>' + (c.n === 0 ? '' : c.n + '. ') + esc(c.title) + '</span><small' + (c.free ? '' : ' class="lock"') + '>' + (c.audio ? '🎧 ' : '') + (c.free ? (c.n === 0 ? 'Free' : 'Free · Day 1') : dayFor(c.n)) + '</small></a>').join('') + '</div>' +
       (list.length ? '' : '<div class="note">The book has not been loaded yet. Check back soon.</div>');
   }
   run().catch(e => { main.innerHTML = '<h1>Could not open the book</h1><p>' + esc(e.message || e) + '</p><p><a href="read.html">Try again</a></p>'; });
